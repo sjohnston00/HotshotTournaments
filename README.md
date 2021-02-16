@@ -23,3 +23,4 @@ If you are not a direct access contributor to this repository, then you will nee
 #### Using markdown
 Any files that have the `.md` suffix required the Markdown syntax to work properly, use this link to for a little [cheatsheet here](https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet)
 
+Note: If you ever want to make a comment on any of the GitHub textboxes, they all support mardown natively.
