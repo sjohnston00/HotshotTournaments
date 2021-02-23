@@ -1,24 +1,73 @@
+//@ts-check
+
 const express = require("express");
 const router = express.Router();
+const Tournament = require("../models/Tournament");
 
-//GET ALL TOURNAMENTS
-router.get("/", (req, res) => {});
+/**
+ * GET ALL TOURNAMENTS
+ * @typedef {object} RequestBody
+ * @property {string} Access_Token token that grants the user access to certain endpoints
+ *
+ * @description A route for getting all the tournaments from the database
+ */
+router.get("/", async (req, res) => {
+  try {
+    const tournaments = await Tournament.find();
+    res.send(tournaments);
+  } catch (error) {
+    res.json({ message: error });
+  }
+});
 
 //GET ALL USERS TOURNAMENTS
-router.get("/", (req, res) => {});
+router.get("/", async (req, res) => {
+  try {
+    const tournaments = await Tournament.find();
+    res.send(tournaments);
+  } catch (error) {
+    res.json({ message: error });
+  }
+});
 
 //GET 1 TOURNAMENT
-router.get("/", (req, res) => {});
+router.get("/:tournamentID", async (req, res) => {
+  //VALIDATE THAT THE USERS ID IS VALID FOR THIS TOURNAMENT
+});
 
-//CREATE A NEW TOURNAMENT
-router.post("/", (req, res) => {});
+//Add user to tournament
+router.get("/:tournamentID", async (req, res) => {});
+
+router.post("/", async (req, res) => {
+  //USE A MIDDLEWARE TO VALIDATE THE ACCESS TOKEN
+
+  //VALIDATE THE DATA
+
+  const newTournament = new Tournament({
+    name: req.body.name,
+    description: req.body.description,
+    game: req.body.game,
+    type: req.body.type,
+    startDate: new Date(req.body.startDate),
+    endDate: new Date(req.body.endDate)
+    // discussionBoardID: req.body.discussionBoardID,
+    // users: []
+  });
+
+  try {
+    const savedTournament = await newTournament.save();
+    res.send(savedTournament);
+  } catch (error) {
+    res.json({ message: error });
+  }
+});
 
 //UPDATE A TOURNAMENT
-router.put("/:tournamentID", (req, res) => {});
+router.put("/:tournamentID", async (req, res) => {});
 
 //DELETE A TOURNAMENT
 //THIS SHOULDN'T BE DONE AS WE STILL WANT USERS TO BE ABLE TO SEE PAST TOURNAMENTS
 //BUT ITS NICE TO HAVE THE METHOD THERE
-router.delete("/:tournamentID", (req, res) => {});
+router.delete("/:tournamentID", async (req, res) => {});
 
 module.exports = router;
