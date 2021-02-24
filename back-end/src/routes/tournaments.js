@@ -1,32 +1,23 @@
-//@ts-check
-
 const express = require("express");
 const router = express.Router();
 const Tournament = require("../models/Tournament");
 
-/**
- * GET ALL TOURNAMENTS
- * @typedef {object} RequestBody
- * @property {string} Access_Token token that grants the user access to certain endpoints
- *
- * @description A route for getting all the tournaments from the database
- */
 router.get("/", async (req, res) => {
   try {
     const tournaments = await Tournament.find();
     res.send(tournaments);
   } catch (error) {
-    res.json({ message: error });
+    res.status(500).json({ message: error });
   }
 });
 
 //GET ALL USERS TOURNAMENTS
-router.get("/", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const tournaments = await Tournament.find();
-    res.send(tournaments);
+    res.status(200).send(tournaments);
   } catch (error) {
-    res.json({ message: error });
+    res.status(500).json({ message: error });
   }
 });
 
@@ -40,9 +31,7 @@ router.get("/:tournamentID", async (req, res) => {});
 
 router.post("/", async (req, res) => {
   //USE A MIDDLEWARE TO VALIDATE THE ACCESS TOKEN
-
   //VALIDATE THE DATA
-
   const newTournament = new Tournament({
     name: req.body.name,
     description: req.body.description,
@@ -50,9 +39,9 @@ router.post("/", async (req, res) => {
     type: req.body.type,
     startDate: new Date(req.body.startDate),
     endDate: new Date(req.body.endDate)
-    // discussionBoardID: req.body.discussionBoardID,
-    // users: []
   });
+  // discussionBoardID: req.body.discussionBoardID,
+  // users: []
 
   try {
     const savedTournament = await newTournament.save();

@@ -4,6 +4,9 @@ const app = express();
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+//MIDDLEWARES
+app.use(express.json());
+
 //IMPORT THE ROUTERS
 const tournamentsRouter = require("./routes/tournaments");
 app.use("/api/tournaments", tournamentsRouter);
@@ -23,13 +26,13 @@ mongoose.connect(
     useNewUrlParser: true,
     useUnifiedTopology: true
   },
-  () => {
+  (err) => {
+    if (err) {
+      return console.error(err);
+    }
     console.log("Connected to cloud DB");
   }
 );
-
-//MIDDLEWARES
-app.use(express.json());
 
 //INITIALISE THE APP
 const PORT = process.env.PORT || 3000;
