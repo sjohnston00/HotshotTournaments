@@ -16,7 +16,10 @@ router.get("/", verifyToken, async (req, res) => {
 //GET ALL USERS TOURNAMENTS
 router.get("/myTournaments", verifyToken, async (req, res) => {
   try {
-    const tournaments = await Tournament.find();
+    //TODO: test this when there are multiple users in the database
+    const tournaments = await Tournament.find({ users: req.user._id }).populate(
+      "users"
+    );
     res.status(200).send(tournaments);
   } catch (error) {
     res.status(500).json({ message: error });
