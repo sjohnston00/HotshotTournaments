@@ -9,7 +9,11 @@ app.use(express.json());
 
 //IMPORT THE ROUTERS
 const tournamentsRouter = require("./routes/tournaments");
+const authRouter = require("./routes/auth");
+const usersRouter = require("./routes/users");
 app.use("/api/tournaments", tournamentsRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 
 //BASIC ROUTE
 app.get("/", (req, res) => {
