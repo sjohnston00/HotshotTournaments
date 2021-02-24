@@ -10,8 +10,8 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    const isVerified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = isVerified;
+    const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = verifiedUser;
   } catch (error) {
     return res
       .status(403)

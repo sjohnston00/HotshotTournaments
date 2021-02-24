@@ -6,7 +6,18 @@ const { verifyToken } = require("../middlewares/verifyToken");
 //GET ALL TOURNAMENTS
 router.get("/", verifyToken, async (req, res) => {
   try {
-    const tournaments = await Tournament.find().populate("users");
+    const tournaments = await Tournament.find()
+      .select("-__v")
+      .populate("users", "-_id -__v -password")
+      .populate({
+        path: "messages",
+        select: "-_id -__v -tournament",
+        populate: {
+          path: "user",
+          model: "users",
+          select: "-_id -__v -password"
+        }
+      });
     res.send(tournaments);
   } catch (error) {
     res.status(500).json({ message: error });
@@ -17,9 +28,9 @@ router.get("/", verifyToken, async (req, res) => {
 router.get("/myTournaments", verifyToken, async (req, res) => {
   try {
     //TODO: test this when there are multiple users and tournaments in the database
-    const tournaments = await Tournament.find({ users: req.user._id }).populate(
-      "users"
-    );
+    const tournaments = await Tournament.find({ users: req.user._id })
+      .populate("users")
+      .populate("messages");
     res.status(200).send(tournaments);
   } catch (error) {
     res.status(500).json({ message: error });
@@ -32,9 +43,9 @@ router.get("/:tournamentID", verifyToken, async (req, res) => {
 
   try {
     const tournamentID = req.params.tournamentID;
-    const tournament = await Tournament.findOne({ _id: tournamentID }).populate(
-      "users"
-    );
+    const tournament = await Tournament.findOne({ _id: tournamentID })
+      .populate("users")
+      .populate("messages");
     if (!tournament) {
       res.status(404).send("Invalid Tournament ID");
     }
@@ -46,7 +57,7 @@ router.get("/:tournamentID", verifyToken, async (req, res) => {
 });
 
 //Add user to tournament
-router.post("/addToTournament/:tournamentID", verifyToken, async (req, res) => {
+router.get("/addToTournament/:tournamentID", verifyToken, async (req, res) => {
   try {
     const { tournamentID } = req.params;
     const tournament = await Tournament.findOne({ _id: tournamentID });
@@ -64,17 +75,25 @@ router.post("/addToTournament/:tournamentID", verifyToken, async (req, res) => {
 });
 
 router.post("/", verifyToken, async (req, res) => {
-  //USE A MIDDLEWARE TO VALIDATE THE ACCESS TOKEN
-  //VALIDATE THE DATA
+  const { name, description, game, type, startDate, endDate } = req.body;
+
+  if (!name || !description || !game || !type || !startDate || !endDate) {
+    res
+      .status(401)
+      .send(
+        "Name, Description, Game, Type, Start Date and End Date are required"
+      );
+  }
+
   const newTournament = new Tournament({
-    name: req.body.name,
-    description: req.body.description,
-    game: req.body.game,
-    type: req.body.type,
-    startDate: new Date(req.body.startDate),
-    endDate: new Date(req.body.endDate),
-    users: [req.user._id]
-    // discussionBoardID: req.body.discussionBoardID,
+    name: name,
+    description: description,
+    game: game,
+    type: type,
+    startDate: new Date(startDate),
+    endDate: new Date(endDate),
+    users: [req.user._id],
+    messages: []
   });
 
   try {
