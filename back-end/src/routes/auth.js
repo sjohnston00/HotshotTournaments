@@ -3,8 +3,6 @@ const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { protectedRoute } = require("../middlewares/index");
-const { validate } = require("../models/User");
 
 router.post("/register", async (req, res) => {
   //VALIDATE BODY

@@ -40,18 +40,18 @@ const TournamentSchema = mongoose.Schema({
   endDate: {
     type: Date,
     required: true
-  }
+  },
   // discussionBoardID: {
   //   type: String,
   //   required: true,
   //   ref: "DiscussionBoards"
   // },
-  // users: [
-  //   {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: "users"
-  //   }
-  // ]
+  users: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users"
+    }
+  ]
 });
 
 module.exports = mongoose.model("tournaments", TournamentSchema);
