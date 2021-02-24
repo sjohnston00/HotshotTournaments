@@ -16,7 +16,7 @@ router.get("/", verifyToken, async (req, res) => {
 //GET ALL USERS TOURNAMENTS
 router.get("/myTournaments", verifyToken, async (req, res) => {
   try {
-    //TODO: test this when there are multiple users in the database
+    //TODO: test this when there are multiple users and tournaments in the database
     const tournaments = await Tournament.find({ users: req.user._id }).populate(
       "users"
     );
@@ -32,7 +32,12 @@ router.get("/:tournamentID", verifyToken, async (req, res) => {
 
   try {
     const tournamentID = req.params.tournamentID;
-    const tournament = await Tournament.find({ _id: tournamentID });
+    const tournament = await Tournament.findOne({ _id: tournamentID }).populate(
+      "users"
+    );
+    if (!tournament) {
+      res.status(404).send("Invalid Tournament ID");
+    }
 
     res.status(200).send(tournament);
   } catch (error) {
@@ -41,7 +46,7 @@ router.get("/:tournamentID", verifyToken, async (req, res) => {
 });
 
 //Add user to tournament
-router.get("/addToTournament/:tournamentID", verifyToken, async (req, res) => {
+router.post("/addToTournament/:tournamentID", verifyToken, async (req, res) => {
   try {
     const { tournamentID } = req.params;
     const tournament = await Tournament.findOne({ _id: tournamentID });

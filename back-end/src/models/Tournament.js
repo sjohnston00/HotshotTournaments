@@ -41,14 +41,18 @@ const TournamentSchema = mongoose.Schema({
     type: Date,
     required: true
   },
-  // discussionBoardID: {
-  //   type: String,
-  //   required: true,
-  //   ref: "DiscussionBoards"
-  // },
+  messages: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+      ref: "messages"
+    }
+  ],
+
   users: [
     {
       type: mongoose.Schema.Types.ObjectId,
+      required: false,
       ref: "users"
     }
   ]

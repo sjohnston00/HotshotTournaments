@@ -11,9 +11,11 @@ app.use(express.json());
 const tournamentsRouter = require("./routes/tournaments");
 const authRouter = require("./routes/auth");
 const usersRouter = require("./routes/users");
+const messagesRouter = require("./routes/messages");
 app.use("/api/tournaments", tournamentsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/messages", messagesRouter);
 
 //BASIC ROUTE
 app.get("/", (req, res) => {
