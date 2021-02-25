@@ -29,7 +29,7 @@ router.get("/myTournaments", verifyToken, async (req, res) => {
   try {
     //TODO: test this when there are multiple users and tournaments in the database
     const tournaments = await Tournament.find({ users: req.user._id })
-      .populate("users")
+      .populate("users", "-_id -__v -password")
       .populate({
         path: "messages",
         select: "-_id -__v -tournament",
@@ -50,16 +50,23 @@ router.get("/:tournamentID", verifyToken, async (req, res) => {
   //VALIDATE THAT THE USERS ID IS VALID FOR THIS TOURNAMENT
   try {
     const tournamentID = req.params.tournamentID;
-    const tournament = await Tournament.findOne({ _id: tournamentID })
-      .populate("users")
-      .populate("messages");
+    const tournament = await Tournament.findOne({
+      _id: tournamentID,
+      users: req.user._id
+    })
+      .populate("users", "-_id -__v -password")
+      .populate({
+        path: "messages",
+        select: "-_id -__v -tournament",
+        populate: {
+          path: "user",
+          model: "users",
+          select: "-_id -__v -password"
+        }
+      });
     if (!tournament) {
-      res.status(404).send("Invalid Tournament ID");
+      return res.status(404).send("Invalid Tournament ID");
     }
-    if (!tournament.users.includes(req.user._id)) {
-      return res.status(401).send("this user is not a part of this tournament");
-    }
-
     res.status(200).send(tournament);
   } catch (error) {
     res.status(500).json({ message: error });

@@ -38,7 +38,11 @@ mongoose.connect(
     if (err) {
       return console.error(err);
     }
-    console.log("Connected to cloud DB");
+    console.log(
+      `${new Date().toUTCString()}: Connected to MongoDB Atlas: Running on Mongoose version ${
+        mongoose.version
+      }`
+    );
   }
 );
 

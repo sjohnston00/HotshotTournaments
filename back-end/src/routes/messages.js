@@ -45,9 +45,12 @@ router.post("/tournament/:tournamentID", verifyToken, async (req, res) => {
   //VALIDATE THE USER IS PART OF THE TOURNAMENT
   let tournament;
   try {
-    tournament = await Tournament.findOne({ _id: tournamentID });
-    if (!tournament.users.includes(req.user._id)) {
-      return res.status(401).send("this user is not a part of this tournament");
+    tournament = await Tournament.findOne({
+      _id: tournamentID,
+      users: req.user._id
+    });
+    if (!tournament) {
+      return res.status(404).send("Invalid Tournament ID");
     }
   } catch (error) {
     return res.status(500).send(error);
