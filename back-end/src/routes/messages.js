@@ -87,14 +87,28 @@ router.get("/myMessages", verifyToken, async (req, res) => {
 });
 
 //update message
-router.get("/:messageId", verifyToken, async (req, res) => {
+router.put("/:messageId", verifyToken, async (req, res) => {
   const { messageId } = req.params;
   if (!messageId) {
     res.status(404).send("Not Found");
   }
+
+  const { body } = req.body;
+  if (!body) {
+    res.status(401).send("Message body and Announcement are required");
+  }
   try {
-    const messages = await Message.find({ user: req.user._id });
-    res.status(200).send(messages);
+    const updatedMessage = await Message.updateOne(
+      { _id: messageId },
+      {
+        $set: {
+          body: body,
+          isAnnouncement: isAnnouncement
+        }
+      }
+    );
+
+    res.status(200).send(updatedMessage);
   } catch (error) {
     res.status(500).send(error);
   }

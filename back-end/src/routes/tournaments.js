@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Tournament = require("../models/Tournament");
+const Message = require("../models/Message");
 const { verifyToken } = require("../middlewares/verifyToken");
 
 //GET ALL TOURNAMENTS
@@ -74,20 +75,25 @@ router.get("/:tournamentID", verifyToken, async (req, res) => {
 });
 
 //Add user to tournament
-router.get("/addToTournament/:tournamentID", verifyToken, async (req, res) => {
+router.post("/addToTournament/:tournamentID", verifyToken, async (req, res) => {
   try {
     const { tournamentID } = req.params;
     const tournament = await Tournament.findOne({ _id: tournamentID });
     if (!tournament) {
       res.status(404).send("Invalid Tournament ID");
     }
-
+    if (tournament.users.includes(req.user._id)) {
+      return res.status(401).send("User is already a part of this tournament");
+    }
     //ADD THE USER ID TO THE TOURNAMENT
     tournament.users.push(req.user._id);
     const savedTournament = await tournament.save();
-    res.status(200).send(savedTournament);
+    res.status(200).send({
+      message: "User has been added to tournament",
+      tournament: savedTournament
+    });
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).send(error.message);
   }
 });
 
@@ -101,6 +107,14 @@ router.post("/", verifyToken, async (req, res) => {
       .send(
         "Name, Description, Game, Type, Start Date and End Date are required"
       );
+  }
+  const nowDate = new Date();
+  if (new Date(startDate) < nowDate) {
+    return res.status(401).send("Starting Date cannot be before today");
+  } else if (new Date(endDate) < nowDate) {
+    return res.status(401).send("Ending Date cannot be before today");
+  } else if (new Date(endDate) < new Date(startDate)) {
+    return res.status(401).send("Ending Date cannot be before Start date");
   }
 
   const newTournament = new Tournament({
@@ -118,7 +132,7 @@ router.post("/", verifyToken, async (req, res) => {
     const savedTournament = await newTournament.save();
     res.send(savedTournament);
   } catch (error) {
-    res.json({ message: error });
+    res.json({ message: error.message });
   }
 });
 
@@ -152,6 +166,15 @@ router.put("/:tournamentID", verifyToken, async (req, res) => {
       );
   }
 
+  const nowDate = new Date();
+  if (new Date(startDate) < nowDate) {
+    return res.status(401).send("Starting Date cannot be before today");
+  } else if (new Date(endDate) < nowDate) {
+    return res.status(401).send("Ending Date cannot be before today");
+  } else if (new Date(endDate) < new Date(startDate)) {
+    return res.status(401).send("Ending Date cannot be before Start date");
+  }
+
   try {
     const updatedTournament = await Tournament.updateOne(
       { _id: req.params.tournamentID },
@@ -176,20 +199,28 @@ router.put("/:tournamentID", verifyToken, async (req, res) => {
 
 //DELETE A TOURNAMENT
 //THIS SHOULDN'T BE DONE AS WE STILL WANT USERS TO BE ABLE TO SEE PAST TOURNAMENTS
-//BUT ITS NICE TO HAVE THE METHOD THERE
+//BUT IT'S NICE TO HAVE THE METHOD THERE
 router.delete("/:tournamentID", verifyToken, async (req, res) => {
+  const { tournamentID } = req.params;
   try {
-    const tournamentID = req.params.tournamentID;
-    const deletedTournament = await Tournament.deleteOne({ _id: tournamentID });
+    const deletedTournament = await Tournament.deleteOne({
+      _id: tournamentID,
+      users: req.user._id
+    });
+    if (deletedTournament.deletedCount === 0) {
+      return res.status(401).send("This user is not part of this tournament");
+    }
 
-    //TODO: SHOULD THEN DELETE THE MESSAGES ASSOCIATED WITH THAT TOURNAMENT
+    //TODO: DELETE THE MESSAGES ASSOCIATED WITH THAT TOURNAMENT
+    const tournamentsMessages = await Message.deleteMany();
 
     res.status(200).send({
       message: "tournament deleted",
-      deletedTournament: deletedTournament
+      deletedTournament: deletedTournament,
+      tournamentsMessages: tournamentsMessages
     });
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ message: error.message });
   }
 });
 
