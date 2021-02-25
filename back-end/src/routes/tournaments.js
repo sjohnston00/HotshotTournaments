@@ -30,7 +30,15 @@ router.get("/myTournaments", verifyToken, async (req, res) => {
     //TODO: test this when there are multiple users and tournaments in the database
     const tournaments = await Tournament.find({ users: req.user._id })
       .populate("users")
-      .populate("messages");
+      .populate({
+        path: "messages",
+        select: "-_id -__v -tournament",
+        populate: {
+          path: "user",
+          model: "users",
+          select: "-_id -__v -password"
+        }
+      });
     res.status(200).send(tournaments);
   } catch (error) {
     res.status(500).json({ message: error });
@@ -40,7 +48,6 @@ router.get("/myTournaments", verifyToken, async (req, res) => {
 //GET 1 TOURNAMENT
 router.get("/:tournamentID", verifyToken, async (req, res) => {
   //VALIDATE THAT THE USERS ID IS VALID FOR THIS TOURNAMENT
-
   try {
     const tournamentID = req.params.tournamentID;
     const tournament = await Tournament.findOne({ _id: tournamentID })
@@ -48,6 +55,9 @@ router.get("/:tournamentID", verifyToken, async (req, res) => {
       .populate("messages");
     if (!tournament) {
       res.status(404).send("Invalid Tournament ID");
+    }
+    if (!tournament.users.includes(req.user._id)) {
+      return res.status(401).send("this user is not a part of this tournament");
     }
 
     res.status(200).send(tournament);
@@ -74,6 +84,7 @@ router.get("/addToTournament/:tournamentID", verifyToken, async (req, res) => {
   }
 });
 
+//CREATE A NEW TOURNAMENT
 router.post("/", verifyToken, async (req, res) => {
   const { name, description, game, type, startDate, endDate } = req.body;
 
@@ -106,6 +117,34 @@ router.post("/", verifyToken, async (req, res) => {
 
 //UPDATE A TOURNAMENT
 router.put("/:tournamentID", verifyToken, async (req, res) => {
+  const {
+    name,
+    description,
+    game,
+    type,
+    startDate,
+    endDate,
+    messages,
+    users
+  } = req.body;
+
+  if (
+    !name ||
+    !description ||
+    !game ||
+    !type ||
+    !startDate ||
+    !endDate ||
+    !messages ||
+    !users
+  ) {
+    return res
+      .status(401)
+      .send(
+        "Name, Description, Game, Tournament Type, Start Date, End Date, Messages and Users are required fields"
+      );
+  }
+
   try {
     const updatedTournament = await Tournament.updateOne(
       { _id: req.params.tournamentID },
@@ -117,7 +156,7 @@ router.put("/:tournamentID", verifyToken, async (req, res) => {
           type: req.body.type,
           startDate: new Date(req.body.startDate),
           endDate: new Date(req.body.endDate),
-          // discussionBoardID: req.body.discussionBoardID,
+          messages: req.body.messages,
           users: req.body.users
         }
       }
@@ -135,6 +174,8 @@ router.delete("/:tournamentID", verifyToken, async (req, res) => {
   try {
     const tournamentID = req.params.tournamentID;
     const deletedTournament = await Tournament.deleteOne({ _id: tournamentID });
+
+    //TODO: SHOULD THEN DELETE THE MESSAGES ASSOCIATED WITH THAT TOURNAMENT
 
     res.status(200).send({
       message: "tournament deleted",
