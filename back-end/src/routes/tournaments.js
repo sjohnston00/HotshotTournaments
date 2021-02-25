@@ -212,7 +212,9 @@ router.delete("/:tournamentID", verifyToken, async (req, res) => {
     }
 
     //TODO: DELETE THE MESSAGES ASSOCIATED WITH THAT TOURNAMENT
-    const tournamentsMessages = await Message.deleteMany();
+    const tournamentsMessages = await Message.deleteMany({
+      tournament: tournamentID
+    });
 
     res.status(200).send({
       message: "tournament deleted",
