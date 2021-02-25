@@ -25,6 +25,10 @@ const MessageSchema = mongoose.Schema({
     type: Boolean,
     required: false,
     default: false
+  },
+  createdAt: {
+    type: Date,
+    required: true
   }
 });
 

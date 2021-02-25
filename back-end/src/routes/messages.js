@@ -5,17 +5,20 @@ const Message = require("../models/Message");
 const { verifyToken } = require("../middlewares/verifyToken");
 
 //GET ALL MESSAGES
+//TODO: remove access to every user
 router.get("/", verifyToken, async (req, res) => {
   try {
-    const messages = await Message.find();
+    const messages = await Message.find()
+      .populate("tournament", "-__v", "tournaments")
+      .populate("user", "-_id -__v -pasword", "users");
     res.status(200).send(messages);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send(error.message);
   }
 });
 
 //ALL MESSAGES FROM A TOURNAMENT
-router.get("/:tournamentID", verifyToken, async (req, res) => {
+router.get("/tournament/:tournamentID", verifyToken, async (req, res) => {
   const { tournamentID } = req.params;
   if (!tournamentID) {
     res.status(404).send("Not Found");
@@ -23,10 +26,12 @@ router.get("/:tournamentID", verifyToken, async (req, res) => {
   try {
     const messages = await Message.find({
       tournament: tournamentID
-    }).populate("tournament");
+    })
+      .sort([["createdAt", -1]]) //FOUND THIS ON STACK OVERFLOW, BUT I HAVE NO IDEA HOW IT WORKS
+      .populate("user", "-_id -__v -pasword", "users");
     res.status(200).send(messages);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send(error.message);
   }
 });
 
@@ -46,11 +51,15 @@ router.post("/tournament/:tournamentID", verifyToken, async (req, res) => {
   let tournament;
   try {
     tournament = await Tournament.findOne({
-      _id: tournamentID,
-      users: req.user._id
+      _id: tournamentID
     });
     if (!tournament) {
       return res.status(404).send("Invalid Tournament ID");
+    }
+    if (!tournament.users.includes(req.user._id)) {
+      return res
+        .status(401)
+        .send("Not allowed to send a message to this tournament");
     }
   } catch (error) {
     return res.status(500).send(error);
@@ -61,7 +70,8 @@ router.post("/tournament/:tournamentID", verifyToken, async (req, res) => {
     body: body,
     isAnnouncement: isAnnouncement,
     user: req.user._id,
-    tournament: tournamentID
+    tournament: tournamentID,
+    createdAt: new Date()
   });
 
   try {
@@ -89,10 +99,6 @@ router.get("/myMessages", verifyToken, async (req, res) => {
 //update message
 router.put("/:messageId", verifyToken, async (req, res) => {
   const { messageId } = req.params;
-  if (!messageId) {
-    res.status(404).send("Not Found");
-  }
-
   const { body } = req.body;
   if (!body) {
     res.status(401).send("Message body and Announcement are required");
@@ -111,6 +117,28 @@ router.put("/:messageId", verifyToken, async (req, res) => {
     res.status(200).send(updatedMessage);
   } catch (error) {
     res.status(500).send(error);
+  }
+});
+
+router.delete("/:messagedId", verifyToken, async (req, res) => {
+  const { messageId } = req.params;
+
+  try {
+    const checkUserId = await Message.findOne({
+      _id: messageId,
+      user: req.user._id
+    });
+    if (!checkUserId) {
+      return res.status(401).send("Not your message to delete");
+    }
+
+    const deletedMessage = await Message.deleteOne({ _id: messageId });
+    res.status(200).send({
+      message: "Message has been deleted",
+      deletedMessage: deletedMessage
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 });
 
