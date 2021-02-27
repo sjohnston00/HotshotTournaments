@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { json } = require("express");
 
 router.post("/register", async (req, res) => {
   //VALIDATE BODY
@@ -36,6 +37,9 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
+  if (true) {
+    return res.send(JSON.stringify(req.body));
+  }
   //VALIDATE BODY
   const { email, password } = req.body;
   if (!email || !password) {
