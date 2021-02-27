@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Tournament = require("../models/Tournament");
 const Message = require("../models/Message");
+const Team = require("../models/Team");
 const { verifyToken } = require("../middlewares/verifyToken");
 
 //GET ALL TOURNAMENTS
@@ -23,7 +24,7 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
-//GET ALL USERS TOURNAMENTS
+//GET ALL THE USERS TOURNAMENTS
 router.get("/myTournaments", verifyToken, async (req, res) => {
   try {
     //TODO: test this when there are multiple users and tournaments in the database
@@ -116,16 +117,35 @@ router.post("/", verifyToken, async (req, res) => {
     return res.status(401).send("Ending Date cannot be before Start date");
   }
 
-  const newTournament = new Tournament({
-    name: name,
-    description: description,
-    game: game,
-    type: type,
-    startDate: new Date(startDate),
-    endDate: new Date(endDate),
-    users: [req.user._id],
-    messages: []
-  });
+  let newTournament;
+
+  //VALIDATE TOURNAMENT TYPE
+  if (type === "Single") {
+    newTournament = new Tournament({
+      name: name,
+      description: description,
+      game: game,
+      type: type,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      messages: [],
+      users: [req.user._id]
+    });
+  } else if (type === "Team") {
+    newTournament = new Tournament({
+      name: name,
+      description: description,
+      game: game,
+      type: type,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      messages: [],
+      teams: []
+    });
+  } else {
+    res.status(401).send("Invalid Tournament Type");
+  }
+  //TODO: Debug this
 
   try {
     const savedTournament = await newTournament.save();
@@ -227,18 +247,20 @@ router.delete("/:tournamentID", verifyToken, async (req, res) => {
 
 //DEV ZONE
 //TODO: Delete these routes in production
-router.get("/deleteTournaments/all", async (req, res) => {
+router.delete("/deleteTournaments/all", async (req, res) => {
   try {
     const deletedTournaments = await Tournament.deleteMany();
-    res.send(deletedTournaments);
-  } catch (error) {}
-});
-
-router.get("/deleteMessages/all", async (req, res) => {
-  try {
     const deletedMessages = await Message.deleteMany();
-    res.send(deletedMessages);
-  } catch (error) {}
+    const deletedTeams = await Team.deleteMany();
+    res.send({
+      message: "Everything deleted",
+      deletedTournaments: deletedTournaments,
+      deletedMessages: deletedMessages,
+      deletedTeams: deletedTeams
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 module.exports = router;

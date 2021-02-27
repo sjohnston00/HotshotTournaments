@@ -14,10 +14,12 @@ const tournamentsRouter = require("./routes/tournaments");
 const authRouter = require("./routes/auth");
 const usersRouter = require("./routes/users");
 const messagesRouter = require("./routes/messages");
+const teamsRouter = require("./routes/teams");
 app.use("/api/tournaments", tournamentsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/messages", messagesRouter);
+app.use("/api/teams", teamsRouter);
 
 //BASIC ROUTE
 app.get("/", (req, res) => {
