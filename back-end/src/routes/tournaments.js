@@ -12,16 +12,14 @@ router.get("/", verifyToken, async (req, res) => {
       .populate("users", "-_id -__v -password")
       .populate({
         path: "messages",
-        select: "-_id -__v -tournament",
         populate: {
           path: "user",
-          model: "users",
-          select: "-_id -__v -password"
+          model: "users"
         }
       });
     res.send(tournaments);
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -79,6 +77,7 @@ router.post("/addToTournament/:tournamentID", verifyToken, async (req, res) => {
   try {
     const { tournamentID } = req.params;
     const tournament = await Tournament.findOne({ _id: tournamentID });
+
     if (!tournament) {
       res.status(404).send("Invalid Tournament ID");
     }
@@ -180,14 +179,14 @@ router.put("/:tournamentID", verifyToken, async (req, res) => {
       { _id: req.params.tournamentID },
       {
         $set: {
-          name: req.body.name,
-          description: req.body.description,
-          game: req.body.game,
-          type: req.body.type,
-          startDate: new Date(req.body.startDate),
-          endDate: new Date(req.body.endDate),
-          messages: req.body.messages,
-          users: req.body.users
+          name: name,
+          description: description,
+          game: game,
+          type: type,
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
+          messages: messages,
+          users: users
         }
       }
     );
@@ -224,6 +223,22 @@ router.delete("/:tournamentID", verifyToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+});
+
+//DEV ZONE
+//TODO: Delete these routes in production
+router.get("/deleteTournaments/all", async (req, res) => {
+  try {
+    const deletedTournaments = await Tournament.deleteMany();
+    res.send(deletedTournaments);
+  } catch (error) {}
+});
+
+router.get("/deleteMessages/all", async (req, res) => {
+  try {
+    const deletedMessages = await Message.deleteMany();
+    res.send(deletedMessages);
+  } catch (error) {}
 });
 
 module.exports = router;

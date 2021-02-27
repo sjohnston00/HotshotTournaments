@@ -55,6 +55,13 @@ const TournamentSchema = mongoose.Schema({
       required: false,
       ref: "users"
     }
+  ],
+  teams: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+      ref: "teams"
+    }
   ]
 });
 

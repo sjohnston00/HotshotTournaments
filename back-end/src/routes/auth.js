@@ -28,6 +28,7 @@ router.post("/register", async (req, res) => {
     });
 
     const savedUser = await user.save();
+
     res.status(201).send(savedUser);
   } catch (error) {
     res.status(500).send({ "Error Message": error });
