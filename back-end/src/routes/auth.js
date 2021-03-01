@@ -37,9 +37,6 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  if (true) {
-    return res.send(JSON.stringify(req.body));
-  }
   //VALIDATE BODY
   const { email, password } = req.body;
   if (!email || !password) {
@@ -63,6 +60,21 @@ router.post("/login", async (req, res) => {
     message: "Login successful",
     token: token
   });
+});
+
+router.get("/authUserToken", (req, res) => {
+  const token = req.header("accessToken");
+
+  if (!token) {
+    return res.status(403).send("No user token");
+  }
+
+  try {
+    const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).send("User is verified");
+  } catch (error) {
+    return res.status(404).send("No user token");
+  }
 });
 
 module.exports = router;

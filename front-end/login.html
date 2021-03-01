@@ -34,13 +34,15 @@
   >
     <div class="w-75">
       <form id="form">
+        <p id="errorMessage" style="color: red"></p>
         <h2 class="text-center">Log in</h2>
         <div class="form-group">
           <label for="email" class="col-form-label">Email</label>
           <input
-            type="text"
+            type="email"
             name="email"
             id="email"
+            maxlength="324"
             class="form-control"
             required="required"
           />
@@ -52,6 +54,8 @@
             type="password"
             name="password"
             id="password"
+            minlength="6"
+            maxlength="64"
             class="form-control"
             required="required"
           />
@@ -70,4 +74,69 @@
       </form>
     </div>
   </body>
+  <script>
+    window.onload = async () => {
+      const form = document.querySelector("form");
+      const emailInput = document.querySelector("#email");
+      const passwordInput = document.querySelector("#password");
+      const errorMessage = document.querySelector("#errorMessage");
+      //When the page loads, check if the user has a valid accessToken
+      const userToken = localStorage.getItem("token");
+      if (userToken) {
+        fetch("http://localhost:8000/api/auth/authUserToken", {
+          headers: {
+            accessToken: userToken
+          }
+        })
+          .then((res) => {
+            if (res.ok) {
+              window.location.replace("./view-tournaments.html");
+            } else {
+              errorMessage.textContent = "You have been signed out";
+              localStorage.removeItem("token");
+            }
+          })
+          .catch((error) => console.error(error));
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        errorMessage.value = "";
+
+        const requestBody = {
+          email: emailInput.value,
+          password: passwordInput.value
+        };
+
+        fetch("http://localhost:8000/api/auth/login", {
+          method: "post",
+          body: JSON.stringify(requestBody, null, 2),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+          .then((res) => {
+            if (!res.ok) {
+              emailInput.value = "";
+              passwordInput.value = "";
+              res.text().then((text) => (errorMessage.textContent = text));
+            } else {
+              /*TODO: Once the response is okay, run a function that saves the token to local storage
+            then redirect the user to the dashboard page, where they can the tournaments that they belong to.
+            */
+              res.json().then((json) => {
+                setUserToken(json.token);
+                window.location.replace("./view-tournaments.html");
+              });
+            }
+          })
+          .catch((error) => console.error(error));
+      });
+
+      function setUserToken(token) {
+        localStorage.setItem("token", token);
+      }
+    };
+  </script>
 </html>
