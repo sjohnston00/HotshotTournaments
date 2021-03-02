@@ -1,16 +1,16 @@
 {
-  "name": "hotshot-tournaments-api",
+  "name": "hotshot-tournaments-application",
   "version": "1.0.0",
-  "description": "the api that allows the front-end of this application to interact with the database",
-  "main": "index.js",
+  "description": "A web application that allows users to create and join tournaments with others",
+  "main": "src/index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
     "docs": "jsdoc -c jsdoc.json"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Former Hotshots",
+  "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -19,7 +19,8 @@
     "jsdoc": "^3.6.6",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.15",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0", 
+    "mustache-express": "^1.3.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"
