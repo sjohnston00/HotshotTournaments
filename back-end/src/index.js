@@ -3,10 +3,12 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
+const morgan = require("morgan");
 require("dotenv").config();
 
 //MIDDLEWARES
 app.use(cors());
+app.use(morgan("dev"));
 app.use(express.json());
 
 //IMPORT THE ROUTERS

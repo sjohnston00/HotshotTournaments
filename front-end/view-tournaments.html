@@ -29,12 +29,22 @@
     ></script>
     <title>Hotshot Tournaments</title>
   </head>
-  <body></body>
+  <body>
+    <div class="container-xl">
+      <h1 class="text-center">My Tournaments</h1>
+      <hr />
+
+      <div
+        class="tournaments d-flex justify-content-around align-items-center"
+      ></div>
+      <button id="btn-log-out" class="btn btn-danger">Sign Out</button>
+    </div>
+  </body>
   <script>
-    window.onload = () => {
+    window.onload = async () => {
       const userToken = localStorage.getItem("token");
       if (!userToken) {
-        window.location.replace("./login.html");
+        return window.location.replace("./login.html");
       } else {
         //verify that this is a valid users token
         fetch("http://localhost:8000/api/auth/authUserToken", {
@@ -44,11 +54,70 @@
         })
           .then((res) => {
             if (!res.ok) {
-              window.location.replace("./login.html");
+              return window.location.replace("./login.html");
             }
           })
           .catch((error) => console.error(error));
       }
+
+      //TOKEN HAS BEEN VALIDATED, now getting all the tournaments
+      const tournamentsSection = document.querySelector(".tournaments");
+
+      fetch("http://localhost:8000/api/tournaments/myTournaments", {
+        headers: {
+          accessToken: userToken
+        }
+      }).then(async (res) => {
+        if (!res.ok) {
+          const message = await res.json();
+          console.error(message);
+        } else {
+          const tournaments = await res.json();
+          console.log(tournaments);
+          renderTournaments(tournaments);
+        }
+      });
+
+      function renderTournaments(tournaments) {
+        const tournamentsDiv = document.querySelector(".tournaments");
+
+        tournaments.forEach((tournament) => {
+          const tournamentDiv = `<div class="card" style="width: 18rem">
+          <img
+            class="card-img-top"
+            style="height: 100px; background-color: lightgrey"
+            src="..."
+            alt="Card image cap"
+          />
+          <div class="card-body">
+            <h5 class="card-title">
+              ${tournament.name}
+              <span class="badge-primary badge-pill small">${
+                tournament.game
+              }</span>
+            </h5>
+            <p class="card-text">
+              ${tournament.description}
+            </p>
+            <p class="card-text">
+              <b>Start Date: </b> ${new Date(
+                tournament.startDate
+              ).toDateString()}
+            </p>
+            <p class="card-text">
+              <b>End Date: </b> ${new Date(tournament.endDate).toDateString()}
+            </p>
+          </div>`;
+          tournamentsDiv.innerHTML += tournamentDiv;
+        });
+      }
+
+      const btnLogOut = document.querySelector("#btn-log-out");
+
+      btnLogOut.addEventListener("click", async (e) => {
+        localStorage.setItem("token", "logged out");
+        window.location.replace("./login.html");
+      });
     };
   </script>
 </html>
