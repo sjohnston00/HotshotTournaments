@@ -26,6 +26,17 @@ const TournamentSchema = mongoose.Schema({
     min: 5,
     max: 255
   },
+  bracket: {
+    type: Object,
+    required: false,
+    default: {}
+  },
+  creator: {
+    //the user ID of the tournament creator
+    type: mongoose.Schema.Types.ObjectId,
+    required: false,
+    ref: "users"
+  },
   dateCreated: {
     type: Date,
     required: false,
