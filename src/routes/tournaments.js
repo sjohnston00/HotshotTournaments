@@ -39,7 +39,7 @@ router.get("/myTournaments", verifyToken, async (req, res) => {
           select: "-_id -__v -password"
         }
       });
-    res.status(200).send(tournaments);
+    res.render("tournaments/myTournaments", { tournaments: tournaments });
   } catch (error) {
     res.status(500).json({ message: error });
   }

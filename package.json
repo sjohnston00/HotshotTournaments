@@ -4,7 +4,7 @@
   "description": "A web application that allows users to create and join tournaments with others",
   "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon src/index.js",
+    "dev":"nodemon -e js,mustache /src/index.js",
     "start": "node src/index.js",
     "docs": "jsdoc -c jsdoc.json"
   },
