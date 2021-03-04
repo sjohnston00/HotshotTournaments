@@ -1,13 +1,16 @@
 //@ts-check
 const express = require("express");
 const app = express();
+const session = require("express-session");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 const mustache = require("mustache-express");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const flash = require("connect-flash");
 require("dotenv").config();
 
-//Testing Heroku deploy
 //MIDDLEWARES
 app.use(cors());
 app.use(morgan("dev"));

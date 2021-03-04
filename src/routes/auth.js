@@ -49,7 +49,10 @@ router.post("/register", async (req, res) => {
 });
 
 router.get("/login", (req, res) => {
-  res.render("auth/login");
+  const errorMessage = req.query.error;
+  res.render("auth/login", {
+    message: errorMessage
+  });
 });
 
 router.post("/login", async (req, res) => {
@@ -77,8 +80,10 @@ router.post("/login", async (req, res) => {
 
   //CREATE A JSON WEB TOKEN FOR THE USER
   const token = jwt.sign({ _id: userWithEmail._id }, process.env.JWT_SECRET);
-
-  res.redirect("/tournaments/myTournaments");
+  // res.header("accessToken", token);
+  res.redirect(
+    `/tournaments/myTournaments/?token=${encodeURIComponent(token)}`
+  );
 
   // res.render("tournaments/myTournaments", {
   //   token: token

@@ -1,21 +1,26 @@
 const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
-  const token = req.header("accessToken");
+  // const token = req.header("accessToken");
+  const token = decodeURIComponent(req.query.token);
 
   if (!token) {
-    return res
-      .status(403)
-      .send("Access Denied, please login to get an access token");
+    return res.redirect(
+      `/auth/login/?error=${encodeURIComponent(
+        "Access Denied, Please login to access this page"
+      )}`
+    );
   }
 
   try {
     const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verifiedUser;
   } catch (error) {
-    return res
-      .status(403)
-      .send("Access Denied, please login to get an access token");
+    return res.redirect(
+      `/auth/login/?error=${encodeURIComponent(
+        "Access Denied, Please login to access this page"
+      )}`
+    );
   }
   next();
 };
