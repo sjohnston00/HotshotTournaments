@@ -4,6 +4,7 @@ const Tournament = require("../models/Tournament");
 const Message = require("../models/Message");
 const Team = require("../models/Team");
 const { verifyToken } = require("../middlewares/verifyToken");
+const { ensureAuthenticated } = require("../config/auth");
 
 //GET ALL TOURNAMENTS
 router.get("/", verifyToken, async (req, res) => {
@@ -25,7 +26,7 @@ router.get("/", verifyToken, async (req, res) => {
 });
 
 //GET ALL THE USERS TOURNAMENTS
-router.get("/myTournaments", verifyToken, async (req, res) => {
+router.get("/myTournaments", ensureAuthenticated, async (req, res) => {
   try {
     //TODO: test this when there are multiple users and tournaments in the database
     const tournaments = await Tournament.find({ users: req.user._id })
@@ -247,7 +248,7 @@ router.delete("/:tournamentID", verifyToken, async (req, res) => {
 
 //DEV ZONE
 //TODO: Delete these routes in production
-router.delete("/deleteTournaments/all", async (req, res) => {
+router.get("/deleteTournaments/all", async (req, res) => {
   try {
     const deletedTournaments = await Tournament.deleteMany();
     const deletedMessages = await Message.deleteMany();

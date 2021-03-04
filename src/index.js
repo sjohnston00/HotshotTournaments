@@ -1,4 +1,3 @@
-//@ts-check
 const express = require("express");
 const app = express();
 const session = require("express-session");
@@ -7,17 +6,46 @@ const cors = require("cors");
 const morgan = require("morgan");
 const mustache = require("mustache-express");
 const passport = require("passport");
-const LocalStrategy = require("passport-local");
 const flash = require("connect-flash");
+const User = require("./models/User");
 require("dotenv").config();
 
 //MIDDLEWARES
 app.use(cors());
-app.use(morgan("dev"));
+app.use(morgan("dev")); // For debugging which routes are being hit on the console
 app.use(express.urlencoded({ limit: "10mb", extended: false }));
 app.engine("mustache", mustache());
 app.set("view engine", "mustache");
+app.use(express.static("./content"));
 app.set("views", __dirname + "/views");
+// Passport Config
+require("./config/passport")(passport);
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true
+  })
+);
+
+// Passport middleware
+// Passport needs to be underneath the the express session
+app.use(passport.initialize());
+app.use(passport.session());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// Using flash to have session variables and messages
+app.use(flash());
+
+// Global variables
+app.use(function (req, res, next) {
+  res.locals.success_msg = req.flash("success_msg");
+  res.locals.error_msg = req.flash("error_msg");
+  res.locals.error = req.flash("error");
+  next();
+});
 
 //IMPORT THE ROUTERS
 const tournamentsRouter = require("./routes/tournaments");

@@ -1,4 +1,4 @@
-{{> templates/head}}
+{{> partials/head}}
 
 <body
     class="container-xl d-flex justify-content-center align-items-center py-2"
@@ -6,7 +6,7 @@
     <div class="w-75">
       <form action="/auth/login" method="POST">
         <h2 class="text-center">Log in</h2>
-        <p class="text-danger">{{message}}</p>
+        {{> partials/messages}}
         <div class="form-group">
           <label for="email" class="col-form-label">Email</label>
           <input

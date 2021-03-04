@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const passportLocalMongoose = require("passport-local-mongoose");
 
 const UserSchema = mongoose.Schema({
   name: {
@@ -23,7 +24,18 @@ const UserSchema = mongoose.Schema({
     type: String,
     required: false,
     max: 1024
-  }
+  },
+  emailConfirmed: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  emailConfirmationToken: String,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date
 });
+
+mongoose.set("useCreateIndex", true);
+UserSchema.plugin(passportLocalMongoose, { usernameField: "email" });
 
 module.exports = mongoose.model("users", UserSchema);
