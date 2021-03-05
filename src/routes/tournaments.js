@@ -118,7 +118,8 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       messages: [],
-      users: [req.user._id]
+      users: [req.user._id],
+      creator: req.user._id
     });
   } else if (type === "team") {
     newTournament = new Tournament({
@@ -129,6 +130,7 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       messages: [],
+      creator: req.user._id,
       teams: []
     });
   } else {
@@ -166,7 +168,9 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
     if (!tournament) {
       return res.status(404).send("Invalid Tournament ID");
     }
-    res.status(200).send(tournament);
+    res.render("tournaments/viewTournament", {
+      tournament: tournament
+    });
   } catch (error) {
     res.status(500).json({ message: error });
   }
@@ -236,31 +240,31 @@ router.put("/:tournamentID", ensureAuthenticated, async (req, res) => {
 //DELETE A TOURNAMENT
 //THIS SHOULDN'T BE DONE AS WE STILL WANT USERS TO BE ABLE TO SEE PAST TOURNAMENTS
 //BUT IT'S NICE TO HAVE THE METHOD THERE
-router.delete("/:tournamentID", ensureAuthenticated, async (req, res) => {
-  const { tournamentID } = req.params;
-  try {
-    const deletedTournament = await Tournament.deleteOne({
-      _id: tournamentID,
-      users: req.user._id
-    });
-    if (deletedTournament.deletedCount === 0) {
-      return res.status(401).send("This user is not part of this tournament");
+router.get(
+  "/deleteTournaments/:tournamentID",
+  ensureAuthenticated,
+  async (req, res) => {
+    const { tournamentID } = req.params;
+    try {
+      const deletedTournament = await Tournament.deleteOne({
+        _id: tournamentID,
+        users: req.user._id
+      });
+      if (deletedTournament.deletedCount === 0) {
+        return res.status(401).send("This user is not part of this tournament");
+      }
+
+      //TODO: DELETE THE MESSAGES ASSOCIATED WITH THAT TOURNAMENT
+      const tournamentsMessages = await Message.deleteMany({
+        tournament: tournamentID
+      });
+      req.flash("success_msg", "You are now logged out"); //give user a log out success message
+      res.redirect("/tournaments/myTournaments");
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
-
-    //TODO: DELETE THE MESSAGES ASSOCIATED WITH THAT TOURNAMENT
-    const tournamentsMessages = await Message.deleteMany({
-      tournament: tournamentID
-    });
-
-    res.status(200).send({
-      message: "tournament deleted",
-      deletedTournament: deletedTournament,
-      tournamentsMessages: tournamentsMessages
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
   }
-});
+);
 
 //DEV ZONE
 //TODO: Delete these routes in production

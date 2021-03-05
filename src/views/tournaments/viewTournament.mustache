@@ -1,0 +1,56 @@
+{{> partials/head}}
+
+<body>
+  <div class="container">
+  {{#tournament}}
+    <h1>{{name}} <span class="badge-primary badge-pill small">{{game}}</span></h1>
+    <p class="small">Type: {{type}}</p>
+    <p class="small">Description: {{description}}</p>
+    <h2>Bracket</h2>
+    <div class="w-100 d-flex justify-content-center align-items-center my-4 bg-dark text-light" style="height: 200px">Bracket here</div>
+    
+
+    <h4>Users</h4>
+    <div class="container d-flex justify-content-space-around align-items-center my-4">
+      {{#users}}
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{name}}</h5>
+            <p class="card-text">
+              <b>Email: </b> {{email}}
+            </p>
+          </div>
+        </div>
+      {{/users}}
+      {{^users}}
+        <p class="text-danger">Something must have gone wrong, no is part of this tournament</p>
+      {{/users}}
+    </div>
+
+    <h4>Messages</h4>  
+    <div class="container d-flex justify-content-space-around align-items-center my-4">
+    {{#messages}}
+      {{#user}}
+      {{/user}}
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{name}}</h5>
+            <p class="card-text">
+              <b>Email: </b> {{email}}
+            </p>
+          </div>
+        </div>
+    {{/messages}}
+    {{^messages}}
+      <p class="text-danger">Currently there are no messages in this tournament</p>
+    {{/messages}}
+  {{/tournament}}
+  <div>
+    <a href="/tournaments/myTournaments" class="btn btn-secondary">Back</a>
+    {{#tournament}}
+      <a href="/tournaments/deleteTournament/{{_id}}" class="btn btn-danger">Delete</a>
+    {{/tournament}}
+  </div>
+  </div>
+
+</body>

@@ -4,14 +4,9 @@
   <div class="container">
     <h1 class="text-center">My Tournaments</h1>
     <hr>
+    <div class="d-flex justify-content-space-around align-items-center my-4">
     {{#tournaments}}
       <div class="card" style="width: 18rem">
-        <img
-          class="card-img-top"
-          style="height: 100px; background-color: lightgrey"
-          src="..."
-          alt="Card image cap"
-        />
         <div class="card-body">
           <h5 class="card-title">
             {{name}}
@@ -28,11 +23,17 @@
           <p class="card-text">
             <b>End Date: </b> {{endDate}}
           </p>
+
+          <p class="card-text">
+            <b>Date Created: </b> {{dateCreated}}
+          </p>
+          <a href="/tournaments/{{_id}}" class="btn btn-primary">View</a>
         </div>
     {{/tournaments}}
     {{^tournaments}}
-      <p class="text-primary">You current do not have any tournaments, why not join one!</p>
+      <p class="text-primary">You currently do not have any tournaments, why not join one!</p>
     {{/tournaments}}
+    </div>
   </div>
 
   <div class="container">
@@ -43,6 +44,7 @@
 
   <div class="container">
     <a href="/auth/logout" class="btn btn-danger">Logout</a>
+    <a href="/" class="btn btn-secondary">Home</a>
     <hr>
   </div>
 </body>
