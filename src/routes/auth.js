@@ -62,6 +62,13 @@ router.post("/login", async (req, res, next) => {
     failureRedirect: "/auth/login", // if the login details are incorrect then redirect to login
     failureFlash: true
   })(req, res, next);
+
+  // Logout
+  router.get("/logout", (req, res) => {
+    req.logout();
+    req.flash("success_msg", "You are now logged out"); //give user a log out success message
+    res.redirect("/auth/login");
+  });
   // //VALIDATE BODY
   // const { email, password } = req.body;
   // if (!email || !password) {

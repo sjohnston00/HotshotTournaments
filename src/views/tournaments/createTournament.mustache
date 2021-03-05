@@ -1,0 +1,75 @@
+{{> partials/head}}
+
+<body>
+  <div class="container">
+    <h1 class="text-center">Create a Tournament</h1>
+    <hr>
+  </div>
+
+  <div class="container my-4">
+        <form action="/tournaments/createTournament" method="POST">
+        <h2 class="text-center">New Tournament</h2>
+        {{> partials/messages}}
+        <div class="form-group">
+          <label for="name" class="col-form-label">Tournament Name <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            class="form-control"
+            required="required"
+          />
+        </div>
+        <div class="form-group">
+          <label for="description" class="col-form-label">Description</label>
+          <input
+            type="text"
+            name="description"
+            id="description"
+            class="form-control"
+            required="required"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="game" class="col-form-label">Game / Sport <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            name="game"
+            id="game"
+            class="form-control"
+            required="required"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="type" class="col-form-label">Tournament Type <span class="text-danger">*</span></label>
+            <select id="type" name="type" class="form-control form-select" aria-label="Default select example">
+              <option value="single">Single</option>
+              <option value="team">Teams</option>
+            </select>
+        </div>
+        <div class="form-group">
+          <label for="startDate" class="col-form-label">Start Date <span class="text-danger">*</span></label>
+            <input class="form-control" type="datetime-local" min="{{startDate}}" value="{{startDate}}" id="startDate" name="startDate">
+        </div>
+
+        <div class="form-group">
+          <label for="endDate" class="col-form-label">End Date <span class="text-danger">*</span></label>
+            <input class="form-control" type="datetime-local" min="{{startDate}}" id="endDate" name="endDate">
+        </div>
+
+
+        <div class="form-group">
+          <button
+            id="login-button"
+            type="submit"
+            class="btn btn-primary btn-block"
+          >
+            Create
+          </button>
+        </div>
+        <a href="/tournaments/myTournaments" class="float-left">Back</a>
+      </form>
+  </div>
+</body>

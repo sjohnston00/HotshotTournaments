@@ -7,7 +7,7 @@ const { verifyToken } = require("../middlewares/verifyToken");
 const { ensureAuthenticated } = require("../config/auth");
 
 //GET ALL TOURNAMENTS
-router.get("/", verifyToken, async (req, res) => {
+router.get("/", ensureAuthenticated, async (req, res) => {
   try {
     const tournaments = await Tournament.find()
       .select("-__v")
@@ -46,8 +46,106 @@ router.get("/myTournaments", ensureAuthenticated, async (req, res) => {
   }
 });
 
+//Add user to tournament
+router.post(
+  "/addToTournament/:tournamentID",
+  ensureAuthenticated,
+  async (req, res) => {
+    try {
+      const { tournamentID } = req.params;
+      const tournament = await Tournament.findOne({ _id: tournamentID });
+
+      if (!tournament) {
+        res.status(404).send("Invalid Tournament ID");
+      }
+      if (tournament.users.includes(req.user._id)) {
+        return res
+          .status(401)
+          .send("User is already a part of this tournament");
+      }
+      //ADD THE USER ID TO THE TOURNAMENT
+      tournament.users.push(req.user._id);
+      const savedTournament = await tournament.save();
+      res.status(200).send({
+        message: "User has been added to tournament",
+        tournament: savedTournament
+      });
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+  }
+);
+
+router.get("/createTournament", ensureAuthenticated, (req, res) => {
+  const todayDate = new Date();
+  todayDate.setSeconds(0, 0);
+  res.render("tournaments/createTournament", {
+    startDate: todayDate.toISOString().replace("Z", ""),
+    endDate: new Date().toISOString()
+  });
+});
+
+//CREATE A NEW TOURNAMENT
+router.post("/createTournament", ensureAuthenticated, async (req, res) => {
+  // return res.send(req.body);
+  const { name, description, game, type, startDate, endDate } = req.body;
+
+  if (!name || !description || !game || !type || !startDate || !endDate) {
+    res
+      .status(401)
+      .send(
+        "Name, Description, Game, Type, Start Date and End Date are required"
+      );
+  }
+  const nowDate = new Date();
+  if (new Date(startDate) < nowDate) {
+    return res.status(401).send("Starting Date cannot be before today");
+  } else if (new Date(endDate) < nowDate) {
+    return res.status(401).send("Ending Date cannot be before today");
+  } else if (new Date(endDate) < new Date(startDate)) {
+    return res.status(401).send("Ending Date cannot be before Start date");
+  }
+
+  let newTournament;
+
+  //VALIDATE TOURNAMENT TYPE
+  if (type === "single") {
+    newTournament = new Tournament({
+      name: name,
+      description: description,
+      game: game,
+      type: type,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      messages: [],
+      users: [req.user._id]
+    });
+  } else if (type === "team") {
+    newTournament = new Tournament({
+      name: name,
+      description: description,
+      game: game,
+      type: type,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      messages: [],
+      teams: []
+    });
+  } else {
+    res.status(401).send("Invalid Tournament Type");
+  }
+  //TODO: Debug this
+
+  try {
+    const savedTournament = await newTournament.save();
+    res.send(savedTournament);
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+});
+
 //GET 1 TOURNAMENT
-router.get("/:tournamentID", verifyToken, async (req, res) => {
+router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
   //VALIDATE THAT THE USERS ID IS VALID FOR THIS TOURNAMENT
   try {
     const tournamentID = req.params.tournamentID;
@@ -74,90 +172,8 @@ router.get("/:tournamentID", verifyToken, async (req, res) => {
   }
 });
 
-//Add user to tournament
-router.post("/addToTournament/:tournamentID", verifyToken, async (req, res) => {
-  try {
-    const { tournamentID } = req.params;
-    const tournament = await Tournament.findOne({ _id: tournamentID });
-
-    if (!tournament) {
-      res.status(404).send("Invalid Tournament ID");
-    }
-    if (tournament.users.includes(req.user._id)) {
-      return res.status(401).send("User is already a part of this tournament");
-    }
-    //ADD THE USER ID TO THE TOURNAMENT
-    tournament.users.push(req.user._id);
-    const savedTournament = await tournament.save();
-    res.status(200).send({
-      message: "User has been added to tournament",
-      tournament: savedTournament
-    });
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-});
-
-//CREATE A NEW TOURNAMENT
-router.post("/", verifyToken, async (req, res) => {
-  const { name, description, game, type, startDate, endDate } = req.body;
-
-  if (!name || !description || !game || !type || !startDate || !endDate) {
-    res
-      .status(401)
-      .send(
-        "Name, Description, Game, Type, Start Date and End Date are required"
-      );
-  }
-  const nowDate = new Date();
-  if (new Date(startDate) < nowDate) {
-    return res.status(401).send("Starting Date cannot be before today");
-  } else if (new Date(endDate) < nowDate) {
-    return res.status(401).send("Ending Date cannot be before today");
-  } else if (new Date(endDate) < new Date(startDate)) {
-    return res.status(401).send("Ending Date cannot be before Start date");
-  }
-
-  let newTournament;
-
-  //VALIDATE TOURNAMENT TYPE
-  if (type === "Single") {
-    newTournament = new Tournament({
-      name: name,
-      description: description,
-      game: game,
-      type: type,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      messages: [],
-      users: [req.user._id]
-    });
-  } else if (type === "Team") {
-    newTournament = new Tournament({
-      name: name,
-      description: description,
-      game: game,
-      type: type,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      messages: [],
-      teams: []
-    });
-  } else {
-    res.status(401).send("Invalid Tournament Type");
-  }
-  //TODO: Debug this
-
-  try {
-    const savedTournament = await newTournament.save();
-    res.send(savedTournament);
-  } catch (error) {
-    res.json({ message: error.message });
-  }
-});
-
 //UPDATE A TOURNAMENT
-router.put("/:tournamentID", verifyToken, async (req, res) => {
+router.put("/:tournamentID", ensureAuthenticated, async (req, res) => {
   const {
     name,
     description,
@@ -220,7 +236,7 @@ router.put("/:tournamentID", verifyToken, async (req, res) => {
 //DELETE A TOURNAMENT
 //THIS SHOULDN'T BE DONE AS WE STILL WANT USERS TO BE ABLE TO SEE PAST TOURNAMENTS
 //BUT IT'S NICE TO HAVE THE METHOD THERE
-router.delete("/:tournamentID", verifyToken, async (req, res) => {
+router.delete("/:tournamentID", ensureAuthenticated, async (req, res) => {
   const { tournamentID } = req.params;
   try {
     const deletedTournament = await Tournament.deleteOne({

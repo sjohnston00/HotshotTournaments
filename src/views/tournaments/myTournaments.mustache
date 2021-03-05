@@ -4,5 +4,45 @@
   <div class="container">
     <h1 class="text-center">My Tournaments</h1>
     <hr>
+    {{#tournaments}}
+      <div class="card" style="width: 18rem">
+        <img
+          class="card-img-top"
+          style="height: 100px; background-color: lightgrey"
+          src="..."
+          alt="Card image cap"
+        />
+        <div class="card-body">
+          <h5 class="card-title">
+            {{name}}
+            <span class="badge-primary badge-pill small">
+              {{game}}
+            </span>
+          </h5>
+          <p class="card-text">
+            {{description}}
+          </p>
+          <p class="card-text">
+            <b>Start Date: </b> {{startDate}}
+          </p>
+          <p class="card-text">
+            <b>End Date: </b> {{endDate}}
+          </p>
+        </div>
+    {{/tournaments}}
+    {{^tournaments}}
+      <p class="text-primary">You current do not have any tournaments, why not join one!</p>
+    {{/tournaments}}
+  </div>
+
+  <div class="container">
+    <h3 class="text-center">Create a tournament</h3>
+    <a href="/tournaments/createTournament" class="btn btn-large btn-primary">Create</a>
+    <hr>
+  </div>
+
+  <div class="container">
+    <a href="/auth/logout" class="btn btn-danger">Logout</a>
+    <hr>
   </div>
 </body>
