@@ -28,7 +28,6 @@ router.get("/", ensureAuthenticated, async (req, res) => {
 //GET ALL THE USERS TOURNAMENTS
 router.get("/myTournaments", ensureAuthenticated, async (req, res) => {
   try {
-    //TODO: test this when there are multiple users and tournaments in the database
     const tournaments = await Tournament.find({ users: req.user._id })
       .populate("users", "-_id -__v -password")
       .populate({
