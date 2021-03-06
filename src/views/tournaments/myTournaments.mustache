@@ -4,6 +4,7 @@
   <div class="container">
     <h1 class="text-center">My Tournaments</h1>
     <hr>
+    {{> partials/messages}}
     <div class="d-flex justify-content-space-around align-items-center my-4">
     {{#tournaments}}
       <div class="card" style="width: 18rem">
@@ -31,7 +32,7 @@
         </div>
     {{/tournaments}}
     {{^tournaments}}
-      <p class="text-primary">You currently do not have any tournaments, why not join one!</p>
+      <p class="text-primary">You currently do not have any tournaments, why not created one!</p>
     {{/tournaments}}
     </div>
   </div>

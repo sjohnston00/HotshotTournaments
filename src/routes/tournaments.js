@@ -240,7 +240,7 @@ router.put("/:tournamentID", ensureAuthenticated, async (req, res) => {
 //THIS SHOULDN'T BE DONE AS WE STILL WANT USERS TO BE ABLE TO SEE PAST TOURNAMENTS
 //BUT IT'S NICE TO HAVE THE METHOD THERE
 router.get(
-  "/deleteTournaments/:tournamentID",
+  "/deleteTournament/:tournamentID",
   ensureAuthenticated,
   async (req, res) => {
     const { tournamentID } = req.params;
@@ -250,14 +250,15 @@ router.get(
         users: req.user._id
       });
       if (deletedTournament.deletedCount === 0) {
-        return res.status(401).send("This user is not part of this tournament");
+        req.flash("error_msg", "Something went wrong, please try again later");
+        return res.redirect("/tournaments/myTournaments");
       }
 
       //TODO: DELETE THE MESSAGES ASSOCIATED WITH THAT TOURNAMENT
       const tournamentsMessages = await Message.deleteMany({
         tournament: tournamentID
       });
-      req.flash("success_msg", "You are now logged out"); //give user a log out success message
+      req.flash("success_msg", "Your tournament has been deleted"); //give user a log out success message
       res.redirect("/tournaments/myTournaments");
     } catch (error) {
       res.status(500).json({ message: error.message });

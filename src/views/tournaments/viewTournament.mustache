@@ -7,6 +7,7 @@
     <p class="small">Type: {{type}}</p>
     <p class="small">Description: {{description}}</p>
     <h2>Bracket</h2>
+    {{> partials/messages}}
     <div class="w-100 d-flex justify-content-center align-items-center my-4 bg-dark text-light" style="height: 200px">Bracket here</div>
     
 
@@ -29,28 +30,52 @@
 
     <h4>Messages</h4>  
     <div class="container d-flex justify-content-space-around align-items-center my-4">
-    {{#messages}}
-      {{#user}}
-      {{/user}}
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">{{name}}</h5>
-            <p class="card-text">
-              <b>Email: </b> {{email}}
-            </p>
+      {{#messages}}
+        {{#user}}
+        {{/user}}
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{name}}</h5>
+              <p class="card-text">
+                <b>Email: </b> {{email}}
+              </p>
+            </div>
+          </div>
+      {{/messages}}
+      {{^messages}}
+        <p class="text-danger">Currently there are no messages in this tournament</p>
+      {{/messages}}
+    {{/tournament}}
+    </div>
+    <div class="row">
+      <a href="/tournaments/myTournaments" class="btn btn-secondary mx-4">Back</a>
+      {{#tournament}}
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+          Delete Tournament
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete {{name}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                Are you sure would like to delete this tournament?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <a href="/tournaments/deleteTournament/{{_id}}" class="btn btn-danger">Delete</a>
+              </div>
+            </div>
           </div>
         </div>
-    {{/messages}}
-    {{^messages}}
-      <p class="text-danger">Currently there are no messages in this tournament</p>
-    {{/messages}}
-  {{/tournament}}
-  <div>
-    <a href="/tournaments/myTournaments" class="btn btn-secondary">Back</a>
-    {{#tournament}}
-      <a href="/tournaments/deleteTournament/{{_id}}" class="btn btn-danger">Delete</a>
-    {{/tournament}}
-  </div>
-  </div>
+      {{/tournament}}
+    </div>
 
 </body>
