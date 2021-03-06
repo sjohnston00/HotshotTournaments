@@ -47,7 +47,7 @@
       {{/messages}}
     {{/tournament}}
     </div>
-    <div class="row">
+    <div>
       <a href="/tournaments/myTournaments" class="btn btn-secondary mx-4">Back</a>
       {{#tournament}}
         <!-- Button trigger modal -->
@@ -76,6 +76,45 @@
           </div>
         </div>
       {{/tournament}}
-    </div>
 
+      <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#inviteModal">
+          Add Users
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="inviteModal" tabindex="-1" role="dialog" aria-labelledby="inviteModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="inviteModalLabel">Add users</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>Copy this link and see it to the people you would like to invite to the tournament</p>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" id="tournamentInviteLink" value="{{tournamentInviteLink}}" aria-label="Tournament Invite Link" aria-describedby="A textbox so users can copy the tournament link" readonly>
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-primary" onclick="copyText()" id="copy-link-btn"><svg height="1em" width="1em " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"/></svg></button>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  <script>
+    function copyText() {
+      const tournamentLink = document.getElementById("tournamentInviteLink");
+      tournamentLink.select();
+      tournamentLink.setSelectionRange(0, 99999)
+      document.execCommand("copy");
+      alert(`${tournamentLink.value} has been coppied to your clipboard`);
+    }
+</script>
 </body>

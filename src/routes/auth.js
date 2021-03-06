@@ -56,52 +56,54 @@ router.get("/login", forwardAuthenticated, (req, res) => {
   res.render("auth/login");
 });
 
-router.post("/login", async (req, res, next) => {
+router.post(
+  "/login",
   passport.authenticate("local", {
-    successRedirect: "/tournaments/myTournaments", //if the login details are correct then redirect to /tournaments/myTournaments
+    successReturnToOrRedirect: "/tournaments/myTournaments", //if the login details are correct then redirect to /tournaments/myTournaments
     failureRedirect: "/auth/login", // if the login details are incorrect then redirect to login
     failureFlash: true
-  })(req, res, next);
+  })
+);
 
-  // Logout
-  router.get("/logout", (req, res) => {
-    req.logout();
-    req.flash("success_msg", "You are now logged out"); //give user a log out success message
-    res.redirect("/auth/login");
-  });
-  // //VALIDATE BODY
-  // const { email, password } = req.body;
-  // if (!email || !password) {
-  //   return res.status(401).render("auth/login", {
-  //     message: "Please fill in all the fields"
-  //   });
-  // }
-  // //MAKE SURE THE EMAIL IN THE BODY IS THE SAME AS ONE IN THE DATABASE
-  // //COMPARE THE HASHED PASSWORD IN THE DATABASE TO THE PASSWORD IN THE BODY USING BCRYPT
-  // const userWithEmail = await User.findOne({ email: email });
-  // if (!userWithEmail) {
-  //   return res.status(401).render("auth/login", {
-  //     message: "Invalid Login Credentials"
-  //   });
-  // }
-  // const validPassword = await bcrypt.compare(password, userWithEmail.password);
-  // if (!validPassword) {
-  //   return res.status(401).render("auth/login", {
-  //     message: "Invalid Login Credentials"
-  //   });
-  // }
-
-  // //CREATE A JSON WEB TOKEN FOR THE USER
-  // const token = jwt.sign({ _id: userWithEmail._id }, process.env.JWT_SECRET);
-  // // res.header("accessToken", token);
-  // res.redirect(
-  //   `/tournaments/myTournaments/?token=${encodeURIComponent(token)}`
-  // );
-
-  // // res.render("tournaments/myTournaments", {
-  // //   token: token
-  // // });
+// Logout
+router.get("/logout", (req, res) => {
+  req.logout();
+  req.flash("success_msg", "You are now logged out"); //give user a log out success message
+  res.redirect("/auth/login");
 });
+// //VALIDATE BODY
+// const { email, password } = req.body;
+// if (!email || !password) {
+//   return res.status(401).render("auth/login", {
+//     message: "Please fill in all the fields"
+//   });
+// }
+// //MAKE SURE THE EMAIL IN THE BODY IS THE SAME AS ONE IN THE DATABASE
+// //COMPARE THE HASHED PASSWORD IN THE DATABASE TO THE PASSWORD IN THE BODY USING BCRYPT
+// const userWithEmail = await User.findOne({ email: email });
+// if (!userWithEmail) {
+//   return res.status(401).render("auth/login", {
+//     message: "Invalid Login Credentials"
+//   });
+// }
+// const validPassword = await bcrypt.compare(password, userWithEmail.password);
+// if (!validPassword) {
+//   return res.status(401).render("auth/login", {
+//     message: "Invalid Login Credentials"
+//   });
+// }
+
+// //CREATE A JSON WEB TOKEN FOR THE USER
+// const token = jwt.sign({ _id: userWithEmail._id }, process.env.JWT_SECRET);
+// // res.header("accessToken", token);
+// res.redirect(
+//   `/tournaments/myTournaments/?token=${encodeURIComponent(token)}`
+// );
+
+// // res.render("tournaments/myTournaments", {
+// //   token: token
+// // });
+// });
 
 router.get("/authUserToken", (req, res) => {
   const token = req.header("accessToken");

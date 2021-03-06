@@ -5,6 +5,7 @@ const Message = require("../models/Message");
 const Team = require("../models/Team");
 const { verifyToken } = require("../middlewares/verifyToken");
 const { ensureAuthenticated } = require("../config/auth");
+const crypto = require("crypto");
 
 //GET ALL TOURNAMENTS
 router.get("/", ensureAuthenticated, async (req, res) => {
@@ -167,8 +168,17 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
     if (!tournament) {
       return res.status(404).send("Invalid Tournament ID");
     }
+
+    //GENERATE A TOKEN FOR THE INVITE
+    const buffer = crypto.randomBytes(6);
+    const token = buffer.toString("hex");
+
+    //GET THE FULL URL SO IT CAN BE USED IN THE TEXTBOX
+    const fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
+
     res.render("tournaments/viewTournament", {
-      tournament: tournament
+      tournament: tournament,
+      tournamentInviteLink: `${fullUrl}/invite/${token}`
     });
   } catch (error) {
     res.status(500).json({ message: error });
