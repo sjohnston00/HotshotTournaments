@@ -4,13 +4,12 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.status(403); //forbidden
   req.flash("error_msg", "Please log in to access that page");
   //credit https://github.com/jaredhanson/connect-ensure-login/blob/master/lib/ensureLoggedIn.js
   if (req.session) {
     req.session.returnTo = req.originalUrl || req.url;
   }
-  res.redirect("/auth/login");
+  return res.status(403).redirect("/auth/login");
 
   next();
 }

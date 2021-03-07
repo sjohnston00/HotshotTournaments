@@ -73,7 +73,15 @@ const TournamentSchema = mongoose.Schema({
       required: false,
       ref: "teams"
     }
-  ]
+  ],
+  inviteCode: {
+    type: String,
+    required: false
+  },
+  inviteCodeExpiryDate: {
+    type: Date,
+    required: false
+  }
 });
 
 module.exports = mongoose.model("tournaments", TournamentSchema);

@@ -47,31 +47,38 @@ router.get("/myTournaments", ensureAuthenticated, async (req, res) => {
 });
 
 //Add user to tournament
-router.post(
-  "/addToTournament/:tournamentID",
+router.get(
+  "/:tournamentID/invite/:token",
   ensureAuthenticated,
   async (req, res) => {
     try {
-      const { tournamentID } = req.params;
-      const tournament = await Tournament.findOne({ _id: tournamentID });
+      const { tournamentID, token } = req.params;
+      const tournament = await Tournament.findOne({
+        _id: tournamentID,
+        inviteCode: token
+      });
 
       if (!tournament) {
-        res.status(404).send("Invalid Tournament ID");
+        req.flash("error_msg", "Tournament Not Found");
+        return res.redirect(`/tournaments/myTournaments`);
       }
       if (tournament.users.includes(req.user._id)) {
-        return res
-          .status(401)
-          .send("User is already a part of this tournament");
+        req.flash("error_msg", "You are already part of this tournament");
+        return res.redirect(`/tournaments/${tournamentID}`);
+      }
+      const today = new Date();
+      if (tournament.endDate < today) {
+        req.flash("error_msg", "Tournament has already ended");
+        return res.redirect(`/tournaments/myTournaments`);
       }
       //ADD THE USER ID TO THE TOURNAMENT
       tournament.users.push(req.user._id);
       const savedTournament = await tournament.save();
-      res.status(200).send({
-        message: "User has been added to tournament",
-        tournament: savedTournament
-      });
+      req.flash("success_msg", "You are now part of this tournament");
+      return res.redirect(`/tournaments/${tournamentID}`);
     } catch (error) {
-      res.status(500).send(error.message);
+      req.flash("error_msg", error.message);
+      return res.redirect(`/tournaments/myTournaments`);
     }
   }
 );
@@ -91,20 +98,27 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
   const { name, description, game, type, startDate, endDate } = req.body;
 
   if (!name || !description || !game || !type || !startDate || !endDate) {
-    res
-      .status(401)
-      .send(
-        "Name, Description, Game, Type, Start Date and End Date are required"
-      );
+    req.flash(
+      "error_msg",
+      "Name, Description, Game, Type, Start Date and End Date are required"
+    );
+    return res.redirect("/tournaments/createTournament");
   }
   const nowDate = new Date();
   if (new Date(startDate) < nowDate) {
-    return res.status(401).send("Starting Date cannot be before today");
+    req.flash("error_msg", "Start date cannot be before today");
+    return res.redirect("/tournaments/createTournament");
   } else if (new Date(endDate) < nowDate) {
-    return res.status(401).send("Ending Date cannot be before today");
+    req.flash("error_msg", "Ending Date cannot be before today");
+    return res.redirect("/tournaments/createTournament");
   } else if (new Date(endDate) < new Date(startDate)) {
-    return res.status(401).send("Ending Date cannot be before Start date");
+    req.flash("error_msg", "Ending Date cannot be before Starting Date");
+    return res.redirect("/tournaments/createTournament");
   }
+
+  //CREATE AN INVITE CODE AND SET THE EXPIRATION DATE TO END DATE
+  const buffer = crypto.randomBytes(6);
+  const token = buffer.toString("hex");
 
   let newTournament;
 
@@ -119,7 +133,9 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
       endDate: new Date(endDate),
       messages: [],
       users: [req.user._id],
-      creator: req.user._id
+      creator: req.user._id,
+      inviteCode: token,
+      inviteCodeExpiryDate: new Date(endDate)
     });
   } else if (type === "team") {
     newTournament = new Tournament({
@@ -131,18 +147,22 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
       endDate: new Date(endDate),
       messages: [],
       creator: req.user._id,
-      teams: []
+      teams: [],
+      inviteCode: token,
+      inviteCodeExpiryDate: new Date(endDate)
     });
   } else {
-    res.status(401).send("Invalid Tournament Type");
+    req.flash("error_msg", "Invalid Tournament Type");
+    return res.redirect("/tournaments/createTournament");
   }
-  //TODO: Debug this
 
   try {
     const savedTournament = await newTournament.save();
-    res.send(savedTournament);
+    req.flash("success_msg", "New Tournament Created");
+    return res.redirect(`/tournaments/${savedTournament._id}`);
   } catch (error) {
-    res.json({ message: error.message });
+    req.flash("error_msg", error.message);
+    return res.redirect("/tournaments/createTournament");
   }
 });
 
@@ -169,16 +189,12 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
       return res.status(404).send("Invalid Tournament ID");
     }
 
-    //GENERATE A TOKEN FOR THE INVITE
-    const buffer = crypto.randomBytes(6);
-    const token = buffer.toString("hex");
-
     //GET THE FULL URL SO IT CAN BE USED IN THE TEXTBOX
     const fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
 
     res.render("tournaments/viewTournament", {
       tournament: tournament,
-      tournamentInviteLink: `${fullUrl}/invite/${token}`
+      tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`
     });
   } catch (error) {
     res.status(500).json({ message: error });
@@ -283,14 +299,11 @@ router.get("/deleteTournaments/all", async (req, res) => {
     const deletedTournaments = await Tournament.deleteMany();
     const deletedMessages = await Message.deleteMany();
     const deletedTeams = await Team.deleteMany();
-    res.send({
-      message: "Everything deleted",
-      deletedTournaments: deletedTournaments,
-      deletedMessages: deletedMessages,
-      deletedTeams: deletedTeams
-    });
+    req.flash("success_msg", "Everything Deleted");
+    res.redirect("/tournaments/myTournaments");
   } catch (error) {
-    res.status(500).send(error.message);
+    req.flash("error_msg", error.message);
+    res.redirect("/tournaments/myTournaments");
   }
 });
 

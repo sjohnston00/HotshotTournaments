@@ -5,15 +5,13 @@
     <h1 class="text-center">My Tournaments</h1>
     <hr>
     {{> partials/messages}}
-    <div class="d-flex justify-content-space-around align-items-center my-4">
+    <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
     {{#tournaments}}
-      <div class="card" style="width: 18rem">
+      <div class="card mr-2" style="width: 16rem">
         <div class="card-body">
           <h5 class="card-title">
             {{name}}
-            <span class="badge-primary badge-pill small">
-              {{game}}
-            </span>
+            <span class="badge-primary badge-pill small">{{game}}</span>
           </h5>
           <p class="card-text">
             {{description}}
@@ -30,6 +28,7 @@
           </p>
           <a href="/tournaments/{{_id}}" class="btn btn-primary">View</a>
         </div>
+      </div>
     {{/tournaments}}
     {{^tournaments}}
       <p class="text-primary">You currently do not have any tournaments, why not created one!</p>

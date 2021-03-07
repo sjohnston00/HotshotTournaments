@@ -6,6 +6,8 @@
     <h1>{{name}} <span class="badge-primary badge-pill small">{{game}}</span></h1>
     <p class="small">Type: {{type}}</p>
     <p class="small">Description: {{description}}</p>
+    <p class="small">Start Date: {{startDate}}</p>
+    <p class="small">End Date: {{endDate}}</p>
     <h2>Bracket</h2>
     {{> partials/messages}}
     <div class="w-100 d-flex justify-content-center align-items-center my-4 bg-dark text-light" style="height: 200px">Bracket here</div>
@@ -24,7 +26,7 @@
         </div>
       {{/users}}
       {{^users}}
-        <p class="text-danger">Something must have gone wrong, no is part of this tournament</p>
+        <p class="text-danger">Something must have gone wrong, no one is part of this tournament</p>
       {{/users}}
     </div>
 
