@@ -191,6 +191,7 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
 
     let found = false;
     for (let i = 0; i < tournament.users.length; i++) {
+      //https://stackoverflow.com/questions/15724272/what-is-the-difference-between-id-and-id-in-mongoose
       if (tournament.users[i].id === req.user.id) {
         found = true;
         break;
@@ -204,6 +205,7 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
 
     //Reason why its .id and not _id is because .id is the getter method for the _id as its still treated as a ObjectId
     //https://stackoverflow.com/questions/15724272/what-is-the-difference-between-id-and-id-in-mongoose
+    //https://stackoverflow.com/questions/11637353/comparing-mongoose-id-and-strings
     const isTournamentCreator = tournament.creator.equals(req.user._id)
       ? true
       : false;
