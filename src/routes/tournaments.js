@@ -183,8 +183,7 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
           model: "users",
           select: "-_id -__v -password"
         }
-      })
-      .lean();
+      });
     if (!tournament) {
       req.flash("error_msg", "Tournament Not Found");
       return res.status(404).redirect("/tournaments/myTournaments");
@@ -192,7 +191,7 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
 
     let found = false;
     for (let i = 0; i < tournament.users.length; i++) {
-      if (tournament.users[i].email === req.user.email) {
+      if (tournament.users[i].id === req.user.id) {
         found = true;
         break;
       }
@@ -203,12 +202,19 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
       return res.status(401).redirect("/tournaments/myTournaments");
     }
 
+    //Reason why its .id and not _id is because .id is the getter method for the _id as its still treated as a ObjectId
+    //https://stackoverflow.com/questions/15724272/what-is-the-difference-between-id-and-id-in-mongoose
+    const isTournamentCreator = tournament.creator.equals(req.user._id)
+      ? true
+      : false;
+
     //GET THE FULL URL SO IT CAN BE USED IN THE TEXTBOX
     const fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
 
     res.render("tournaments/viewTournament", {
       tournament: tournament,
-      tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`
+      tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
+      isTournamentCreator: isTournamentCreator
     });
   } catch (error) {
     req.flash("error_msg", error.message);
