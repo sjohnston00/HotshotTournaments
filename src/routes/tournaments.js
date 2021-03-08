@@ -172,10 +172,9 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
   try {
     const tournamentID = req.params.tournamentID;
     const tournament = await Tournament.findOne({
-      _id: tournamentID,
-      users: req.user._id
+      _id: tournamentID
     })
-      .populate("users", "-_id -__v -password")
+      .populate("users")
       .populate({
         path: "messages",
         select: "-_id -__v -tournament",
@@ -184,9 +183,24 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
           model: "users",
           select: "-_id -__v -password"
         }
-      });
+      })
+      .lean();
     if (!tournament) {
-      return res.status(404).send("Invalid Tournament ID");
+      req.flash("error_msg", "Tournament Not Found");
+      return res.status(404).redirect("/tournaments/myTournaments");
+    }
+
+    let found = false;
+    for (let i = 0; i < tournament.users.length; i++) {
+      if (tournament.users[i].email === req.user.email) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      req.flash("error_msg", "You are not part of this tournament");
+      return res.status(401).redirect("/tournaments/myTournaments");
     }
 
     //GET THE FULL URL SO IT CAN BE USED IN THE TEXTBOX
@@ -197,7 +211,8 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
       tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`
     });
   } catch (error) {
-    res.status(500).json({ message: error });
+    req.flash("error_msg", error.message);
+    return res.status(500).redirect("/tournaments/myTournaments");
   }
 });
 

@@ -12,7 +12,9 @@ const UserSchema = mongoose.Schema({
     type: String,
     required: true,
     min: 3,
-    max: 255
+    max: 255,
+    unique: true,
+    dropDups: true
   },
   password: {
     type: String,
