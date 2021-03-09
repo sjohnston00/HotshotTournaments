@@ -67,6 +67,11 @@ const TournamentSchema = mongoose.Schema({
       ref: "users"
     }
   ],
+  limit: {
+    type: Number,
+    max: 16,
+    required: true
+  },
   teams: [
     {
       type: mongoose.Schema.Types.ObjectId,

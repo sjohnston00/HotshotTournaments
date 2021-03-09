@@ -95,9 +95,17 @@ router.get("/createTournament", ensureAuthenticated, (req, res) => {
 //CREATE A NEW TOURNAMENT
 router.post("/createTournament", ensureAuthenticated, async (req, res) => {
   // return res.send(req.body);
-  const { name, description, game, type, startDate, endDate } = req.body;
+  const { name, description, game, type, startDate, endDate, size } = req.body;
 
-  if (!name || !description || !game || !type || !startDate || !endDate) {
+  if (
+    !name ||
+    !description ||
+    !game ||
+    !type ||
+    !startDate ||
+    !endDate ||
+    !size
+  ) {
     req.flash(
       "error_msg",
       "Name, Description, Game, Type, Start Date and End Date are required"
@@ -135,7 +143,8 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
       users: [req.user._id],
       creator: req.user._id,
       inviteCode: token,
-      inviteCodeExpiryDate: new Date(endDate)
+      inviteCodeExpiryDate: new Date(endDate),
+      size: size
     });
   } else if (type === "team") {
     newTournament = new Tournament({
@@ -149,7 +158,8 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
       creator: req.user._id,
       teams: [],
       inviteCode: token,
-      inviteCodeExpiryDate: new Date(endDate)
+      inviteCodeExpiryDate: new Date(endDate),
+      size: size
     });
   } else {
     req.flash("error_msg", "Invalid Tournament Type");
