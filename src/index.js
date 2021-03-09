@@ -16,7 +16,7 @@ app.use(morgan("dev")); // For debugging which routes are being hit on the conso
 app.use(express.urlencoded({ limit: "10mb", extended: false }));
 app.engine("mustache", mustache());
 app.set("view engine", "mustache");
-app.use(express.static("./content"));
+app.use(express.static("./src/content"));
 app.set("views", __dirname + "/views");
 // Passport Config
 require("./config/passport")(passport);
