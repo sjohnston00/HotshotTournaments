@@ -30,9 +30,9 @@ console.log(singleElimination.teams); //OUTPUT [['Team 1', 'Team 2'], ['Team 3',
 /**
  * Set a tournament limit of 8
  * Get all the names of the teams
- * Initialise an empty teams array
+ * Initialize an empty teams array
  */
-const tournamentLimit = 8;
+const tournamentLimit = 16;
 let allUsers = [
   "Team 1",
   "Team 2",
@@ -57,7 +57,8 @@ for (let index = 0; index < tournamentLimit / 2; index++) {
  */
 function addRandomTeams(array) {
   for (let index = 0; index < array.length; index++) {
-    const randomTeam = allUsers[Math.floor(Math.random() * allUsers.length)];
+    const randomTeam =
+      allUsers[Math.floor(Math.random() * allUsers.length)] || null;
     array[index] = randomTeam;
     allUsers = allUsers.filter((item) => item !== randomTeam);
   }

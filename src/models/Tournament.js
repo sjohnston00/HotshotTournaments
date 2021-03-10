@@ -28,7 +28,7 @@ const TournamentSchema = mongoose.Schema({
   },
   bracket: {
     type: Object,
-    required: false,
+    required: true,
     default: {}
   },
   creator: {

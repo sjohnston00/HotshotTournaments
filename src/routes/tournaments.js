@@ -22,7 +22,8 @@ router.get("/", ensureAuthenticated, async (req, res) => {
       });
     res.send(tournaments);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    req.flash("error_msg", "Something went wrong, Please try again later");
+    res.status(500).redirect("/");
   }
 });
 
@@ -42,7 +43,8 @@ router.get("/myTournaments", ensureAuthenticated, async (req, res) => {
       });
     res.render("tournaments/myTournaments", { tournaments: tournaments });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    req.flash("error_msg", "Something went wrong, Please try again later");
+    res.status(500).redirect("/");
   }
 });
 
@@ -96,7 +98,6 @@ router.get("/createTournament", ensureAuthenticated, (req, res) => {
 router.post("/createTournament", ensureAuthenticated, async (req, res) => {
   // return res.send(req.body);
   const { name, description, game, type, startDate, endDate, size } = req.body;
-
   if (
     !name ||
     !description ||
@@ -108,7 +109,7 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
   ) {
     req.flash(
       "error_msg",
-      "Name, Description, Game, Type, Start Date and End Date are required"
+      "Name, Description, Game, Type, Size, Start Date and End Date are required"
     );
     return res.redirect("/tournaments/createTournament");
   }
@@ -128,6 +129,14 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
   const buffer = crypto.randomBytes(6);
   const token = buffer.toString("hex");
 
+  //CREATE THE TOURNAMENT BRACKET FROM THE limitconst emptyTournamentLimit = 16;
+  const bracket = {
+    teams: []
+  };
+  for (let index = 0; index < Number(size) / 2; index++) {
+    bracket.teams.push(Array(2).fill(null));
+  }
+
   let newTournament;
 
   //VALIDATE TOURNAMENT TYPE
@@ -137,6 +146,7 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
       description: description,
       game: game,
       type: type,
+      bracket: bracket,
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       messages: [],
@@ -144,7 +154,7 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
       creator: req.user._id,
       inviteCode: token,
       inviteCodeExpiryDate: new Date(endDate),
-      size: size
+      limit: Number(size)
     });
   } else if (type === "team") {
     newTournament = new Tournament({
@@ -152,6 +162,7 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
       description: description,
       game: game,
       type: type,
+      bracket: bracket,
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       messages: [],
@@ -159,7 +170,7 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
       teams: [],
       inviteCode: token,
       inviteCodeExpiryDate: new Date(endDate),
-      size: size
+      limit: Number(size)
     });
   } else {
     req.flash("error_msg", "Invalid Tournament Type");
@@ -226,7 +237,8 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
     res.render("tournaments/viewTournament", {
       tournament: tournament,
       tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
-      isTournamentCreator: isTournamentCreator
+      isTournamentCreator: isTournamentCreator,
+      bracketString: JSON.stringify(tournament.bracket, null, 2)
     });
   } catch (error) {
     req.flash("error_msg", error.message);
