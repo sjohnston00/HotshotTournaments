@@ -187,15 +187,73 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
   }
 });
 
+router.get(
+  "/generateTournamentBracket/:tournamentID",
+  ensureAuthenticated,
+  async (req, res) => {
+    const { tournamentID } = req.params;
+    const tournament = await Tournament.findOne({
+      _id: tournamentID
+    }).populate("users");
+
+    if (!tournament) {
+      req.flash("error_msg", "Tournament Not Found");
+      return res.status(404).redirect("/tournaments/myTournaments");
+    }
+
+    const isTournamentCreator = tournament.creator.equals(req.user._id)
+      ? true
+      : false;
+
+    if (!isTournamentCreator) {
+      req.flash("error_msg", "You are not part of this tournament");
+      return res.status(401).redirect("/tournaments/myTournaments");
+    }
+
+    //MAKE A COPY OF THE TOURNAMENT USERS ARRAY
+    let tournamentUsers = tournament.users;
+
+    for (let index = 0; index < tournament.bracket.teams.length; index++) {
+      const currentArray = tournament.bracket.teams[index];
+      const faceOff = addRandomUsers(currentArray);
+
+      tournament.bracket.teams[index] = faceOff;
+    }
+    function addRandomUsers(array) {
+      for (let index = 0; index < array.length; index++) {
+        const randomUser =
+          tournamentUsers[Math.floor(Math.random() * tournamentUsers.length)];
+        if (randomUser == undefined) {
+          return array;
+        } else {
+          array[index] = randomUser.name;
+          tournamentUsers = tournamentUsers.filter(
+            (item) => item.name !== randomUser.name
+          );
+        }
+      }
+      return array;
+    }
+
+    try {
+      tournament.markModified("bracket");
+      const savedTournament = await tournament.save();
+      return res.redirect(`/tournaments/${savedTournament._id}`);
+    } catch (error) {
+      res.send(error.message);
+    }
+  }
+);
+
 //GET 1 TOURNAMENT
 router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
   //VALIDATE THAT THE USERS ID IS VALID FOR THIS TOURNAMENT
   try {
-    const tournamentID = req.params.tournamentID;
+    const { tournamentID } = req.params;
     const tournament = await Tournament.findOne({
       _id: tournamentID
     })
-      .populate("users")
+      .populate("users", "-__v -password")
       .populate({
         path: "messages",
         select: "-_id -__v -tournament",
@@ -224,7 +282,7 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
       return res.status(401).redirect("/tournaments/myTournaments");
     }
 
-    //Reason why its .id and not _id is because .id is the getter method for the _id as its still treated as a ObjectId
+    //Reason why its .id and not _id is because .id is the getter method for the _id as its still treated as a mongo ObjectId
     //https://stackoverflow.com/questions/15724272/what-is-the-difference-between-id-and-id-in-mongoose
     //https://stackoverflow.com/questions/11637353/comparing-mongoose-id-and-strings
     const isTournamentCreator = tournament.creator.equals(req.user._id)

@@ -70,6 +70,7 @@ const TournamentSchema = mongoose.Schema({
   limit: {
     type: Number,
     max: 16,
+    min: 4,
     required: true
   },
   teams: [

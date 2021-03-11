@@ -20,15 +20,19 @@
       </div>
       {{#isTournamentCreator}}
       <button id='btn-edit-tournament' class="btn btn-primary"
-        >Edit Tournament</button>
+        onclick='editTournament()'>Edit Bracket</button>
+
+      {{#tournament}}
+      <a href='/tournaments/generateTournamentBracket/{{_id}}' class="btn btn-secondary">Generate Bracket</a>
+      {{/tournament}}
       {{/isTournamentCreator}}
 
       <h4>Users</h4>
       <div
-        class="container d-flex justify-content-space-around align-items-center my-4"
+        class="d-flex flex-wrap justify-content-space-around align-items-center my-4"
       >
         {{#users}}
-        <div class="card">
+        <div class="card mr-4 mb-4">
           <div class="card-body">
             <h5 class="card-title">{{name}}</h5>
             <p class="card-text"><b>Email: </b> {{email}}</p>
@@ -63,6 +67,7 @@
       >
       {{#isTournamentCreator}}
       <!-- Button trigger modal -->
+      {{#tournament}}
       <button
         type="button"
         class="btn btn-danger"
@@ -194,6 +199,7 @@
         </div>
       </div>
     </div>
+    {{/tournament}}
     {{/isTournamentCreator}} 
 
       <textarea id='tournament-bracket-textarea' class='d-none'>
@@ -206,6 +212,17 @@
         tournamentLink.setSelectionRange(0, 99999);
         document.execCommand("copy");
         alert(`Coppied to your clipboard`);
+      }
+      let clicked = false;
+      function editTournament(){
+        const bracket = document.querySelector('#tournament-bracket')
+        if(!clicked){
+          clicked = true
+          bracket.style.pointerEvents = 'all'
+        }else {
+          clicked = false
+          bracket.style.pointerEvents = 'none'
+        }
       }
     </script>
     <link rel="stylesheet" href="/css/jquery.bracket.min.css" />
