@@ -7,15 +7,27 @@ $(function () {
     save: saveData,
     centerConnectors: true,
     disableToolbar: true,
-    userData: "Data to send"
+    teamWidth: 100
   });
-
-  const currentData = tournament.bracket("data");
-  // $("#saveOutput").text(`Initial data ${JSON.stringify(currentData, null, 2)}`);
 });
 
-function saveData(data, userData) {
-  // $("#requestOutput").text(
-  //   `POST https://api.com/api/${userData} ${JSON.stringify(data, null, 2)}`
-  // );
+function saveData(data) {
+  $("#tournament-bracket-textarea-2").text(`${JSON.stringify(data)}`);
+  $("#btn-edit-tournament").text(`Save Tournament`);
 }
+
+// const savedTournamentButton = document.querySelector("#btn-edit-tournament");
+// savedTournamentButton.addEventListener("click", async (e) => {
+//   if (confirm("Are you sure you want to save these changes?")) {
+//     const tournamentID = document.querySelector("#tournamentID");
+//     const bracket = document.querySelector("#tournament-bracket-textarea");
+//     fetch(`/tournaments/saveTournamentBracket/${tournamentID.textContent}`, {
+//       method: "POST",
+//       body: {
+//         bracket: bracket.textContent
+//       }
+//     });
+//   } else {
+//     return;
+//   }
+// });

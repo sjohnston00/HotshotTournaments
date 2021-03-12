@@ -68,6 +68,11 @@ router.get(
         req.flash("error_msg", "You are already part of this tournament");
         return res.redirect(`/tournaments/${tournamentID}`);
       }
+
+      if (tournament.users.length >= tournament.limit) {
+        req.flash("error_msg", "Tournament is at full capacity");
+        return res.redirect(`/tournaments/myTournaments`);
+      }
       const today = new Date();
       if (tournament.endDate < today) {
         req.flash("error_msg", "Tournament has already ended");
@@ -296,13 +301,37 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
       tournament: tournament,
       tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
       isTournamentCreator: isTournamentCreator,
-      bracketString: JSON.stringify(tournament.bracket, null, 2)
+      bracketString: JSON.stringify(tournament.bracket)
     });
   } catch (error) {
     req.flash("error_msg", error.message);
     return res.status(500).redirect("/tournaments/myTournaments");
   }
 });
+
+router.post(
+  "/saveTournamentBracket/:tournamentID",
+  ensureAuthenticated,
+  async (req, res) => {
+    const { bracket } = req.body;
+    const { tournamentID } = req.params;
+
+    try {
+      const tournament = await Tournament.findById(tournamentID);
+      if (!tournament) {
+        req.flash("error_msg", "Tournament Not Found");
+        return res.redirect("/tournaments/myTournaments");
+      }
+      tournament.bracket = JSON.parse(bracket);
+      tournament.markModified("bracket");
+      const updatedTournament = await tournament.save();
+      return res.redirect(`/tournaments/${updatedTournament._id}`);
+    } catch (error) {
+      req.flash("error_msg", "Something went wrong, please try again later");
+      return res.redirect("/tournaments/myTournaments");
+    }
+  }
+);
 
 //UPDATE A TOURNAMENT
 router.put("/:tournamentID", ensureAuthenticated, async (req, res) => {

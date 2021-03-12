@@ -18,10 +18,17 @@
         style="height: 300px"
       >
       </div>
+        <textarea id='tournament-bracket-textarea' class='d-none'>
+          {{bracketString}}
+        </textarea>
+        <p id="tournamentID" class="d-none">{{_id}}</p>
       {{#isTournamentCreator}}
-      <button id='btn-edit-tournament' class="btn btn-primary"
-        onclick='editTournament()'>Edit Bracket</button>
-
+      <form action="/tournaments/saveTournamentBracket/{{_id}}" method="POST">
+        <textarea id='tournament-bracket-textarea-2' name="bracket" class='d-none'>
+          {{bracketString}}
+        </textarea>
+      <button id='btn-edit-tournament' class="btn btn-primary">Edit Bracket</button>
+      </form>
       {{#tournament}}
       <a href='/tournaments/generateTournamentBracket/{{_id}}' class="btn btn-secondary">Generate Bracket</a>
       {{/tournament}}
@@ -202,9 +209,7 @@
     {{/tournament}}
     {{/isTournamentCreator}} 
 
-      <textarea id='tournament-bracket-textarea' class='d-none'>
-        {{bracketString}}
-      </textarea>
+      
     <script>
       function copyText() {
         const tournamentLink = document.getElementById("tournamentInviteLink");
@@ -213,17 +218,7 @@
         document.execCommand("copy");
         alert(`Coppied to your clipboard`);
       }
-      let clicked = false;
-      function editTournament(){
-        const bracket = document.querySelector('#tournament-bracket')
-        if(!clicked){
-          clicked = true
-          bracket.style.pointerEvents = 'all'
-        }else {
-          clicked = false
-          bracket.style.pointerEvents = 'none'
-        }
-      }
+      
     </script>
     <link rel="stylesheet" href="/css/jquery.bracket.min.css" />
     <script src="/scripts/tournament-bracket.js" defer></script>

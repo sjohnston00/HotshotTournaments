@@ -1,5 +1,4 @@
 #tournament-bracket,
 #tournament-bracket * {
-  pointer-events: none;
   cursor: pointer;
 }
