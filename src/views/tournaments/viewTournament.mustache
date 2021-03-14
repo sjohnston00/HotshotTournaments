@@ -15,7 +15,6 @@
       <div
         id="tournament-bracket"
         class="w-100 d-flex justify-content-center align-items-center my-4"
-        style="height: 300px"
       >
       </div>
         <textarea id='tournament-bracket-textarea' class='d-none'>
@@ -53,22 +52,32 @@
       </div>
 
       <h4>Messages</h4>
-      <div
-        class="container d-flex justify-content-space-around align-items-center my-4"
-      >
-        {{#messages}} {{#user}} {{/user}}
-        <div class="card">
+      <div id="messages-container" class="mb-3">
+        {{#messages}} 
+          {{#user}} 
+        <div class="card mb-3">
           <div class="card-body">
             <h5 class="card-title">{{name}}</h5>
-            <p class="card-text"><b>Email: </b> {{email}}</p>
+            <p class="card-title">{{body}}</p>
           </div>
         </div>
-        {{/messages}} {{^messages}}
-        <p class="text-danger">
-          Currently there are no messages in this tournament
-        </p>
-        {{/messages}} {{/tournament}}
+          {{/user}}
+        {{/messages}} 
+          {{^messages}}
+            <p class="text-danger">
+              Currently there are no messages in this tournament
+            </p>
+          {{/messages}} 
+        <form id="send-message-form" action="/tournaments/{{_id}}/addMessage" method="POST">
+          <div class="input-group mb-3">
+            <input id="input-message" type="text" name="message" class="form-control" placeholder="Message..." aria-label="Message..." aria-describedby="the message to be sent" required>
+            <div class="input-group-append">
+              <button id="btn-send-message" type="submit" class="btn btn-outline-primary" type="button">Send</button>
+            </div>
+          </div>
+        </form>
       </div>
+      {{/tournament}}
       <a href="/tournaments/myTournaments" class="btn btn-secondary mx-4"
         >Back</a
       >
@@ -206,11 +215,24 @@
         </div>
       </div>
     </div>
+    <input type="text" value="{{_id}}" id="tournamentID" class="d-none"/>
     {{/tournament}}
     {{/isTournamentCreator}} 
 
       
     <script>
+      $(function(){
+        const socket = io.connect('http://localhost:8000/')
+      });
+
+      const form = document.querySelector('#send-message-form');
+      const message = document.querySelector('#input-message');
+      const tournamentID = document.querySelector('#tournamentID').textContent;
+      /*
+        form.addEventListener('submit', async (event) => {
+          
+        });
+      */
       function copyText() {
         const tournamentLink = document.getElementById("tournamentInviteLink");
         tournamentLink.select();
@@ -218,7 +240,6 @@
         document.execCommand("copy");
         alert(`Coppied to your clipboard`);
       }
-      
     </script>
     <link rel="stylesheet" href="/css/jquery.bracket.min.css" />
     <script src="/scripts/tournament-bracket.js" defer></script>

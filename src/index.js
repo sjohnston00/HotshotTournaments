@@ -85,6 +85,40 @@ mongoose.connect(
 
 //INITIALISE THE APP
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`App Started ===> Listening on port ${PORT}`);
+});
+
+const io = require("socket.io")(server);
+
+io.on("connection", (socket) => {
+  console.log("New user connected");
+});
+
+const connection = mongoose.connection;
+connection.once("open", () => {
+  const messagesChangeStream = connection.collection("messages").watch();
+
+  messagesChangeStream.on("change", (change) => {
+    switch (change.operationType) {
+      case "insert":
+        const message = {
+          _id: change.fullDocument._id,
+          name: change.fullDocument.name,
+          body: change.fullDocument.body,
+          isAnnouncement: change.fullDocument.isAnnouncement,
+          createdAt: change.fullDocument.createdAt
+        };
+        console.log(message);
+        io.of("/api/socket").emit("newThought", message);
+        break;
+
+      case "delete":
+        console.log(
+          `Deleted message: ${change.documentKey._id} from ${change.ns.db} collection ${change.ns.coll}`
+        );
+        io.of("/api/socket").emit("deletedThought", change.documentKey._id);
+        break;
+    }
+  });
 });

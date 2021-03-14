@@ -11,6 +11,10 @@ const MessageSchema = mongoose.Schema({
     required: true,
     ref: "user"
   },
+  name: {
+    type: String,
+    required: true
+  },
   tournament: {
     type: mongoose.Schema.Types.ObjectId,
     required: false,

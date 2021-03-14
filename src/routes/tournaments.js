@@ -296,7 +296,6 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
 
     //GET THE FULL URL SO IT CAN BE USED IN THE TEXTBOX
     const fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
-
     res.render("tournaments/viewTournament", {
       tournament: tournament,
       tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
@@ -308,6 +307,34 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
     return res.status(500).redirect("/tournaments/myTournaments");
   }
 });
+
+router.post(
+  "/:tournamentID/addMessage",
+  ensureAuthenticated,
+  async (req, res) => {
+    const { tournamentID } = req.params;
+    const message = new Message({
+      user: req.user._id,
+      isAnnouncement: req.body.isAnnouncement,
+      createdAt: new Date(),
+      tournament: tournamentID,
+      name: req.user.name,
+      body: req.body.message
+    });
+
+    try {
+      const savedMessage = await message.save();
+      await Tournament.updateOne(
+        { _id: tournamentID },
+        { $push: { messages: savedMessage._id } }
+      );
+      return res.redirect(`/tournaments/${tournamentID}`);
+    } catch (error) {
+      req.flash("error_msg", "Something went wrong, please try again later");
+      return res.redirect(`/tournaments/${tournamentID}`);
+    }
+  }
+);
 
 router.post(
   "/saveTournamentBracket/:tournamentID",
