@@ -14,14 +14,7 @@ router.post("/register", controller.post_register_view);
 
 router.get("/login", forwardAuthenticated, controller.get_login_view);
 
-router.post(
-  "/login",
-  passport.authenticate("local", {
-    successReturnToOrRedirect: "/tournaments/myTournaments", //if the login details are correct then redirect to /tournaments/myTournaments
-    failureRedirect: "/auth/login", // if the login details are incorrect then redirect to login
-    failureFlash: true
-  })
-);
+router.post("/login", controller.authenticate_passport);
 
 // Logout
 router.get("/logout", (req, res) => {
