@@ -5,6 +5,7 @@ const Message = require("../models/Message");
 const Team = require("../models/Team");
 const { ensureAuthenticated } = require("../config/auth");
 const crypto = require("crypto");
+const moment = require('moment');
 
 //GET ALL THE USERS TOURNAMENTS
 router.get("/myTournaments", ensureAuthenticated, async (req, res) => {
@@ -76,12 +77,11 @@ router.get(
 );
 
 router.get("/createTournament", ensureAuthenticated, (req, res) => {
-  const todayDate = new Date();
-  todayDate.setSeconds(0, 0);
-  //TODO: Use Moment to format the date string so its an acceptable HTML Date String
+  const startDate = moment().utc().local().format(moment.HTML5_FMT.DATETIME_LOCAL);
+  const endDate = moment().add(1, "week").utc().local().format(moment.HTML5_FMT.DATETIME_LOCAL);
   res.render("tournaments/createTournament", {
-    startDate: todayDate.toISOString().replace("Z", ""),
-    endDate: new Date().toISOString()
+    startDate: startDate,
+    endDate: endDate
   });
 });
 
