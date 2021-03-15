@@ -57,4 +57,4 @@ exports.get_logout = (req, res) => {
     req.logout();
     req.flash("success_msg", "You are now logged out"); //give user a log out success message
     res.redirect("/auth/login");
-  }
+}

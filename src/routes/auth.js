@@ -51,19 +51,4 @@ router.get("/logout", controller.get_logout);
 // // });
 // });
 
-router.get("/authUserToken", (req, res) => {
-  const token = req.header("accessToken");
-
-  if (!token) {
-    return res.status(403).send("No user token");
-  }
-
-  try {
-    const verifiedUser = jwt.verify(token, process.env.JWT_SECRET);
-    res.status(200).send("User is verified");
-  } catch (error) {
-    return res.status(404).send("No user token");
-  }
-});
-
 module.exports = router;
