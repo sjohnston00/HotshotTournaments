@@ -8,14 +8,15 @@ const controller = require("../controllers/messagesController");
 //GET ALL MESSAGES
 //TODO: remove access to every user
 router.get("/", ensureAuthenticated, async (req, res) => {
-  try {
-    const messages = await Message.find()
-      .populate("tournament", "-__v", "tournaments")
-      .populate("user", "-_id -__v -pasword", "users");
-    res.status(200).send(messages);
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
+  console.log('HELLO WORLD');
+    try {
+      const messages = await Message.find()
+        .populate("tournament", "-__v", "tournaments")
+        .populate("user", "-_id -__v -pasword", "users");
+      res.status(200).send(messages);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
 });
 
 //Post a new message to a tournament
