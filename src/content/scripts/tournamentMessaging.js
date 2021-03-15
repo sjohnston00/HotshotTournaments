@@ -1,4 +1,4 @@
-const deployed = true;
+const deployed = false;
 const connectionString = deployed
   ? "https://hotshot-tournaments.herokuapp.com/"
   : "http://10.223.69.35:8000";
@@ -21,14 +21,6 @@ socket.on("newMessage", (message) => {
     </div>
   </div>
 `;
-  // messagesContainer.insertAdjacentHTML(/*html*/ `
-  //   <div class="card mb-3">
-  //     <div class="card-body">
-  //       <h5 class="card-title">${message.user}</h5>
-  //       <p class="card-title">${message.body}</p>
-  //     </div>
-  //   </div>
-  // `);
 });
 
 form.addEventListener("submit", async (event) => {
@@ -38,20 +30,23 @@ form.addEventListener("submit", async (event) => {
   fetch(`/messages/tournament/${tournamentID}`, {
     method: "POST",
     headers: {
-      // "Content-Type": "application/json"
-      "Content-Type": "application/x-www-form-urlencoded"
+      // "Content-Type": "application/json" //for when the application only accepts JSON input
+      "Content-Type": "application/x-www-form-urlencoded" //for when the application only accepts form urlencoded input
     },
+    //when using FORM - URLENCODED use the URLSearchParams class fort the body
     body: new URLSearchParams({
       message: messageValue
     })
   });
 
+  //set the value of the message box back to empty
   document.querySelector("#input-message").value = "";
 });
+
 function copyText() {
   const tournamentLink = document.getElementById("tournamentInviteLink");
   tournamentLink.select();
   tournamentLink.setSelectionRange(0, 99999);
   document.execCommand("copy");
-  alert(`Coppied to your clipboard`);
+  alert(`Copied to your clipboard`);
 }

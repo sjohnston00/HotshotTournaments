@@ -106,13 +106,6 @@ connection.once("open", () => {
         const message = await Message.findById(
           change.fullDocument._id
         ).populate({ path: "user", model: "users", select: "-__v -password" });
-        // const message = {
-        //   _id: change.fullDocument._id,
-        //   name: change.fullDocument.name,
-        //   body: change.fullDocument.body,
-        //   isAnnouncement: change.fullDocument.isAnnouncement,
-        //   createdAt: change.fullDocument.createdAt
-        // };
         console.log(message);
         io.emit("newMessage", message);
         break;

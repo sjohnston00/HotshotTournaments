@@ -3,29 +3,8 @@ const router = express.Router();
 const Tournament = require("../models/Tournament");
 const Message = require("../models/Message");
 const Team = require("../models/Team");
-const { verifyToken } = require("../middlewares/verifyToken");
 const { ensureAuthenticated } = require("../config/auth");
 const crypto = require("crypto");
-
-//GET ALL TOURNAMENTS
-router.get("/", ensureAuthenticated, async (req, res) => {
-  try {
-    const tournaments = await Tournament.find()
-      .select("-__v")
-      .populate("users", "-_id -__v -password")
-      .populate({
-        path: "messages",
-        populate: {
-          path: "user",
-          model: "users"
-        }
-      });
-    res.send(tournaments);
-  } catch (error) {
-    req.flash("error_msg", "Something went wrong, Please try again later");
-    res.status(500).redirect("/");
-  }
-});
 
 //GET ALL THE USERS TOURNAMENTS
 router.get("/myTournaments", ensureAuthenticated, async (req, res) => {
@@ -43,8 +22,13 @@ router.get("/myTournaments", ensureAuthenticated, async (req, res) => {
       });
     res.render("tournaments/myTournaments", { tournaments: tournaments });
   } catch (error) {
+    //THE FIRST PARAMETER OF THIS FUNCTION IS TO SET THE ERROR MESSAGE IN THE CONSOLE TO A RED COLOUR
+    //TODO: FOR THE SAKE OF NOT REPEATING CODE, TURN INTO A FUNCTION
+    //E.G handleError('/tournaments/myTournaments', error)
+    //First params is where to redirect to and second is the error object from the catch
+    console.error("\x1b[31m", `Error: ${error.message}`);
     req.flash("error_msg", "Something went wrong, Please try again later");
-    res.status(500).redirect("/");
+    return res.redirect("/");
   }
 });
 
@@ -80,12 +64,13 @@ router.get(
       }
       //ADD THE USER ID TO THE TOURNAMENT
       tournament.users.push(req.user._id);
-      const savedTournament = await tournament.save();
+      await tournament.save();
       req.flash("success_msg", "You are now part of this tournament");
       return res.redirect(`/tournaments/${tournamentID}`);
     } catch (error) {
-      req.flash("error_msg", error.message);
-      return res.redirect(`/tournaments/myTournaments`);
+      console.error("\x1b[31m", `Error: ${error.message}`);
+      req.flash("error_msg", "Something went wrong, Please try again later");
+      return res.redirect("/tournaments/myTournaments");
     }
   }
 );
@@ -93,6 +78,7 @@ router.get(
 router.get("/createTournament", ensureAuthenticated, (req, res) => {
   const todayDate = new Date();
   todayDate.setSeconds(0, 0);
+  //TODO: Use Moment to format the date string so its an acceptable HTML Date String
   res.render("tournaments/createTournament", {
     startDate: todayDate.toISOString().replace("Z", ""),
     endDate: new Date().toISOString()
@@ -101,8 +87,8 @@ router.get("/createTournament", ensureAuthenticated, (req, res) => {
 
 //CREATE A NEW TOURNAMENT
 router.post("/createTournament", ensureAuthenticated, async (req, res) => {
-  // return res.send(req.body);
   const { name, description, game, type, startDate, endDate, size } = req.body;
+  //TODO: VALIDATE BODY PARAMS IN SEPERATE FILE
   if (
     !name ||
     !description ||
@@ -134,7 +120,7 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
   const buffer = crypto.randomBytes(6);
   const token = buffer.toString("hex");
 
-  //CREATE THE TOURNAMENT BRACKET FROM THE limitconst emptyTournamentLimit = 16;
+  //CREATE THE TOURNAMENT BRACKET FROM THE TOURNAMENT limit ;
   const bracket = {
     teams: []
   };
@@ -145,6 +131,7 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
   let newTournament;
 
   //VALIDATE TOURNAMENT TYPE
+  //TODO: Change to SWTICH statement as it makes the code more versatile for the future
   if (type === "single") {
     newTournament = new Tournament({
       name: name,
@@ -187,7 +174,8 @@ router.post("/createTournament", ensureAuthenticated, async (req, res) => {
     req.flash("success_msg", "New Tournament Created");
     return res.redirect(`/tournaments/${savedTournament._id}`);
   } catch (error) {
-    req.flash("error_msg", error.message);
+    console.error("\x1b[31m", `Error: ${error.message}`);
+    req.flash("error_msg", "Something went wrong, Please try again later");
     return res.redirect("/tournaments/createTournament");
   }
 });
@@ -241,18 +229,20 @@ router.get(
     }
 
     try {
-      tournament.markModified("bracket");
+      tournament.markModified("bracket"); //this tells mongoose thats the bracket has been modified so make sure to save it this way
       const savedTournament = await tournament.save();
+      req.flash("success_msg", "Tournament bracket has been generated");
       return res.redirect(`/tournaments/${savedTournament._id}`);
     } catch (error) {
-      res.send(error.message);
+      console.error("\x1b[31m", `Error: ${error.message}`);
+      req.flash("error_msg", "Something went wrong, Please try again later");
+      res.redirect("/tournaments/myTournaments");
     }
   }
 );
 
 //GET 1 TOURNAMENT
 router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
-  //VALIDATE THAT THE USERS ID IS VALID FOR THIS TOURNAMENT
   try {
     const { tournamentID } = req.params;
     const tournament = await Tournament.findOne({
@@ -268,11 +258,13 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
           select: "-_id -__v -password"
         }
       });
+    //TODO: VALIDATION SHOULD BE IN ANOTHER FILE
     if (!tournament) {
       req.flash("error_msg", "Tournament Not Found");
       return res.status(404).redirect("/tournaments/myTournaments");
     }
 
+    //FIND THE USERS ID IN THE TOURNAMENT
     let found = false;
     for (let i = 0; i < tournament.users.length; i++) {
       //https://stackoverflow.com/questions/15724272/what-is-the-difference-between-id-and-id-in-mongoose
@@ -295,12 +287,17 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
       : false;
 
     //GET THE FULL URL SO IT CAN BE USED IN THE TEXTBOX
+    //TODO: FIGURE OUT WHY THIS RENDERS THE URL WITH HTTP NOT HTTPS
     const fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
     res.render("tournaments/viewTournament", {
       tournament: tournament,
       tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
       isTournamentCreator: isTournamentCreator,
       bracketString: JSON.stringify(tournament.bracket)
+      /*REASON: Mustache will not allow front-end script to access the properties that are passed from the server
+        therefore I'm having to turn the JSON object to a string, then put the string in a <textarea/> element and hide import PropTypes from 'prop-types'
+        THIS IS WHY I HATE MUSTACHE
+      */
     });
   } catch (error) {
     req.flash("error_msg", error.message);
@@ -324,9 +321,11 @@ router.post(
       tournament.bracket = JSON.parse(bracket);
       tournament.markModified("bracket");
       const updatedTournament = await tournament.save();
+      req.flash("success_msg", "Tournament bracket saved");
       return res.redirect(`/tournaments/${updatedTournament._id}`);
     } catch (error) {
-      req.flash("error_msg", "Something went wrong, please try again later");
+      console.error("\x1b[31m", `Error: ${error.message}`);
+      req.flash("error_msg", "Something went wrong, Please try again later");
       return res.redirect("/tournaments/myTournaments");
     }
   }
@@ -334,6 +333,8 @@ router.post(
 
 //UPDATE A TOURNAMENT
 router.put("/:tournamentID", ensureAuthenticated, async (req, res) => {
+  //TODO: VALIDATION SHOULD BE IN SEPERATE FILE
+  const { tournamentID } = req.params;
   const {
     name,
     description,
@@ -355,11 +356,11 @@ router.put("/:tournamentID", ensureAuthenticated, async (req, res) => {
     !messages ||
     !users
   ) {
-    return res
-      .status(401)
-      .send(
-        "Name, Description, Game, Tournament Type, Start Date, End Date, Messages and Users are required fields"
-      );
+    req.flash(
+      "error_msg",
+      "Name, Description, Game, Tournament Type, Start Date, End Date, Messages and Users are required fields"
+    );
+    return res.redirect(`/tournaments/${tournamentID}`);
   }
 
   const nowDate = new Date();
@@ -373,7 +374,7 @@ router.put("/:tournamentID", ensureAuthenticated, async (req, res) => {
 
   try {
     const updatedTournament = await Tournament.updateOne(
-      { _id: req.params.tournamentID },
+      { _id: tournamentID },
       {
         $set: {
           name: name,
@@ -387,9 +388,12 @@ router.put("/:tournamentID", ensureAuthenticated, async (req, res) => {
         }
       }
     );
-    res.status(200).send(updatedTournament);
+    req.flash("success_msg", "Tournament has been updated");
+    return res.redirect(`/tournaments/${updatedTournament._id}`);
   } catch (error) {
-    res.json({ message: error });
+    console.error(error.message);
+    req.flash("error_msg", "Something went wrong please try again later");
+    return res.redirect(`/tournaments/${updatedTournament._id}`);
   }
 });
 
@@ -402,6 +406,8 @@ router.get(
   async (req, res) => {
     const { tournamentID } = req.params;
     try {
+      //TODO: VALIDATE THAT THIS USER IS THE TOURNAMENT CREATOR
+      //TODO: VALIDATE ON DIFFERENT FILE
       const deletedTournament = await Tournament.deleteOne({
         _id: tournamentID,
         users: req.user._id
@@ -411,32 +417,18 @@ router.get(
         return res.redirect("/tournaments/myTournaments");
       }
 
-      const tournamentsMessages = await Message.deleteMany({
+      //delete all the messages associated with that tournament
+      await Message.deleteMany({
         tournament: tournamentID
       });
-      req.flash("success_msg", "Your tournament has been deleted"); //give user a log out success message
+      req.flash("success_msg", "Your tournament has been deleted");
       return res.redirect("/tournaments/myTournaments");
     } catch (error) {
-      console.log(error.message);
-      req.flash("error_msg", "Something went wrong, please try again later");
-      return res.redirect("/tournaments/myTournaments");
+      console.error(error.message);
+      req.flash("error_msg", "Something went wrong please try again later");
+      return res.redirect(`/tournaments/myTournaments`);
     }
   }
 );
-
-//DEV ZONE
-//TODO: Delete these routes in production
-router.get("/deleteTournaments/all", async (req, res) => {
-  try {
-    const deletedTournaments = await Tournament.deleteMany();
-    const deletedMessages = await Message.deleteMany();
-    const deletedTeams = await Team.deleteMany();
-    req.flash("success_msg", "Everything Deleted");
-    res.redirect("/tournaments/myTournaments");
-  } catch (error) {
-    req.flash("error_msg", error.message);
-    res.redirect("/tournaments/myTournaments");
-  }
-});
 
 module.exports = router;
