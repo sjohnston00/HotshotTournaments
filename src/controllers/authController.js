@@ -43,3 +43,5 @@ exports.post_register_view = async (req, res) => {
     res.redirect("/auth/login");
   }
 }
+
+exports.get_login_view = (req, res) => res.render("auth/login");

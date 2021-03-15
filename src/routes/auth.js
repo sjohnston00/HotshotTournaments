@@ -12,9 +12,7 @@ router.get("/register", forwardAuthenticated, controller.get_register_view);
 
 router.post("/register", controller.post_register_view);
 
-router.get("/login", forwardAuthenticated, (req, res) => {
-  res.render("auth/login");
-});
+router.get("/login", forwardAuthenticated, controller.get_login_view);
 
 router.post(
   "/login",
