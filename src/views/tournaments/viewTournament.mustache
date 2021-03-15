@@ -68,15 +68,15 @@
               Currently there are no messages in this tournament
             </p>
           {{/messages}} 
-        <form id="send-message-form" action="/tournaments/{{_id}}/addMessage" method="POST">
-          <div class="input-group mb-3">
-            <input id="input-message" type="text" name="message" class="form-control" placeholder="Message..." aria-label="Message..." aria-describedby="the message to be sent" required>
-            <div class="input-group-append">
-              <button id="btn-send-message" type="submit" class="btn btn-outline-primary" type="button">Send</button>
-            </div>
-          </div>
-        </form>
       </div>
+      <form id="send-message-form" action="/tournaments/{{_id}}/addMessage" method="POST">
+        <div class="input-group mb-3">
+          <input id="input-message" type="text" name="message" class="form-control" placeholder="Message..." aria-label="Message..." aria-describedby="the message to be sent" required>
+          <div class="input-group-append">
+            <button id="btn-send-message" type="submit" class="btn btn-outline-primary" type="button">Send</button>
+          </div>
+        </div>
+      </form>
       {{/tournament}}
       <a href="/tournaments/myTournaments" class="btn btn-secondary mx-4"
         >Back</a
@@ -219,28 +219,7 @@
     {{/tournament}}
     {{/isTournamentCreator}} 
 
-      
-    <script>
-      $(function(){
-        const socket = io.connect('http://localhost:8000/')
-      });
-
-      const form = document.querySelector('#send-message-form');
-      const message = document.querySelector('#input-message');
-      const tournamentID = document.querySelector('#tournamentID').textContent;
-      /*
-        form.addEventListener('submit', async (event) => {
-          
-        });
-      */
-      function copyText() {
-        const tournamentLink = document.getElementById("tournamentInviteLink");
-        tournamentLink.select();
-        tournamentLink.setSelectionRange(0, 99999);
-        document.execCommand("copy");
-        alert(`Coppied to your clipboard`);
-      }
-    </script>
+    <script src="/scripts/tournamentMessaging.js" defer></script>
     <link rel="stylesheet" href="/css/jquery.bracket.min.css" />
     <script src="/scripts/tournament-bracket.js" defer></script>
     <script src="/scripts/jquery.bracket.min.js" defer></script>

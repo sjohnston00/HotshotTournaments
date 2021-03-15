@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const Tournament = require("../models/Tournament");
 const Message = require("../models/Message");
-const { verifyToken } = require("../middlewares/verifyToken");
+const { ensureAuthenticated } = require("../config/auth");
 
 //GET ALL MESSAGES
 //TODO: remove access to every user
-router.get("/", verifyToken, async (req, res) => {
+router.get("/", ensureAuthenticated, async (req, res) => {
   try {
     const messages = await Message.find()
       .populate("tournament", "-__v", "tournaments")
@@ -18,76 +18,59 @@ router.get("/", verifyToken, async (req, res) => {
 });
 
 //ALL MESSAGES FROM A TOURNAMENT
-router.get("/tournament/:tournamentID", verifyToken, async (req, res) => {
-  const { tournamentID } = req.params;
-  if (!tournamentID) {
-    res.status(404).send("Not Found");
+router.get(
+  "/tournament/:tournamentID",
+  ensureAuthenticated,
+  async (req, res) => {
+    const { tournamentID } = req.params;
+    if (!tournamentID) {
+      res.status(404).send("Not Found");
+    }
+    try {
+      const messages = await Message.find({
+        tournament: tournamentID
+      })
+        .sort([["createdAt", -1]]) //FOUND THIS ON STACK OVERFLOW, BUT I HAVE NO IDEA HOW IT WORKS
+        .populate("user", "-_id -__v -pasword", "users");
+      res.status(200).send(messages);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
   }
-  try {
-    const messages = await Message.find({
-      tournament: tournamentID
-    })
-      .sort([["createdAt", -1]]) //FOUND THIS ON STACK OVERFLOW, BUT I HAVE NO IDEA HOW IT WORKS
-      .populate("user", "-_id -__v -pasword", "users");
-    res.status(200).send(messages);
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-});
+);
 
 //Post a new message to a tournament
-router.post("/tournament/:tournamentID", verifyToken, async (req, res) => {
-  const { body, isAnnouncement } = req.body;
-  if (!body) {
-    res.status(401).send("Message body and Announcement are required");
-  }
-
-  const { tournamentID } = req.params;
-  if (!tournamentID) {
-    res.status(404).send("Not Found");
-  }
-
-  //VALIDATE THE USER IS PART OF THE TOURNAMENT
-  let tournament;
-  try {
-    tournament = await Tournament.findOne({
-      _id: tournamentID
+router.post(
+  "/tournament/:tournamentID",
+  ensureAuthenticated,
+  async (req, res) => {
+    const { tournamentID } = req.params;
+    const message = new Message({
+      user: req.user._id,
+      isAnnouncement: req.body.isAnnouncement,
+      createdAt: new Date(),
+      tournament: tournamentID,
+      name: req.user.name,
+      body: req.body.message
     });
-    if (!tournament) {
-      return res.status(404).send("Invalid Tournament ID");
-    }
-    if (!tournament.users.includes(req.user._id)) {
-      return res
-        .status(401)
-        .send("Not allowed to send a message to this tournament");
-    }
-  } catch (error) {
-    return res.status(500).send(error);
-  }
 
-  //ONCE EVERYTHING IS VALIDATED CONSTRUCT THE MESSAGE OBJECT
-  const message = new Message({
-    body: body,
-    isAnnouncement: isAnnouncement,
-    user: req.user._id,
-    tournament: tournamentID,
-    createdAt: new Date()
-  });
-
-  try {
-    //SAVE THE MESSAGE
-    const newMessage = await message.save();
-    //ADD THE NEW MESSAGE TO THE TOURNAMENT
-    tournament.messages.push(newMessage._id);
-    await tournament.save();
-    res.status(200).send(tournament);
-  } catch (error) {
-    res.status(500).send(error);
+    try {
+      const savedMessage = await message.save();
+      await Tournament.updateOne(
+        { _id: tournamentID },
+        { $push: { messages: savedMessage._id } }
+      );
+      return res.json({ success: true, message: "message successfully added" });
+    } catch (error) {
+      console.log(error.message);
+      req.flash("error_msg", "Something went wrong, please try again later");
+      return res.redirect(`/tournaments/${tournamentID}`);
+    }
   }
-});
+);
 
 //A users messages
-router.get("/myMessages", verifyToken, async (req, res) => {
+router.get("/myMessages", ensureAuthenticated, async (req, res) => {
   try {
     const messages = await Message.find({ user: req.user._id });
     res.status(200).send(messages);
@@ -97,7 +80,7 @@ router.get("/myMessages", verifyToken, async (req, res) => {
 });
 
 //update message
-router.put("/:messageId", verifyToken, async (req, res) => {
+router.put("/:messageId", ensureAuthenticated, async (req, res) => {
   const { messageId } = req.params;
   const { body } = req.body;
   if (!body) {
@@ -120,7 +103,7 @@ router.put("/:messageId", verifyToken, async (req, res) => {
   }
 });
 
-router.delete("/:messagedId", verifyToken, async (req, res) => {
+router.delete("/:messagedId", ensureAuthenticated, async (req, res) => {
   const { messageId } = req.params;
 
   try {

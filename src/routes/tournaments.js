@@ -309,34 +309,6 @@ router.get("/:tournamentID", ensureAuthenticated, async (req, res) => {
 });
 
 router.post(
-  "/:tournamentID/addMessage",
-  ensureAuthenticated,
-  async (req, res) => {
-    const { tournamentID } = req.params;
-    const message = new Message({
-      user: req.user._id,
-      isAnnouncement: req.body.isAnnouncement,
-      createdAt: new Date(),
-      tournament: tournamentID,
-      name: req.user.name,
-      body: req.body.message
-    });
-
-    try {
-      const savedMessage = await message.save();
-      await Tournament.updateOne(
-        { _id: tournamentID },
-        { $push: { messages: savedMessage._id } }
-      );
-      return res.redirect(`/tournaments/${tournamentID}`);
-    } catch (error) {
-      req.flash("error_msg", "Something went wrong, please try again later");
-      return res.redirect(`/tournaments/${tournamentID}`);
-    }
-  }
-);
-
-router.post(
   "/saveTournamentBracket/:tournamentID",
   ensureAuthenticated,
   async (req, res) => {
@@ -439,14 +411,15 @@ router.get(
         return res.redirect("/tournaments/myTournaments");
       }
 
-      //TODO: DELETE THE MESSAGES ASSOCIATED WITH THAT TOURNAMENT
       const tournamentsMessages = await Message.deleteMany({
         tournament: tournamentID
       });
       req.flash("success_msg", "Your tournament has been deleted"); //give user a log out success message
-      res.redirect("/tournaments/myTournaments");
+      return res.redirect("/tournaments/myTournaments");
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.log(error.message);
+      req.flash("error_msg", "Something went wrong, please try again later");
+      return res.redirect("/tournaments/myTournaments");
     }
   }
 );

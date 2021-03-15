@@ -8,6 +8,7 @@ const mustache = require("mustache-express");
 const passport = require("passport");
 const flash = require("connect-flash");
 const User = require("./models/User");
+const Message = require("./models/Message");
 require("dotenv").config();
 
 //MIDDLEWARES
@@ -56,7 +57,7 @@ const teamsRouter = require("./routes/teams");
 app.use("/tournaments", tournamentsRouter);
 app.use("/auth", authRouter);
 app.use("/api/users", usersRouter);
-app.use("/api/messages", messagesRouter);
+app.use("/messages", messagesRouter);
 app.use("/api/teams", teamsRouter);
 
 //BASIC ROUTE
@@ -99,25 +100,28 @@ const connection = mongoose.connection;
 connection.once("open", () => {
   const messagesChangeStream = connection.collection("messages").watch();
 
-  messagesChangeStream.on("change", (change) => {
+  messagesChangeStream.on("change", async (change) => {
     switch (change.operationType) {
       case "insert":
-        const message = {
-          _id: change.fullDocument._id,
-          name: change.fullDocument.name,
-          body: change.fullDocument.body,
-          isAnnouncement: change.fullDocument.isAnnouncement,
-          createdAt: change.fullDocument.createdAt
-        };
+        const message = await Message.findById(
+          change.fullDocument._id
+        ).populate({ path: "user", model: "users", select: "-__v -password" });
+        // const message = {
+        //   _id: change.fullDocument._id,
+        //   name: change.fullDocument.name,
+        //   body: change.fullDocument.body,
+        //   isAnnouncement: change.fullDocument.isAnnouncement,
+        //   createdAt: change.fullDocument.createdAt
+        // };
         console.log(message);
-        io.of("/api/socket").emit("newThought", message);
+        io.emit("newMessage", message);
         break;
 
       case "delete":
         console.log(
           `Deleted message: ${change.documentKey._id} from ${change.ns.db} collection ${change.ns.coll}`
         );
-        io.of("/api/socket").emit("deletedThought", change.documentKey._id);
+        io.emit("deletedMessage", change.documentKey._id);
         break;
     }
   });
