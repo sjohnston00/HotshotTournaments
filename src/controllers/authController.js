@@ -52,3 +52,9 @@ exports.authenticate_passport = passport.authenticate("local", {
     failureRedirect: "/auth/login", // if the login details are incorrect then redirect to login
     failureFlash: true
 })
+
+exports.get_logout = (req, res) => {
+    req.logout();
+    req.flash("success_msg", "You are now logged out"); //give user a log out success message
+    res.redirect("/auth/login");
+  }

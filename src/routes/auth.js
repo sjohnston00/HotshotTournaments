@@ -16,12 +16,7 @@ router.get("/login", forwardAuthenticated, controller.get_login);
 
 router.post("/login", controller.authenticate_passport);
 
-// Logout
-router.get("/logout", (req, res) => {
-  req.logout();
-  req.flash("success_msg", "You are now logged out"); //give user a log out success message
-  res.redirect("/auth/login");
-});
+router.get("/logout", controller.get_logout);
 // //VALIDATE BODY
 // const { email, password } = req.body;
 // if (!email || !password) {
