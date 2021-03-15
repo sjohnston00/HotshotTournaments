@@ -3,6 +3,7 @@ const router = express.Router();
 const Tournament = require("../models/Tournament");
 const Message = require("../models/Message");
 const { ensureAuthenticated } = require("../config/auth");
+const controller = require("../controllers/messagesController");
 
 //GET ALL MESSAGES
 //TODO: remove access to every user
@@ -16,28 +17,6 @@ router.get("/", ensureAuthenticated, async (req, res) => {
     res.status(500).send(error.message);
   }
 });
-
-//ALL MESSAGES FROM A TOURNAMENT
-router.get(
-  "/tournament/:tournamentID",
-  ensureAuthenticated,
-  async (req, res) => {
-    const { tournamentID } = req.params;
-    if (!tournamentID) {
-      res.status(404).send("Not Found");
-    }
-    try {
-      const messages = await Message.find({
-        tournament: tournamentID
-      })
-        .sort([["createdAt", -1]]) //FOUND THIS ON STACK OVERFLOW, BUT I HAVE NO IDEA HOW IT WORKS
-        .populate("user", "-_id -__v -pasword", "users");
-      res.status(200).send(messages);
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
-  }
-);
 
 //Post a new message to a tournament
 router.post(
