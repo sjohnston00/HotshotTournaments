@@ -1,4 +1,8 @@
-const socket = io.connect("http://localhost:8000/");
+const deployed = true;
+const connectionString = deployed
+  ? "https://hotshot-tournaments.herokuapp.com/"
+  : "http://10.223.69.35:8000";
+const socket = io.connect(connectionString);
 
 const form = document.querySelector("#send-message-form");
 const message = document.querySelector("#input-message");
