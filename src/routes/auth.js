@@ -4,12 +4,11 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
+const controller = require("../controllers/authController");
 
 const { forwardAuthenticated, ensureAuthenticated } = require("../config/auth");
 
-router.get("/register", forwardAuthenticated, (req, res) => {
-  res.render("auth/register");
-});
+router.get("/register", forwardAuthenticated, controller.show_register);
 
 router.post("/register", async (req, res) => {
   //VALIDATE BODY

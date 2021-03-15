@@ -1,0 +1,1 @@
+exports.show_register = (req, res) => res.render("auth/register");
