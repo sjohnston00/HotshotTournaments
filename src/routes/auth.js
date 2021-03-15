@@ -8,11 +8,11 @@ const controller = require("../controllers/authController");
 
 const { forwardAuthenticated, ensureAuthenticated } = require("../config/auth");
 
-router.get("/register", forwardAuthenticated, controller.get_register_view);
+router.get("/register", forwardAuthenticated, controller.get_register);
 
-router.post("/register", controller.post_register_view);
+router.post("/register", controller.post_register);
 
-router.get("/login", forwardAuthenticated, controller.get_login_view);
+router.get("/login", forwardAuthenticated, controller.get_login);
 
 router.post("/login", controller.authenticate_passport);
 

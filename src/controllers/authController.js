@@ -2,9 +2,9 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
 
-exports.get_register_view = (req, res) => res.render("auth/register");
+exports.get_register = (req, res) => res.render("auth/register");
 
-exports.post_register_view = async (req, res) => {
+exports.post_register = async (req, res) => {
       //VALIDATE BODY
   const { name, email, password } = req.body;
 
@@ -45,7 +45,7 @@ exports.post_register_view = async (req, res) => {
   }
 }
 
-exports.get_login_view = (req, res) => res.render("auth/login");
+exports.get_login = (req, res) => res.render("auth/login");
 
 exports.authenticate_passport = passport.authenticate("local", {
     successReturnToOrRedirect: "/tournaments/myTournaments", //if the login details are correct then redirect to /tournaments/myTournaments
