@@ -286,3 +286,25 @@ exports.get_one_tournament = async (req, res) => {
       return res.status(500).redirect("/tournaments/myTournaments");
     }
 }
+
+exports.save_tournament_bracket = async (req, res) => {
+    const { bracket } = req.body;
+    const { tournamentID } = req.params;
+
+    try {
+      const tournament = await Tournament.findById(tournamentID);
+      if (!tournament) {
+        req.flash("error_msg", "Tournament Not Found");
+        return res.redirect("/tournaments/myTournaments");
+      }
+      tournament.bracket = JSON.parse(bracket);
+      tournament.markModified("bracket");
+      const updatedTournament = await tournament.save();
+      req.flash("success_msg", "Tournament bracket saved");
+      return res.redirect(`/tournaments/${updatedTournament._id}`);
+    } catch (error) {
+      console.error("\x1b[31m", `Error: ${error.message}`);
+      req.flash("error_msg", "Something went wrong, Please try again later");
+      return res.redirect("/tournaments/myTournaments");
+    }
+}
