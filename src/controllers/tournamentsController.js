@@ -308,3 +308,68 @@ exports.save_tournament_bracket = async (req, res) => {
       return res.redirect("/tournaments/myTournaments");
     }
 }
+
+exports.update_tournament = async (req, res) => {
+    //TODO: VALIDATION SHOULD BE IN SEPERATE FILE
+    const { tournamentID } = req.params;
+    const {
+      name,
+      description,
+      game,
+      type,
+      startDate,
+      endDate,
+      messages,
+      users
+    } = req.body;
+  
+    if (
+      !name ||
+      !description ||
+      !game ||
+      !type ||
+      !startDate ||
+      !endDate ||
+      !messages ||
+      !users
+    ) {
+      req.flash(
+        "error_msg",
+        "Name, Description, Game, Tournament Type, Start Date, End Date, Messages and Users are required fields"
+      );
+      return res.redirect(`/tournaments/${tournamentID}`);
+    }
+  
+    const nowDate = new Date();
+    if (new Date(startDate) < nowDate) {
+      return res.status(401).send("Starting Date cannot be before today");
+    } else if (new Date(endDate) < nowDate) {
+      return res.status(401).send("Ending Date cannot be before today");
+    } else if (new Date(endDate) < new Date(startDate)) {
+      return res.status(401).send("Ending Date cannot be before Start date");
+    }
+  
+    try {
+      const updatedTournament = await Tournament.updateOne(
+        { _id: tournamentID },
+        {
+          $set: {
+            name: name,
+            description: description,
+            game: game,
+            type: type,
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+            messages: messages,
+            users: users
+          }
+        }
+      );
+      req.flash("success_msg", "Tournament has been updated");
+      return res.redirect(`/tournaments/${updatedTournament._id}`);
+    } catch (error) {
+      console.error(error.message);
+      req.flash("error_msg", "Something went wrong please try again later");
+      return res.redirect(`/tournaments/${updatedTournament._id}`);
+    }
+}
