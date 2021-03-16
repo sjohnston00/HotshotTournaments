@@ -20,14 +20,11 @@ router.get(
   controller.add_user_to_tournament
 );
 
-router.get("/createTournament", ensureAuthenticated, (req, res) => {
-  const startDate = moment().utc().local().format(moment.HTML5_FMT.DATETIME_LOCAL);
-  const endDate = moment().add(1, "week").utc().local().format(moment.HTML5_FMT.DATETIME_LOCAL);
-  res.render("tournaments/createTournament", {
-    startDate: startDate,
-    endDate: endDate
-  });
-});
+router.get(
+  "/createTournament",
+  ensureAuthenticated,
+  controller.get_create_tournament
+);
 
 //CREATE A NEW TOURNAMENT
 router.post("/createTournament", ensureAuthenticated, async (req, res) => {

@@ -1,3 +1,4 @@
+const moment = require('moment');
 const Tournament = require("../models/Tournament");
 
 exports.get_all_users_tournaments = async (req, res) => {
@@ -41,7 +42,6 @@ exports.add_user_to_tournament = async (req, res) => {
         req.flash("error_msg", "You are already part of this tournament");
         return res.redirect(`/tournaments/${tournamentID}`);
       }
-
       if (tournament.users.length >= tournament.limit) {
         req.flash("error_msg", "Tournament is at full capacity");
         return res.redirect(`/tournaments/myTournaments`);
@@ -62,3 +62,12 @@ exports.add_user_to_tournament = async (req, res) => {
       return res.redirect("/tournaments/myTournaments");
     }
 }
+
+exports.get_create_tournament = (req, res) => {
+    const startDate = moment().utc().local().format(moment.HTML5_FMT.DATETIME_LOCAL);
+    const endDate = moment().add(1, "week").utc().local().format(moment.HTML5_FMT.DATETIME_LOCAL);
+    res.render("tournaments/createTournament", {
+      startDate: startDate,
+      endDate: endDate
+    });
+};
