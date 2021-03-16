@@ -223,3 +223,66 @@ exports.generate_tournament_bracket = async (req, res) => {
       res.redirect("/tournaments/myTournaments");
     }
 }
+
+exports.get_one_tournament = async (req, res) => {
+    try {
+      const { tournamentID } = req.params;
+      const tournament = await Tournament.findOne({
+        _id: tournamentID
+      })
+        .populate("users", "-__v -password")
+        .populate({
+          path: "messages",
+          select: "-_id -__v -tournament",
+          populate: {
+            path: "user",
+            model: "users",
+            select: "-_id -__v -password"
+          }
+        });
+      //TODO: VALIDATION SHOULD BE IN ANOTHER FILE
+      if (!tournament) {
+        req.flash("error_msg", "Tournament Not Found");
+        return res.status(404).redirect("/tournaments/myTournaments");
+      }
+  
+      //FIND THE USERS ID IN THE TOURNAMENT
+      let found = false;
+      for (let i = 0; i < tournament.users.length; i++) {
+        //https://stackoverflow.com/questions/15724272/what-is-the-difference-between-id-and-id-in-mongoose
+        if (tournament.users[i].id === req.user.id) {
+          found = true;
+          break;
+        }
+      }
+  
+      if (!found) {
+        req.flash("error_msg", "You are not part of this tournament");
+        return res.status(401).redirect("/tournaments/myTournaments");
+      }
+  
+      //Reason why its .id and not _id is because .id is the getter method for the _id as its still treated as a mongo ObjectId
+      //https://stackoverflow.com/questions/15724272/what-is-the-difference-between-id-and-id-in-mongoose
+      //https://stackoverflow.com/questions/11637353/comparing-mongoose-id-and-strings
+      const isTournamentCreator = tournament.creator.equals(req.user._id)
+        ? true
+        : false;
+  
+      //GET THE FULL URL SO IT CAN BE USED IN THE TEXTBOX
+      //TODO: FIGURE OUT WHY THIS RENDERS THE URL WITH HTTP NOT HTTPS
+      const fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
+      res.render("tournaments/viewTournament", {
+        tournament: tournament,
+        tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
+        isTournamentCreator: isTournamentCreator,
+        bracketString: JSON.stringify(tournament.bracket)
+        /*REASON: Mustache will not allow front-end script to access the properties that are passed from the server
+          therefore I'm having to turn the JSON object to a string, then put the string in a <textarea/> element and hide import PropTypes from 'prop-types'
+          THIS IS WHY I HATE MUSTACHE
+        */
+      });
+    } catch (error) {
+      req.flash("error_msg", error.message);
+      return res.status(500).redirect("/tournaments/myTournaments");
+    }
+}
