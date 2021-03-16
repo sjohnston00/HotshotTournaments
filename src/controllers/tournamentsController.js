@@ -71,7 +71,7 @@ exports.get_create_tournament = (req, res) => {
       endDate: endDate
     });
 };
-
+// TODO: Review this function to see if it can be slimmed down
 exports.post_create_tournament = async (req, res) => {
     const { name, description, game, type, startDate, endDate, size } = req.body;
     //TODO: VALIDATE BODY PARAMS IN SEPERATE FILE
