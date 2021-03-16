@@ -1,4 +1,5 @@
 const moment = require('moment');
+const crypto = require("crypto");
 const Tournament = require("../models/Tournament");
 
 exports.get_all_users_tournaments = async (req, res) => {
@@ -164,4 +165,4 @@ exports.post_create_tournament = async (req, res) => {
       req.flash("error_msg", "Something went wrong, Please try again later");
       return res.redirect("/tournaments/createTournament");
     }
-  }
+}
