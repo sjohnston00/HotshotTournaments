@@ -373,3 +373,30 @@ exports.update_tournament = async (req, res) => {
       return res.redirect(`/tournaments/${updatedTournament._id}`);
     }
 }
+
+exports.delete_tournament =  async (req, res) => {
+    const { tournamentID } = req.params;
+    try {
+      //TODO: VALIDATE THAT THIS USER IS THE TOURNAMENT CREATOR
+      //TODO: VALIDATE ON DIFFERENT FILE
+      const deletedTournament = await Tournament.deleteOne({
+        _id: tournamentID,
+        users: req.user._id
+      });
+      if (deletedTournament.deletedCount === 0) {
+        req.flash("error_msg", "Something went wrong, please try again later");
+        return res.redirect("/tournaments/myTournaments");
+      }
+
+      // Delete all the messages associated with that tournament
+      await Message.deleteMany({
+        tournament: tournamentID
+      });
+      req.flash("success_msg", "Your tournament has been deleted");
+      return res.redirect("/tournaments/myTournaments");
+    } catch (error) {
+      console.error(error.message);
+      req.flash("error_msg", "Something went wrong please try again later");
+      return res.redirect(`/tournaments/myTournaments`);
+    }
+}
