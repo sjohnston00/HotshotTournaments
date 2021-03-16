@@ -26,100 +26,10 @@ router.get(
   controller.get_create_tournament
 );
 
-//CREATE A NEW TOURNAMENT
-router.post("/createTournament", ensureAuthenticated, async (req, res) => {
-  const { name, description, game, type, startDate, endDate, size } = req.body;
-  //TODO: VALIDATE BODY PARAMS IN SEPERATE FILE
-  if (
-    !name ||
-    !description ||
-    !game ||
-    !type ||
-    !startDate ||
-    !endDate ||
-    !size
-  ) {
-    req.flash(
-      "error_msg",
-      "Name, Description, Game, Type, Size, Start Date and End Date are required"
-    );
-    return res.redirect("/tournaments/createTournament");
-  }
-  const nowDate = new Date();
-  if (new Date(startDate) < nowDate) {
-    req.flash("error_msg", "Start date cannot be before today");
-    return res.redirect("/tournaments/createTournament");
-  } else if (new Date(endDate) < nowDate) {
-    req.flash("error_msg", "Ending Date cannot be before today");
-    return res.redirect("/tournaments/createTournament");
-  } else if (new Date(endDate) < new Date(startDate)) {
-    req.flash("error_msg", "Ending Date cannot be before Starting Date");
-    return res.redirect("/tournaments/createTournament");
-  }
-
-  //CREATE AN INVITE CODE AND SET THE EXPIRATION DATE TO END DATE
-  const buffer = crypto.randomBytes(6);
-  const token = buffer.toString("hex");
-
-  //CREATE THE TOURNAMENT BRACKET FROM THE TOURNAMENT limit ;
-  const bracket = {
-    teams: []
-  };
-  for (let index = 0; index < Number(size) / 2; index++) {
-    bracket.teams.push(Array(2).fill(null));
-  }
-
-  let newTournament;
-
-  //VALIDATE TOURNAMENT TYPE
-  //TODO: Change to SWTICH statement as it makes the code more versatile for the future
-  if (type === "single") {
-    newTournament = new Tournament({
-      name: name,
-      description: description,
-      game: game,
-      type: type,
-      bracket: bracket,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      messages: [],
-      users: [req.user._id],
-      creator: req.user._id,
-      inviteCode: token,
-      inviteCodeExpiryDate: new Date(endDate),
-      limit: Number(size)
-    });
-  } else if (type === "team") {
-    newTournament = new Tournament({
-      name: name,
-      description: description,
-      game: game,
-      type: type,
-      bracket: bracket,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      messages: [],
-      creator: req.user._id,
-      teams: [],
-      inviteCode: token,
-      inviteCodeExpiryDate: new Date(endDate),
-      limit: Number(size)
-    });
-  } else {
-    req.flash("error_msg", "Invalid Tournament Type");
-    return res.redirect("/tournaments/createTournament");
-  }
-
-  try {
-    const savedTournament = await newTournament.save();
-    req.flash("success_msg", "New Tournament Created");
-    return res.redirect(`/tournaments/${savedTournament._id}`);
-  } catch (error) {
-    console.error("\x1b[31m", `Error: ${error.message}`);
-    req.flash("error_msg", "Something went wrong, Please try again later");
-    return res.redirect("/tournaments/createTournament");
-  }
-});
+router.post(
+  "/createTournament",
+  ensureAuthenticated,
+  controller.post_create_tournament);
 
 router.get(
   "/generateTournamentBracket/:tournamentID",
