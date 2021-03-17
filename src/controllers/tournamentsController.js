@@ -389,9 +389,14 @@ exports.delete_tournament =  async (req, res) => {
       }
 
       // Delete all the messages associated with that tournament
-      await Message.deleteMany({
-        tournament: tournamentID
-      });
+      try {
+        await Message.deleteMany({
+          tournament: tournamentID
+        });
+      } catch (error) {
+        console.log("Could not find any messages associated with this tournament", error);
+      }
+
       req.flash("success_msg", "Your tournament has been deleted");
       return res.redirect("/tournaments/myTournaments");
     } catch (error) {
