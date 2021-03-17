@@ -1,4 +1,5 @@
 const Message = require("../models/Message");
+const Tournament = require("../models/Tournament");
 
 exports.post_message_to_tournament = async (req, res) => {
     const { tournamentID } = req.params;

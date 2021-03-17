@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const Tournament = require("../models/Tournament");
 const Message = require("../models/Message");
 const { ensureAuthenticated } = require("../config/auth");
 const controller = require("../controllers/messagesController");
