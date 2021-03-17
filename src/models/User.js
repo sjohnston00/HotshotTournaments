@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const passportLocalMongoose = require("passport-local-mongoose");
+const mongoose = require('mongoose')
+const passportLocalMongoose = require('passport-local-mongoose')
 
 const UserSchema = mongoose.Schema({
   name: {
@@ -35,9 +35,9 @@ const UserSchema = mongoose.Schema({
   emailConfirmationToken: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date
-});
+})
 
-mongoose.set("useCreateIndex", true);
-UserSchema.plugin(passportLocalMongoose, { usernameField: "email" });
+mongoose.set('useCreateIndex', true)
+UserSchema.plugin(passportLocalMongoose, { usernameField: 'email' })
 
-module.exports = mongoose.model("users", UserSchema);
+module.exports = mongoose.model('users', UserSchema)

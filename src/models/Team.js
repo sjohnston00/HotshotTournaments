@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose')
 
 const TeamSchema = mongoose.Schema({
   name: {
@@ -10,15 +10,15 @@ const TeamSchema = mongoose.Schema({
   tournament: {
     type: mongoose.Schema.Types.ObjectId,
     required: false,
-    ref: "tournament"
+    ref: 'tournament'
   },
   users: [
     {
       type: mongoose.Schema.Types.ObjectId,
       required: false,
-      ref: "users"
+      ref: 'users'
     }
   ]
-});
+})
 
-module.exports = mongoose.model("teams", TeamSchema);
+module.exports = mongoose.model('teams', TeamSchema)
