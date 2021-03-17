@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A web application that allows users to create and join tournaments with others",
   "main": "src/index.js",
+  "prettier": "prettier-config-standard",
   "scripts": {
     "dev": "nodemon -e js,mustache /src/index.js",
     "start": "node src/index.js",
