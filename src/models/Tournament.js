@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose')
 
 const TournamentSchema = mongoose.Schema({
   name: {
@@ -22,7 +22,7 @@ const TournamentSchema = mongoose.Schema({
   type: {
     type: String,
     required: true,
-    default: "single",
+    default: 'single',
     min: 5,
     max: 255
   },
@@ -35,7 +35,7 @@ const TournamentSchema = mongoose.Schema({
     //the user ID of the tournament creator
     type: mongoose.Schema.Types.ObjectId,
     required: false,
-    ref: "users"
+    ref: 'users'
   },
   dateCreated: {
     type: Date,
@@ -56,7 +56,7 @@ const TournamentSchema = mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       required: false,
-      ref: "messages"
+      ref: 'messages'
     }
   ],
 
@@ -64,7 +64,7 @@ const TournamentSchema = mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       required: false,
-      ref: "users"
+      ref: 'users'
     }
   ],
   limit: {
@@ -77,7 +77,7 @@ const TournamentSchema = mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       required: false,
-      ref: "teams"
+      ref: 'teams'
     }
   ],
   inviteCode: {
@@ -88,6 +88,6 @@ const TournamentSchema = mongoose.Schema({
     type: Date,
     required: false
   }
-});
+})
 
-module.exports = mongoose.model("tournaments", TournamentSchema);
+module.exports = mongoose.model('tournaments', TournamentSchema)
