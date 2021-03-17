@@ -25,3 +25,12 @@ exports.post_message_to_tournament = async (req, res) => {
         return res.redirect(`/tournaments/${tournamentID}`);
     }
 }
+
+exports.get_all_users_messages = async (req, res) => {
+    try {
+      const messages = await Message.find({ user: req.user._id });
+      res.status(200).send(messages);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+}

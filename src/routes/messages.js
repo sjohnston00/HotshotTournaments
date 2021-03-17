@@ -12,14 +12,7 @@ router.post(
 );
 
 //A users messages
-router.get("/myMessages", ensureAuthenticated, async (req, res) => {
-  try {
-    const messages = await Message.find({ user: req.user._id });
-    res.status(200).send(messages);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
+router.get("/myMessages", ensureAuthenticated, controller.get_all_users_messages);
 
 //update message
 router.put("/:messageId", ensureAuthenticated, async (req, res) => {
