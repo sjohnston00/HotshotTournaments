@@ -1,12 +1,9 @@
-const express = require('express')
-const router = express.Router()
-const Team = require('../models/Team')
-const Tournament = require('../models/Tournament')
-const { verifyToken } = require('../middlewares/verifyToken')
-
-router.get('/', verifyToken, async (req, res) => {
-  res.send('teams router')
-})
+const express = require("express");
+const router = express.Router();
+const Team = require("../models/Team");
+const Tournament = require("../models/Tournament");
+const { verifyToken } = require("../middlewares/verifyToken");
+const controller = require("../controllers/teamsController")
 
 //CREATE A TEAM
 router.post('/:tournamentID', verifyToken, async (req, res) => {
