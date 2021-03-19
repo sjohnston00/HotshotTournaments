@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A web application that allows users to create and join tournaments with others",
   "main": "src/index.js",
+  "prettier": "prettier-config-standard",
   "scripts": {
     "dev": "nodemon -e js,mustache /src/index.js",
     "start": "node src/index.js",
@@ -32,6 +33,8 @@
     "socket.io": "^4.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "prettier": "2.2.1"
+    "prettier-config-standard": "^4.0.0"
   }
 }
