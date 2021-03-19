@@ -1,1 +1,5 @@
-// Adding a comment here to test that git is not broken
+const Team = require("../models/Team")
+
+exports.root_get_response = async (req, res) => {
+  res.send("teams router")
+}
