@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose')
 const MessageSchema = mongoose.Schema({
   body: {
     type: String,
@@ -9,7 +9,7 @@ const MessageSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "user"
+    ref: 'user'
   },
   name: {
     type: String,
@@ -18,12 +18,12 @@ const MessageSchema = mongoose.Schema({
   tournament: {
     type: mongoose.Schema.Types.ObjectId,
     required: false,
-    ref: "tournament"
+    ref: 'tournament'
   },
   team: {
     type: mongoose.Schema.Types.ObjectId,
     required: false,
-    ref: "team"
+    ref: 'team'
   },
   isAnnouncement: {
     type: Boolean,
@@ -34,6 +34,6 @@ const MessageSchema = mongoose.Schema({
     type: Date,
     required: true
   }
-});
+})
 
-module.exports = mongoose.model("messages", MessageSchema);
+module.exports = mongoose.model('messages', MessageSchema)
