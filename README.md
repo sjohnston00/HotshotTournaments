@@ -2,7 +2,7 @@
 
 A web based tournament app, that allows users to create tournaments for any sports with discussion boards
 
-Hotshots Tournaments can be found online [here](https://hotshot-tournaments.herokuapp.com/tournaments/myTournaments).
+Hotshots Tournaments can be found online [here](https://hotshot-tournaments.herokuapp.com).
 
 ---
 
