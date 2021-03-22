@@ -29,6 +29,12 @@ If you are not a direct access contributor to this repository, then you will nee
 - clone the repo using the steps above.
 - go into the directory `cd HotshotTournaments/`
 - install the dependencies `npm install`
+  - you will need to provide your own `.env` at the root of the project that houses the secret keys to certain aspects of the application.
+  ```
+  PORT = <any-port-number> //if you do not provide this value the default is 3000
+  MONGO_URI= <your-mongoDB-connection-string>
+  SESSION_SECRET= <your-session-secret-key>
+  ```
 - run the development script `npm run dev`
 
 ---
