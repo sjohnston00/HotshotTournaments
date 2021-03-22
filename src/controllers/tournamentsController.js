@@ -125,42 +125,45 @@ exports.post_create_tournament = async (req, res) => {
   let newTournament
 
   //VALIDATE TOURNAMENT TYPE
-  //TODO: Change to SWTICH statement as it makes the code more versatile for the future
-  if (type === 'single') {
-    newTournament = new Tournament({
-      name: name,
-      description: description,
-      game: game,
-      type: type,
-      bracket: bracket,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      messages: [],
-      users: [req.user._id],
-      creator: req.user._id,
-      inviteCode: token,
-      inviteCodeExpiryDate: new Date(endDate),
-      limit: Number(size)
-    })
-  } else if (type === 'team') {
-    newTournament = new Tournament({
-      name: name,
-      description: description,
-      game: game,
-      type: type,
-      bracket: bracket,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      messages: [],
-      creator: req.user._id,
-      teams: [],
-      inviteCode: token,
-      inviteCodeExpiryDate: new Date(endDate),
-      limit: Number(size)
-    })
-  } else {
-    req.flash('error_msg', 'Invalid Tournament Type')
-    return res.redirect('/tournaments/createTournament')
+  switch (type) {
+    case 'single':
+      newTournament = new Tournament({
+        name: name,
+        description: description,
+        game: game,
+        type: type,
+        bracket: bracket,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        messages: [],
+        users: [req.user._id],
+        creator: req.user._id,
+        inviteCode: token,
+        inviteCodeExpiryDate: new Date(endDate),
+        limit: Number(size)
+      })
+      break
+
+      case 'team':
+        newTournament = new Tournament({
+          name: name,
+          description: description,
+          game: game,
+          type: type,
+          bracket: bracket,
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
+          messages: [],
+          creator: req.user._id,
+          teams: [],
+          inviteCode: token,
+          inviteCodeExpiryDate: new Date(endDate),
+          limit: Number(size)
+        })
+      break
+    default:
+      req.flash('error_msg', 'Invalid Tournament Type')
+      return res.redirect('/tournaments/createTournament')
   }
 
   try {
