@@ -19,13 +19,14 @@ exports.get_all_users_tournaments = async (req, res) => {
       })
     res.render('tournaments/myTournaments', { tournaments: tournaments })
   } catch (error) {
-    //THE FIRST PARAMETER OF THIS FUNCTION IS TO SET THE ERROR MESSAGE IN THE CONSOLE TO A RED COLOUR
-    //TODO: FOR THE SAKE OF NOT REPEATING CODE, TURN INTO A FUNCTION
-    //E.G handleError('/tournaments/myTournaments', error)
-    //First params is where to redirect to and second is the error object from the catch
-    console.error('\x1b[31m', `Error: ${error.message}`)
-    req.flash('error_msg', 'Something went wrong, Please try again later')
-    return res.redirect('/')
+    return handlers.response_handler(
+      '/',
+      'error_msg',
+      'Something went wrong, Please try again later',
+      req,
+      res,
+      error.message
+    )
   }
 }
 
