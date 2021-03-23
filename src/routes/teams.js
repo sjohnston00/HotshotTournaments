@@ -1,26 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const Team = require("../models/Team");
-const Tournament = require("../models/Tournament");
-const { verifyToken } = require("../middlewares/verifyToken");
+const { ensureAuthenticated } = require("../config/auth");
 const controller = require("../controllers/teamsController")
 
-//CREATE A TEAM
-router.post('/:tournamentID', verifyToken, async (req, res) => {
-  const { name } = req.body
-  const { tournamentID } = req.params
+//VIEW A TEAMS PAGE
+router.get('/view/:tournamentID/team/:teamID', ensureAuthenticated, controller.view_team_from_tournament)
 
-  try {
-    const team = new Team({
-      name: name,
-      tournament: tournamentID,
-      users: [req.user._id]
-    })
-    const createdTeam = await team.save()
-    res.send(createdTeam)
-  } catch (error) {
-    res.status(500).send(error.message)
-  }
-})
+//UPDATE A TEAM
+router.post('/update/:teamID', ensureAuthenticated, controller.create_new_team_post)
+
+//CREATE A TEAM
+router.post('/:tournamentID', ensureAuthenticated, controller.create_new_team_post)
 
 module.exports = router

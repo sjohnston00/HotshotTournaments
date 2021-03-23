@@ -1,0 +1,9 @@
+<form action="/tournaments/saveTournamentBracket/{{_id}}" method="POST">
+  <textarea id='tournament-bracket-textarea-2' name="bracket" class='d-none'>
+    {{bracketString}}
+  </textarea>
+  <button id='btn-edit-tournament' class="btn btn-primary">Edit Bracket</button>
+</form>
+{{#tournament}}
+  <a href='/tournaments/generateTournamentBracket/{{_id}}' class="btn btn-secondary">Generate Bracket</a>
+{{/tournament}}

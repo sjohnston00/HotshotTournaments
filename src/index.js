@@ -56,9 +56,9 @@ const messagesRouter = require('./routes/messages')
 const teamsRouter = require('./routes/teams')
 app.use('/tournaments', tournamentsRouter)
 app.use('/auth', authRouter)
-app.use('/api/users', usersRouter)
+app.use('/users', usersRouter)
 app.use('/messages', messagesRouter)
-app.use('/api/teams', teamsRouter)
+app.use('/teams', teamsRouter)
 
 //BASIC ROUTE
 app.get('/', (req, res) => {
