@@ -47,23 +47,17 @@ exports.post_register = async (req, res) => {
 
     const savedUser = await user.save()
 
-    handlers.response_handler(
+    return handlers.response_handler(
       '/auth/login',
       'success_msg',
       'Please login with your newly created account',
       req,
       res
     )
-
-    
   } catch (error) {
-    console.log(error)
-    req.flash('error', 'Cannot save user to database')
-    res.redirect('/auth/login')
-
-    handlers.response_handler(
+    return handlers.response_handler(
       '/auth/login',
-      'error',
+      'error_msg',
       'Cannot save user to database',
       req,
       res,
@@ -82,6 +76,12 @@ exports.authenticate_passport = passport.authenticate('local', {
 
 exports.get_logout = (req, res) => {
   req.logout()
-  req.flash('success_msg', 'You are now logged out') //give user a log out success message
-  res.redirect('/auth/login')
+
+  return handlers.response_handler(
+    '/auth/login',
+    'success_msg',
+    'You are now logged out',
+    req,
+    res
+  )
 }
