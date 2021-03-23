@@ -10,6 +10,7 @@
       <p class="small">Start Date: {{startDate}}</p>
       <p class="small">End Date: {{endDate}}</p>
       <p class="small">Tournament Size: {{limit}}</p>
+      
       <h2>Bracket</h2>
       {{> partials/messages}}
       <div
@@ -22,17 +23,12 @@
         </textarea>
         <p id="tournamentID" class="d-none">{{_id}}</p>
       {{#isTournamentCreator}}
-      <form action="/tournaments/saveTournamentBracket/{{_id}}" method="POST">
-        <textarea id='tournament-bracket-textarea-2' name="bracket" class='d-none'>
-          {{bracketString}}
-        </textarea>
-      <button id='btn-edit-tournament' class="btn btn-primary">Edit Bracket</button>
-      </form>
-      {{#tournament}}
-      <a href='/tournaments/generateTournamentBracket/{{_id}}' class="btn btn-secondary">Generate Bracket</a>
-      {{/tournament}}
+        {{> partials/tournaments/tournamentCreator}}
       {{/isTournamentCreator}}
 
+      {{#isTeamTournament}}
+        {{> partials/tournaments/teams}}
+      {{/isTeamTournament}}
       <h4>Users</h4>
       <div
         class="d-flex flex-wrap justify-content-space-around align-items-center my-4"
@@ -81,142 +77,8 @@
       <a href="/tournaments/myTournaments" class="btn btn-secondary mx-4"
         >Back</a
       >
-      {{#isTournamentCreator}}
-      <!-- Button trigger modal -->
-      {{#tournament}}
-      <button
-        type="button"
-        class="btn btn-danger"
-        data-toggle="modal"
-        data-target="#deleteModal"
-      >
-        Delete Tournament
-      </button>
-
-      <!-- Modal -->
-      <div
-        class="modal fade"
-        id="deleteModal"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="deleteModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="deleteModalLabel">Delete {{name}}</h5>
-              <button
-                type="button"
-                class="close"
-                data-dismiss="modal"
-                aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              Are you sure would like to delete this tournament?
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal"
-              >
-                Close
-              </button>
-              <a
-                href="/tournaments/deleteTournament/{{_id}}"
-                class="btn btn-danger"
-                >Delete</a
-              >
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Button trigger modal -->
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-toggle="modal"
-        data-target="#inviteModal"
-      >
-        Add Users
-      </button>
-
-      <!-- Modal -->
-      <div
-        class="modal fade"
-        id="inviteModal"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="inviteModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="inviteModalLabel">Add users</h5>
-              <button
-                type="button"
-                class="close"
-                data-dismiss="modal"
-                aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <p>
-                Copy this link and see it to the people you would like to invite
-                to the tournament
-              </p>
-              <div class="input-group mb-3">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="tournamentInviteLink"
-                  value="{{tournamentInviteLink}}"
-                  aria-label="Tournament Invite Link"
-                  aria-describedby="A textbox so users can copy the tournament link"
-                  readonly
-                />
-                <div class="input-group-append">
-                  <button
-                    class="btn btn-outline-primary"
-                    onclick="copyText()"
-                    id="copy-link-btn"
-                  >
-                    <svg
-                      height="1em"
-                      width="1em "
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 448 512"
-                    >
-                      <path
-                        d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <input type="text" value="{{_id}}" id="tournamentID" class="d-none"/>
-    {{/tournament}}
+    {{#isTournamentCreator}}
+      {{> partials/tournaments/tournamentActions}}  
     {{/isTournamentCreator}} 
 
     <script src="/scripts/tournamentMessaging.js" defer></script>

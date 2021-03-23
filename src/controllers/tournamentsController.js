@@ -157,6 +157,7 @@ exports.post_create_tournament = async (req, res) => {
           messages: [],
           creator: req.user._id,
           teams: [],
+          users: [req.user._id],
           inviteCode: token,
           inviteCodeExpiryDate: new Date(endDate),
           limit: Number(size)
@@ -277,8 +278,7 @@ exports.get_one_tournament = async (req, res) => {
     //https://stackoverflow.com/questions/11637353/comparing-mongoose-id-and-strings
     const isTournamentCreator = tournament.creator.equals(req.user._id)
       ? true
-      : false
-
+      : false;
     //GET THE FULL URL SO IT CAN BE USED IN THE TEXTBOX
     //TODO: FIGURE OUT WHY THIS RENDERS THE URL WITH HTTP NOT HTTPS
     const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl
@@ -286,6 +286,7 @@ exports.get_one_tournament = async (req, res) => {
       tournament: tournament,
       tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
       isTournamentCreator: isTournamentCreator,
+      isTeamTournament: tournament.type === 'team' ? true : false,
       bracketString: JSON.stringify(tournament.bracket)
       /*REASON: Mustache will not allow front-end script to access the properties that are passed from the server
           therefore I'm having to turn the JSON object to a string, then put the string in a <textarea/> element and hide import PropTypes from 'prop-types'
