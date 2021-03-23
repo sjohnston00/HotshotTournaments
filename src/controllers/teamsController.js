@@ -1,3 +1,4 @@
+const handlers = require('../middlewares/handlers')
 const Team = require("../models/Team")
 const Tournament = require("../models/Tournament")
 
@@ -10,10 +11,7 @@ exports.create_new_team_post = async (req,res) => {
 
   try {
     const tournament = await Tournament.findById(tournamentID);
-    if (!tournament) {
-      req.flash('error_msg', 'Not Tournament Found')
-      return res.redirect(`/tournaments/myTournaments`)
-    }
+
     try {
       const team = new Team({
         name: newTeam,
@@ -26,19 +24,32 @@ exports.create_new_team_post = async (req,res) => {
       await tournament.save();
       
     } catch (error) {
-      console.error(error.message)
-      req.flash('error_msg', 'Something went wrong, please try again later')
-      return res.redirect(`/tournaments/${tournamentID}`)
+      return handlers.response_handler(
+        `/tournaments/${tournamentID}`,
+        'error_msg',
+        'Something went wrong, please try again later',
+        req,
+        res,
+        error.message
+      )
     }
   } catch (error) {
-    console.error(error.message)
-    req.flash('error_msg', 'Something went wrong, please try again later')
-    return res.redirect(`/tournaments/${tournamentID}`)
+    return handlers.response_handler(
+      `/tournaments/${tournamentID}`,
+      'error_msg',
+      'Something went wrong, please try again later',
+      req,
+      res,
+      error.message
+    )
   }
-
-  req.flash('success_msg', 'New Team Created')
-  res.redirect(`/tournaments/${tournamentID}`)
-
+  return handlers.response_handler(
+    `/tournaments/${tournamentID}`,
+    'success_msg',
+    'New team created!',
+    req,
+    res
+  )
   //Add this new team to the tournament
 }
 
