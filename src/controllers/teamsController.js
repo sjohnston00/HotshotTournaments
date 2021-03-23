@@ -10,7 +10,7 @@ exports.create_new_team_post = async (req,res) => {
   const { tournamentID } = req.params
 
   try {
-    const tournament = await Tournament.findById('test_data');
+    const tournament = await Tournament.findById(tournamentID);
 
     try {
       const team = new Team({
