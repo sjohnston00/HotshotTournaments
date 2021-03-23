@@ -61,7 +61,7 @@ exports.post_register = async (req, res) => {
       'Cannot save user to database',
       req,
       res,
-      error
+      error.message
     )
   }
 }
