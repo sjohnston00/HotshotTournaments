@@ -1,4 +1,5 @@
 const User = require('../models/User')
+const handlers = require('../middlewares/handlers')
 const bcrypt = require('bcryptjs')
 const passport = require('passport')
 
@@ -8,22 +9,28 @@ exports.post_register = async (req, res) => {
   //VALIDATE BODY
   const { name, email, password } = req.body
 
-  if (!name || !email || !password) {
-    req.flash('error_msg', 'Please fill in all the fields')
-    return res.redirect('/auth/register')
-  }
+  if (!name || !email || !password) return handlers.handle_error(
+    '/auth/register',
+    'Please fill in all the fields',
+    req,
+    res
+  )
 
-  if (password.length < 6) {
-    req.flash('error_msg', 'Password must be at least 6 characters')
-    return res.redirect('/auth/register')
-  }
+  if (password.length < 6) return handlers.handle_error(
+    '/auth/register',
+    'Password must be at least 6 characters',
+    req,
+    res
+  )
 
   //VALIDATE THAT THE EMAIL DOESN'T ALREADY EXIST
   const userWithEmail = await User.findOne({ email: email })
-  if (userWithEmail) {
-    req.flash('error_msg', `A user with ${email} already exists`)
-    return res.redirect('/auth/register')
-  }
+  if (userWithEmail) return handlers.handle_error(
+    '/auth/register',
+    `A user with ${email} already exists`,
+    req,
+    res
+  )
 
   const salt = await bcrypt.genSalt(10)
   const hashedPassword = await bcrypt.hash(password, salt)
