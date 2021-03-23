@@ -386,28 +386,37 @@ exports.update_tournament = async (req, res) => {
 
 exports.delete_tournament = async (req, res) => {
   const { tournamentID } = req.params
+
+  //TODO: VALIDATE THAT THIS USER IS THE TOURNAMENT CREATOR
   try {
-    //TODO: VALIDATE THAT THIS USER IS THE TOURNAMENT CREATOR
-    //TODO: VALIDATE ON DIFFERENT FILE
-    const deletedTournament = await Tournament.deleteOne({
-      _id: tournamentID,
-      users: req.user._id
-    })
-    if (deletedTournament.deletedCount === 0) {
-      req.flash('error_msg', 'Something went wrong, please try again later')
+    const tournament = await Tournament.findById(tournamentID);
+    if (!tournament) {
+      req.flash('error_msg', 'Could not find tournament')
       return res.redirect('/tournaments/myTournaments')
     }
-
-    // Delete all the messages associated with that tournament
+    if (!tournament.creator.equals(req.user._id)) {
+      req.flash('error_msg', 'You are not authorized to delete this tournament')
+      return res.redirect('/tournaments/myTournaments')
+    }
+  } catch (error) {
+    console.error(error.message);
+    req.flash('error_msg', 'Something went wrong please try again later')
+    return res.redirect('/tournaments/myTournaments')
+  }
+  
+  try {
+    const deletedTournament = await Tournament.deleteOne({
+      _id: tournamentID,
+    })
     try {
+      // Delete all the messages associated with that tournament
       await Message.deleteMany({
         tournament: tournamentID
       })
     } catch (error) {
-      console.log(
-        'Could not find any messages associated with this tournament',
-        error
-      )
+      console.error('Could not find any messages associated with this tournament',error.message)
+      req.flash('error_msg', 'Something went wrong, please try again later')
+      return res.redirect('/tournaments/myTournaments')
     }
 
     req.flash('success_msg', 'Your tournament has been deleted')
