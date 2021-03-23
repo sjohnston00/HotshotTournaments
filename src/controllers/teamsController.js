@@ -18,7 +18,7 @@ exports.create_new_team_post = async (req,res) => {
       const team = new Team({
         name: newTeam,
         tournament: tournamentID,
-        users: [req.user._id],
+        users: [],
         limit: tournament.teamsSize || 5
       })
       const createdTeam = await team.save()

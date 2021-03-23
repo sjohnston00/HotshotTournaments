@@ -243,6 +243,7 @@ exports.get_one_tournament = async (req, res) => {
       _id: tournamentID
     })
       .populate('users', '-__v -password')
+      .populate('teams')
       .populate({
         path: 'messages',
         select: '-_id -__v -tournament',
@@ -287,6 +288,7 @@ exports.get_one_tournament = async (req, res) => {
       tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
       isTournamentCreator: isTournamentCreator,
       isTeamTournament: tournament.type === 'team' ? true : false,
+      teamsNotEqualsTournamentSize: tournament.teams.length !== tournament.limit ? true : false,
       bracketString: JSON.stringify(tournament.bracket)
       /*REASON: Mustache will not allow front-end script to access the properties that are passed from the server
           therefore I'm having to turn the JSON object to a string, then put the string in a <textarea/> element and hide import PropTypes from 'prop-types'

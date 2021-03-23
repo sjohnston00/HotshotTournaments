@@ -1,18 +1,20 @@
 <h4>Teams</h4>
 {{#tournament}}
   {{#teams}}
-    <p>The object of teams<p>
+    <p>{{name}}<p>
   {{/teams}}
   {{^teams}}
     <p class="text-danger">There are no teams yet</p>
-    <button
+  {{/teams}}
+  {{#teamsNotEqualsTournamentSize}}
+  <button
     type="button"
     class="btn btn-primary"
     data-toggle="modal"
     data-target="#teamsModal"
-  >
-    Add Team
-  </button>
+    >
+      Add Team
+    </button>
 
   <!-- Modal -->
   <div
@@ -70,5 +72,6 @@
     </div>
   </div>
 </div>
-  {{/teams}}
+{{/teamsNotEqualsTournamentSize}}
+
 {{/tournament}}
