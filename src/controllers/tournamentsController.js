@@ -1,6 +1,7 @@
 const moment = require('moment')
 const crypto = require('crypto')
 const Tournament = require('../models/Tournament')
+const Message = require('../models/Message')
 
 exports.get_all_users_tournaments = async (req, res) => {
   try {
@@ -389,20 +390,21 @@ exports.delete_tournament = async (req, res) => {
   try {
     //TODO: VALIDATE THAT THIS USER IS THE TOURNAMENT CREATOR
     //TODO: VALIDATE ON DIFFERENT FILE
-    const deletedTournament = await Tournament.deleteOne({
-      _id: tournamentID,
-      users: req.user._id
-    })
-    if (deletedTournament.deletedCount === 0) {
-      req.flash('error_msg', 'Something went wrong, please try again later')
-      return res.redirect('/tournaments/myTournaments')
-    }
+    // const deletedTournament = await Tournament.deleteOne({
+    //   _id: tournamentID,
+    //   users: req.user._id
+    // })
+    // if (deletedTournament.deletedCount === 0) {
+    //   req.flash('error_msg', 'Something went wrong, please try again later')
+    //   return res.redirect('/tournaments/myTournaments')
+    // }
 
     // Delete all the messages associated with that tournament
     try {
-      await Message.deleteMany({
+      const messages = await Message.deleteMany({
         tournament: tournamentID
       })
+      console.log(messages);
     } catch (error) {
       console.log(
         'Could not find any messages associated with this tournament',
