@@ -1,6 +1,7 @@
 const moment = require('moment')
 const crypto = require('crypto')
 const Tournament = require('../models/Tournament')
+const Message = require('../models/Message')
 
 exports.get_all_users_tournaments = async (req, res) => {
   try {
@@ -410,9 +411,10 @@ exports.delete_tournament = async (req, res) => {
     })
     try {
       // Delete all the messages associated with that tournament
-      await Message.deleteMany({
+      const messages = await Message.deleteMany({
         tournament: tournamentID
       })
+      console.log(messages);
     } catch (error) {
       console.error('Could not find any messages associated with this tournament',error.message)
       req.flash('error_msg', 'Something went wrong, please try again later')
