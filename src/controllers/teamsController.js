@@ -43,10 +43,13 @@ exports.create_new_team_post = async (req,res) => {
       error.message
     )
   }
-
-  req.flash('success_msg', 'New Team Created')
-  res.redirect(`/tournaments/${tournamentID}`)
-
+  return handlers.response_handler(
+    `/tournaments/${tournamentID}`,
+    'success_msg',
+    'New team created!',
+    req,
+    res
+  )
   //Add this new team to the tournament
 }
 
