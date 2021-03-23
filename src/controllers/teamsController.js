@@ -1,3 +1,4 @@
+const handlers = require('../middlewares/handlers')
 const Team = require("../models/Team")
 const Tournament = require("../models/Tournament")
 
@@ -9,11 +10,8 @@ exports.create_new_team_post = async (req,res) => {
   const { tournamentID } = req.params
 
   try {
-    const tournament = await Tournament.findById(tournamentID);
-    if (!tournament) {
-      req.flash('error_msg', 'Not Tournament Found')
-      return res.redirect(`/tournaments/myTournaments`)
-    }
+    const tournament = await Tournament.findById('test_data');
+
     try {
       const team = new Team({
         name: newTeam,
