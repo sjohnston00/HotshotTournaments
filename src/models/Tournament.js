@@ -80,6 +80,10 @@ const TournamentSchema = mongoose.Schema({
       ref: 'teams'
     }
   ],
+  teamsSize: {
+    type: Number,
+    required: false,
+  },
   inviteCode: {
     type: String,
     required: false

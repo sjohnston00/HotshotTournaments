@@ -18,7 +18,11 @@ const TeamSchema = mongoose.Schema({
       required: false,
       ref: 'users'
     }
-  ]
+  ],
+  limit: {
+    type: Number,
+    required: true,
+  }
 })
 
 module.exports = mongoose.model('teams', TeamSchema)
