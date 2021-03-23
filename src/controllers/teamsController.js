@@ -24,9 +24,14 @@ exports.create_new_team_post = async (req,res) => {
       await tournament.save();
       
     } catch (error) {
-      console.error(error.message)
-      req.flash('error_msg', 'Something went wrong, please try again later')
-      return res.redirect(`/tournaments/${tournamentID}`)
+      return handlers.response_handler(
+        `/tournaments/${tournamentID}`,
+        'error_msg',
+        'Something went wrong, please try again later',
+        req,
+        res,
+        error.message
+      )
     }
   } catch (error) {
     console.error(error.message)
