@@ -1,3 +1,4 @@
+const handlers = require('../middlewares/handlers')
 const moment = require('moment')
 const crypto = require('crypto')
 const Tournament = require('../models/Tournament')
