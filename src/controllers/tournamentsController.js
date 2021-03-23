@@ -285,6 +285,7 @@ exports.get_one_tournament = async (req, res) => {
     const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl
     res.render('tournaments/viewTournament', {
       tournament: tournament,
+      tournamentID: tournament._id,
       tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
       isTournamentCreator: isTournamentCreator,
       isTeamTournament: tournament.type === 'team' ? true : false,
