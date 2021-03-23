@@ -38,32 +38,58 @@ exports.add_user_to_tournament = async (req, res) => {
       inviteCode: token
     })
 
-    if (!tournament) {
-      req.flash('error_msg', 'Tournament Not Found')
-      return res.redirect(`/tournaments/myTournaments`)
-    }
-    if (tournament.users.includes(req.user._id)) {
-      req.flash('error_msg', 'You are already part of this tournament')
-      return res.redirect(`/tournaments/${tournamentID}`)
-    }
+    if (!tournament) return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Tournament not found',
+      req,
+      res
+    )
+    if (tournament.users.includes(req.user._id)) return handlers.response_handler(
+      `/tournaments/${tournamentID}`,
+      'error_msg',
+      'You are already involved with this tournament',
+      req,
+      res
+    )
+  
     if (tournament.users.length >= tournament.limit) {
-      req.flash('error_msg', 'Tournament is at full capacity')
-      return res.redirect(`/tournaments/myTournaments`)
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'Tournament has reached maximum capacity',
+        req,
+        res
+      )
     }
     const today = new Date()
-    if (tournament.endDate < today) {
-      req.flash('error_msg', 'Tournament has already ended')
-      return res.redirect(`/tournaments/myTournaments`)
-    }
-    //ADD THE USER ID TO THE TOURNAMENT
+
+    if (tournament.endDate < today) return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Tournament has already ended',
+      req,
+      res
+    )
+    // Add user to the tournament via ID
     tournament.users.push(req.user._id)
     await tournament.save()
-    req.flash('success_msg', 'You are now part of this tournament')
-    return res.redirect(`/tournaments/${tournamentID}`)
+    return handlers.response_handler(
+      `/tournaments/${tournamentID}`,
+      'success_msg',
+      'You are now part of this tournament',
+      req,
+      res
+    )
   } catch (error) {
-    console.error('\x1b[31m', `Error: ${error.message}`)
-    req.flash('error_msg', 'Something went wrong, Please try again later')
-    return res.redirect('/tournaments/myTournaments')
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Something went wrong, Please try again later',
+      req,
+      res,
+      error.message
+    )
   }
 }
 
