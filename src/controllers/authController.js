@@ -9,15 +9,17 @@ exports.post_register = async (req, res) => {
   //VALIDATE BODY
   const { name, email, password } = req.body
 
-  if (!name || !email || !password) return handlers.handle_error(
+  if (!name || !email || !password) return handlers.response_handler(
     '/auth/register',
+    'error_msg',
     'Please fill in all the fields',
     req,
     res
   )
 
-  if (password.length < 6) return handlers.handle_error(
+  if (password.length < 6) return handlers.response_handler(
     '/auth/register',
+    'error_msg',
     'Password must be at least 6 characters',
     req,
     res
@@ -25,8 +27,9 @@ exports.post_register = async (req, res) => {
 
   //VALIDATE THAT THE EMAIL DOESN'T ALREADY EXIST
   const userWithEmail = await User.findOne({ email: email })
-  if (userWithEmail) return handlers.handle_error(
+  if (userWithEmail) return handlers.response_handler(
     '/auth/register',
+    'error_msg',
     `A user with ${email} already exists`,
     req,
     res
