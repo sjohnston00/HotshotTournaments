@@ -46,12 +46,29 @@ exports.post_register = async (req, res) => {
     })
 
     const savedUser = await user.save()
-    req.flash('success_msg', 'Please login with your newly created account')
-    res.redirect('/auth/login')
+
+    handlers.response_handler(
+      '/auth/login',
+      'success_msg',
+      'Please login with your newly created account',
+      req,
+      res
+    )
+
+    
   } catch (error) {
     console.log(error)
     req.flash('error', 'Cannot save user to database')
     res.redirect('/auth/login')
+
+    handlers.response_handler(
+      '/auth/login',
+      'error',
+      'Cannot save user to database',
+      req,
+      res,
+      error
+    )
   }
 }
 
