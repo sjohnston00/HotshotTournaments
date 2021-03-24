@@ -18,6 +18,26 @@ exports.get_all_users_tournaments = async (req, res) => {
         }
       })
     res.render('tournaments/myTournaments', { tournaments: tournaments })
+    tournaments.forEach(tournament => {
+      const parsedStartDate = moment(tournament.startDate)
+      .utc()
+      .local()
+      .format('DD/MM/YY, HH:mm')
+
+      const parsedEndDate = moment(tournament.endDate)
+      .utc()
+      .local()
+      .format('DD/MM/YY, HH:mm')
+
+      const parsedDateCreated = moment(tournament.dateCreated)
+      .utc()
+      .local()
+      .format('DD/MM/YY')
+
+      tournament.parsedStartDate = parsedStartDate
+      tournament.parsedEndDate = parsedEndDate
+      tournament.parsedDateCreated = parsedDateCreated
+    })
   } catch (error) {
     return handlers.response_handler(
       '/',
