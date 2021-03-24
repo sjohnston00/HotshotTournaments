@@ -7,24 +7,24 @@
     {{> partials/messages}}
     <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
     {{#tournaments}}
-      <div class="card mr-2" style="width: 20rem">
+      <div class="card bg-light mr-2" style="width: 20rem">
         <div class="card-body">
-          <h5 class="card-title">
-            {{name}}
-            <span class="badge-primary badge-pill small">{{game}}</span>
-          </h5>
+          <div class="d-flex align-items-center justify-content-between">
+            <h5 class="card-title">{{name}}</h5>
+            <span class="badge badge-info small px-1 card-title">{{type}}</span>
+          </div>
           <p class="card-text">
             {{description}}
           </p>
           <p class="card-text">
-            <b>Start Date: </b> {{parsedStartDate}}
+            <b>Begins: </b> {{parsedStartDate}}
           </p>
           <p class="card-text">
-            <b>End Date: </b> {{parsedEndDate}}
+            <b>Ends: </b> {{parsedEndDate}}
           </p>
 
           <p class="card-text">
-            <b>Date Created: </b> {{parsedDateCreated}}
+            <b>Created: </b> {{parsedDateCreated}}
           </p>
           <a href="/tournaments/{{_id}}" class="btn btn-primary">View</a>
         </div>
