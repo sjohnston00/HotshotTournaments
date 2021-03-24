@@ -17,7 +17,6 @@ exports.get_all_users_tournaments = async (req, res) => {
           select: '-_id -__v -password'
         }
       })
-    res.render('tournaments/myTournaments', { tournaments: tournaments })
     tournaments.forEach(tournament => {
       const parsedStartDate = moment(tournament.startDate)
       .utc()
@@ -38,6 +37,7 @@ exports.get_all_users_tournaments = async (req, res) => {
       tournament.parsedEndDate = parsedEndDate
       tournament.parsedDateCreated = parsedDateCreated
     })
+    res.render('tournaments/myTournaments', { tournaments: tournaments })
   } catch (error) {
     return handlers.response_handler(
       '/',
