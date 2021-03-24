@@ -1,5 +1,5 @@
 {{> partials/head}}
-
+{{> partials/navbar}}
 <body>
   <div class="container">
     <h1 class="text-center">My Tournaments</h1>
@@ -34,17 +34,5 @@
       <p class="text-primary">You currently do not have any tournaments, why not created one!</p>
     {{/tournaments}}
     </div>
-  </div>
-
-  <div class="container">
-    <h3 class="text-center">Create a tournament</h3>
-    <a href="/tournaments/createTournament" class="btn btn-large btn-primary">Create</a>
-    <hr>
-  </div>
-
-  <div class="container">
-    <a href="/auth/logout" class="btn btn-danger">Logout</a>
-    <a href="/" class="btn btn-secondary">Home</a>
-    <hr>
   </div>
 </body>
