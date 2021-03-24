@@ -8,28 +8,32 @@
     {{> partials/messages}}
     <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
     {{#tournaments}}
-      <div class="card bg-light mr-2" style="width: 20rem">
-        <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between">
-            <h5 class="card-title">{{name}}</h5>
-            <span class="badge badge-info small px-1 card-title">{{type}}</span>
+      <a class="card bg-light mr-2 text-decoration-none text-muted my-3" style="width: 20rem" href="/tournaments/{{_id}}">
+        <div class="card-header">
+          <div class="d-flex align-items-center justify-content-between card-title">
+            <h3 class="">{{name}}</h3>
+            <span class="badge badge-info small px-1">{{type}}</span>
           </div>
-          <p class="card-text">
-            {{description}}
-          </p>
-          <p class="card-text">
-            <b>Begins: </b> {{parsedStartDate}}
-          </p>
-          <p class="card-text">
-            <b>Ends: </b> {{parsedEndDate}}
-          </p>
-
-          <p class="card-text">
-            <b>Created: </b> {{parsedDateCreated}}
-          </p>
-          <a href="/tournaments/{{_id}}" class="btn btn-primary">View</a>
+          <!-- No need to display the description in the card - that should be reserved for on the main page -->
+          <h5 class="card-text font-italic">
+            {{game}}
+          </h5>
         </div>
-      </div>
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between card-text">
+            <p class="">Begins</p>
+            <p class="">{{parsedStartDate}}</p>
+          </div>
+          <div class="d-flex align-items-center justify-content-between card-text">
+            <p class="">Ends</p>
+            <p class="">{{parsedEndDate}}</p>
+          </div>
+          <div class="d-flex align-items-center justify-content-between card-text">
+            <p class="">Created</p>
+            <p class="">{{parsedDateCreated}}</p>
+          </div>
+        </div>
+      </a>
     {{/tournaments}}
     {{^tournaments}}
       <p class="text-primary">You currently do not have any tournaments, why not created one!</p>
