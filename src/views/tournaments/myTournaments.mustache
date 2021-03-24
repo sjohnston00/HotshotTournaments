@@ -1,6 +1,6 @@
 {{> partials/head}}
-{{> partials/navbar}}
-<body>
+<body class="d-flex flex-column min-vh-100">
+  {{> partials/navbar}}
   <div class="container">
     <header class="d-flex align-items-center justify-content-center py-5 border-bottom">
       <h1 class="text-center">My Tournaments</h1>
@@ -40,4 +40,5 @@
     {{/tournaments}}
     </div>
   </div>
+  {{> partials/footer}}
 </body>
