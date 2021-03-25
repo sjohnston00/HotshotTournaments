@@ -1,0 +1,21 @@
+{{> partials/head}}
+<body>
+  <div class="container">
+    {{#tournament}}
+      <h1>
+        {{name}} <span class="badge-primary badge-pill small">{{game}}</span>
+      </h1>
+      <p class="small">Type: {{type}}</p>
+      <p class="small">Description: {{description}}</p>
+      <p class="small">Start Date: {{startDate}}</p>
+      <p class="small">End Date: {{endDate}}</p>
+      <p class="small">Tournament Size: {{limit}}</p>
+    {{/tournament}}
+    {{#team}}
+      <h2>{{name}}</h2>
+    {{/team}}
+    {{#tournament}}
+      <a href="/tournaments/{{_id}}" class="btn btn-outline-secondary">Back</a>
+    {{/tournament}}
+  </div>
+</body>

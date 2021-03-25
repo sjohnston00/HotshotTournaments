@@ -24,6 +24,8 @@ exports.create_new_team_post = async (req,res) => {
       const createdTeam = await team.save()
       tournament.teams.push(createdTeam._id)
       await tournament.save();
+      req.flash('success_msg', `${createdTeam.name} has been created`)
+      return res.redirect(`/tournaments/${tournamentID}`)
       
     } catch (error) {
       console.error(error.message)
@@ -36,14 +38,21 @@ exports.create_new_team_post = async (req,res) => {
     return res.redirect(`/tournaments/${tournamentID}`)
   }
 
-  req.flash('success_msg', 'New Team Created')
-  res.redirect(`/tournaments/${tournamentID}`)
 
-  //Add this new team to the tournament
 }
 
 exports.view_team_from_tournament = async (req, res) => {
   const { tournamentID, teamID } = req.params
 
-  res.send(`Viewing Team page from tournament: ${tournamentID} and team is: ${teamID}`)
+  try {
+    const team = await Team.findById(teamID).populate('users');
+    const tournament = await Tournament.findById(tournamentID);
+    res.render('teams/view',{
+      tournament: tournament,
+      team: team
+    })
+  } catch (error) {
+    
+  }
+
 }
