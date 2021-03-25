@@ -18,7 +18,6 @@ exports.get_all_users_tournaments = async (req, res) => {
         }
       })
     memberTournaments.forEach((tournament) => {
-      console.log(tournament.creator[0] + '  ' + req.user._id)
       tournament.parsedStartDate = moment(tournament.startDate)
         .utc()
         .local()
@@ -37,7 +36,6 @@ exports.get_all_users_tournaments = async (req, res) => {
     const userCreatedTournaments = memberTournaments.filter(
       (tournament) => String(tournament.creator) === String(req.user._id)
     )
-    console.log(userCreatedTournaments)
     res.render('tournaments/myTournaments', {
       memberTournaments: memberTournaments,
       userCreatedTournaments: userCreatedTournaments
