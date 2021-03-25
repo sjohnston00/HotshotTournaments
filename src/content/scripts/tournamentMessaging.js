@@ -1,4 +1,4 @@
-const deployed = false;
+const deployed = true;
 const connectionString = deployed
   ? "https://hotshot-tournaments.herokuapp.com/"
   : "http://localhost:8000";
@@ -7,7 +7,6 @@ const socket = io.connect(connectionString);
 const form = document.querySelector("#send-message-form");
 const message = document.querySelector("#input-message");
 const tournamentID = document.querySelector("#tournamentID").textContent;
-const teamID = document.querySelector("#teamID").textContent;
 
 socket.on("newMessage", (message) => {
   const messagesContainer = document.querySelector("#messages-container");

@@ -47,7 +47,7 @@ exports.post_message_to_team = async (req,res) => {
 
   try {
     const savedMessage = await message.save()
-    const updatedTeam = await Team.updateOne(
+    await Team.updateOne(
       { _id: teamID, tournament: tournamentID },
       { $push: { messages: savedMessage._id } }
     )
