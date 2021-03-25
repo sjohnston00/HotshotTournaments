@@ -68,7 +68,14 @@ exports.view_team_from_tournament = async (req, res) => {
       team: team
     })
   } catch (error) {
-    
+    return handlers.response_handler(
+      `/tournaments/${tournamentID}`,
+      'error_msg',
+      'Something went wrong, please try again later',
+      req,
+      res,
+      error.message
+    )
   }
 
 }

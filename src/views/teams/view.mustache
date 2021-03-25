@@ -15,25 +15,23 @@
     {{/tournament}}
     {{#team}}
       <h2>{{name}}</h2>
-    {{/team}}
-
-    <h4>Messages Board</h4>
-    <div id="messages-container" class="mb-3">
+      <h4>Messages Board</h4>
+      <div id="messages-container" class="mb-3">
         {{#messages}} 
           {{#user}} 
-        <div class="card mb-3">
-          <div class="card-body">
-            <h5 class="card-title">{{name}}</h5>
-            <p class="card-title">{{body}}</p>
-          </div>
-        </div>
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">{{name}}</h5>
+                <p class="card-title">{{body}}</p>
+              </div>
+            </div>
           {{/user}}
         {{/messages}} 
-          {{^messages}}
-            <p class="text-danger">
-              Currently there are no messages in this tournament
-            </p>
-          {{/messages}} 
+        {{^messages}}
+          <p class="text-danger">
+            Currently there are no messages in this tournament
+          </p>
+        {{/messages}} 
       </div>
       <form id="send-message-form" action="/tournaments/{{_id}}/addMessage" method="POST">
         <div class="input-group mb-3">
@@ -43,6 +41,8 @@
           </div>
         </div>
       </form>
+    {{/team}}
+
     {{#tournament}}
       <a href="/tournaments/{{_id}}" class="btn btn-outline-secondary">Back</a>
     {{/tournament}}
