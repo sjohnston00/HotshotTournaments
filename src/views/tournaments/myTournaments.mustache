@@ -1,44 +1,36 @@
 {{> partials/head}}
 <body class="d-flex flex-column min-vh-100">
   {{> partials/navbar}}
+  <header class="d-flex align-items-center justify-content-center py-5 border-bottom">
+    <h1 class="text-center">My Tournaments</h1>
+  </header>
   <div class="container">
-    <header class="d-flex align-items-center justify-content-center py-5 border-bottom">
-      <h1 class="text-center">My Tournaments</h1>
-    </header>
     {{> partials/messages}}
-    <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
-    {{#tournaments}}
-      <a class="card bg-light mr-2 text-decoration-none text-muted my-3" style="width: 20rem" href="/tournaments/{{_id}}">
-        <div class="card-header">
-          <div class="d-flex align-items-center justify-content-between card-title">
-            <h3 class="">{{name}}</h3>
-            <span class="badge badge-info small px-1">{{type}}</span>
-          </div>
-          <!-- No need to display the description in the card - that should be reserved for on the main page -->
-          <h5 class="card-text font-italic">
-            {{game}}
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between card-text">
-            <p class="">Begins</p>
-            <p class="">{{parsedStartDate}}</p>
-          </div>
-          <div class="d-flex align-items-center justify-content-between card-text">
-            <p class="">Ends</p>
-            <p class="">{{parsedEndDate}}</p>
-          </div>
-          <div class="d-flex align-items-center justify-content-between card-text">
-            <p class="">Created</p>
-            <p class="">{{parsedDateCreated}}</p>
-          </div>
-        </div>
-      </a>
-    {{/tournaments}}
-    {{^tournaments}}
-      <p class="text-primary">You currently do not have any tournaments, why not created one!</p>
-    {{/tournaments}}
+    <div class="d-flex justify-content-between border-bottom mt-5">
+      <h2>Creator</h2>
+      <h2>{{userCreatedTournamentCount}}</h2>
     </div>
+    <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
+    {{#userCreatedTournaments}}
+      {{> tournaments/tournamentCard}}
+    {{/userCreatedTournaments}}
+    {{^userCreatedTournaments}}
+      <p class="text-primary">You currently do not have any tournaments. Why not create one?</p>
+    {{/userCreatedTournaments}}
+    </div>
+
+    <div class="d-flex justify-content-between border-bottom mt-5">
+      <h2>Participant</h2>
+      <h2>{{memberTournamentCount}}</h2>
+    </div>
+    <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
+      {{#memberTournaments}}
+        {{> tournaments/tournamentCard}}
+      {{/memberTournaments}}
+      {{^memberTournaments}}
+        <p class="text-primary">You aren't a part of any other tournaments :(</p>
+      {{/memberTournaments}}
+      </div>
   </div>
   {{> partials/footer}}
 </body>
