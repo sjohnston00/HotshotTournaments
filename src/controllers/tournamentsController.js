@@ -41,7 +41,9 @@ exports.get_all_users_tournaments = async (req, res) => {
     )
     res.render('tournaments/myTournaments', {
       memberTournaments: memberTournaments,
-      userCreatedTournaments: userCreatedTournaments
+      userCreatedTournaments: userCreatedTournaments,
+      memberTournamentCount: memberTournaments.length,
+      userCreatedTournamentCount: userCreatedTournaments.length
     })
   } catch (error) {
     return handlers.response_handler(

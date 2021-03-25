@@ -6,7 +6,10 @@
       <h1 class="text-center">My Tournaments</h1>
     </header>
     {{> partials/messages}}
-    <h2>Creator</h2>
+    <div class="d-flex justify-content-between border-bottom mt-5">
+      <h2>Creator</h2>
+      <h2>{{userCreatedTournamentCount}}</h2>
+    </div>
     <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
     {{#userCreatedTournaments}}
       {{> tournaments/tournamentCard}}
@@ -16,9 +19,10 @@
     {{/userCreatedTournaments}}
     </div>
 
-
-    <!-- This will be a separate view for the tournaments which the user did NOT create -->
-    <h2>Participant</h2>
+    <div class="d-flex justify-content-between border-bottom mt-5">
+      <h2>Participant</h2>
+      <h2>{{memberTournamentCount}}</h2>
+    </div>
     <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
       {{#memberTournaments}}
         {{> tournaments/tournamentCard}}
