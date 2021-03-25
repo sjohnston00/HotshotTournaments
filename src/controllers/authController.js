@@ -1,4 +1,5 @@
 const User = require('../models/User')
+const handlers = require('../middlewares/handlers')
 const bcrypt = require('bcryptjs')
 const passport = require('passport')
 
@@ -8,22 +9,31 @@ exports.post_register = async (req, res) => {
   //VALIDATE BODY
   const { name, email, password } = req.body
 
-  if (!name || !email || !password) {
-    req.flash('error_msg', 'Please fill in all the fields')
-    return res.redirect('/auth/register')
-  }
+  if (!name || !email || !password) return handlers.response_handler(
+    '/auth/register',
+    'error_msg',
+    'Please fill in all the fields',
+    req,
+    res
+  )
 
-  if (password.length < 6) {
-    req.flash('error_msg', 'Password must be at least 6 characters')
-    return res.redirect('/auth/register')
-  }
+  if (password.length < 6) return handlers.response_handler(
+    '/auth/register',
+    'error_msg',
+    'Password must be at least 6 characters',
+    req,
+    res
+  )
 
   //VALIDATE THAT THE EMAIL DOESN'T ALREADY EXIST
   const userWithEmail = await User.findOne({ email: email })
-  if (userWithEmail) {
-    req.flash('error_msg', `A user with ${email} already exists`)
-    return res.redirect('/auth/register')
-  }
+  if (userWithEmail) return handlers.response_handler(
+    '/auth/register',
+    'error_msg',
+    `A user with ${email} already exists`,
+    req,
+    res
+  )
 
   const salt = await bcrypt.genSalt(10)
   const hashedPassword = await bcrypt.hash(password, salt)
@@ -36,12 +46,23 @@ exports.post_register = async (req, res) => {
     })
 
     const savedUser = await user.save()
-    req.flash('success_msg', 'Please login with your newly created account')
-    res.redirect('/auth/login')
+
+    return handlers.response_handler(
+      '/auth/login',
+      'success_msg',
+      'Please login with your newly created account',
+      req,
+      res
+    )
   } catch (error) {
-    console.log(error)
-    req.flash('error', 'Cannot save user to database')
-    res.redirect('/auth/login')
+    return handlers.response_handler(
+      '/auth/login',
+      'error_msg',
+      'Cannot save user to database',
+      req,
+      res,
+      error.message
+    )
   }
 }
 
@@ -55,6 +76,12 @@ exports.authenticate_passport = passport.authenticate('local', {
 
 exports.get_logout = (req, res) => {
   req.logout()
-  req.flash('success_msg', 'You are now logged out') //give user a log out success message
-  res.redirect('/auth/login')
+
+  return handlers.response_handler(
+    '/auth/login',
+    'success_msg',
+    'You are now logged out',
+    req,
+    res
+  )
 }

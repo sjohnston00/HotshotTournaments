@@ -1,50 +1,36 @@
 {{> partials/head}}
-
-<body>
-  <div class="container">
+<body class="d-flex flex-column min-vh-100">
+  {{> partials/navbar}}
+  <header class="d-flex align-items-center justify-content-center py-5 border-bottom">
     <h1 class="text-center">My Tournaments</h1>
-    <hr>
+  </header>
+  <div class="container">
     {{> partials/messages}}
-    <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
-    {{#tournaments}}
-      <div class="card mr-2" style="width: 20rem">
-        <div class="card-body">
-          <h5 class="card-title">
-            {{name}}
-            <span class="badge-primary badge-pill small">{{game}}</span>
-          </h5>
-          <p class="card-text">
-            {{description}}
-          </p>
-          <p class="card-text">
-            <b>Start Date: </b> {{startDate}}
-          </p>
-          <p class="card-text">
-            <b>End Date: </b> {{endDate}}
-          </p>
-
-          <p class="card-text">
-            <b>Date Created: </b> {{dateCreated}}
-          </p>
-          <a href="/tournaments/{{_id}}" class="btn btn-primary">View</a>
-        </div>
-      </div>
-    {{/tournaments}}
-    {{^tournaments}}
-      <p class="text-primary">You currently do not have any tournaments, why not created one!</p>
-    {{/tournaments}}
+    <div class="d-flex justify-content-between border-bottom mt-5">
+      <h2>Creator</h2>
+      <h2>{{userCreatedTournamentCount}}</h2>
     </div>
-  </div>
+    <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
+    {{#userCreatedTournaments}}
+      {{> tournaments/tournamentCard}}
+    {{/userCreatedTournaments}}
+    {{^userCreatedTournaments}}
+      <p class="text-primary">You currently do not have any tournaments. Why not create one?</p>
+    {{/userCreatedTournaments}}
+    </div>
 
-  <div class="container">
-    <h3 class="text-center">Create a tournament</h3>
-    <a href="/tournaments/createTournament" class="btn btn-large btn-primary">Create</a>
-    <hr>
+    <div class="d-flex justify-content-between border-bottom mt-5">
+      <h2>Participant</h2>
+      <h2>{{memberTournamentCount}}</h2>
+    </div>
+    <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
+      {{#memberTournaments}}
+        {{> tournaments/tournamentCard}}
+      {{/memberTournaments}}
+      {{^memberTournaments}}
+        <p class="text-primary">You aren't a part of any other tournaments :(</p>
+      {{/memberTournaments}}
+      </div>
   </div>
-
-  <div class="container">
-    <a href="/auth/logout" class="btn btn-danger">Logout</a>
-    <a href="/" class="btn btn-secondary">Home</a>
-    <hr>
-  </div>
+  {{> partials/footer}}
 </body>

@@ -1,3 +1,4 @@
+const handlers = require('../middlewares/handlers')
 const Message = require('../models/Message')
 const Tournament = require('../models/Tournament')
 
@@ -20,9 +21,14 @@ exports.post_message_to_tournament = async (req, res) => {
     )
     return res.json({ success: true, message: 'message successfully added' })
   } catch (error) {
-    console.log(error.message)
-    req.flash('error_msg', 'Something went wrong, please try again later')
-    return res.redirect(`/tournaments/${tournamentID}`)
+    return handlers.response_handler(
+      `/tournaments/${tournamentID}`,
+      'error_msg',
+      'Something went wrong, please try again later',
+      req,
+      res,
+      error.message
+    )
   }
 }
 
