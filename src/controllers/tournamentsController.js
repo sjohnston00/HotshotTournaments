@@ -41,6 +41,7 @@ exports.get_all_users_tournaments = async (req, res) => {
     )
     res.render('tournaments/myTournaments', {
       memberTournaments: memberTournaments,
+      isLoggedIn: true,
       userCreatedTournaments: userCreatedTournaments,
       memberTournamentCount: memberTournaments.length,
       userCreatedTournamentCount: userCreatedTournaments.length
@@ -134,6 +135,7 @@ exports.get_create_tournament = (req, res) => {
     .local()
     .format(moment.HTML5_FMT.DATETIME_LOCAL)
   res.render('tournaments/createTournament', {
+    isLoggedIn: true,
     startDate: startDate,
     endDate: endDate
   })
@@ -343,6 +345,7 @@ exports.get_one_tournament = async (req, res) => {
     const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl
     res.render('tournaments/viewTournament', {
       tournament: tournament,
+      isLoggedIn: true,
       tournamentID: tournament._id,
       tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
       isTournamentCreator: isTournamentCreator,

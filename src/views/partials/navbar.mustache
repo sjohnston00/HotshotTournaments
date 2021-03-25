@@ -8,9 +8,11 @@
       <li class="nav-item">
           <a class="btn btn-outline-primary my-2 mx-1 my-sm-0" href="/tournaments/createTournament">New</a>
       </li>
+      {{#isLoggedIn}}
       <li class="nav-item">
         <a class="btn btn-outline-secondary my-2 mx-1 my-sm-0" href="/auth/logout">Logout</a>
       </li>
+      {{/isLoggedIn}}
     </ul>
   </div>
 </nav>

@@ -12,6 +12,13 @@ const TeamSchema = mongoose.Schema({
     required: false,
     ref: 'tournament'
   },
+  messages: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+      ref: 'messages'
+    }
+  ],
   users: [
     {
       type: mongoose.Schema.Types.ObjectId,

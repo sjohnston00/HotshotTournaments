@@ -1,6 +1,7 @@
 {{> partials/head}}
-<body>
-  <div class="container">
+{{> partials/navbar}}
+<body class="min-vh-100">
+  <div class="container my-4">
     {{#tournament}}
       <h1>
         {{name}} <span class="badge-primary badge-pill small">{{game}}</span>
@@ -14,8 +15,18 @@
     {{#team}}
       <h2>{{name}}</h2>
     {{/team}}
+
+    <h4>Messages Board</h4>
+    <div class="container">
+      {{#team}}
+        {{#messages}}
+          
+        {{/messages}}
+      {{/team}}
+    </div>
     {{#tournament}}
       <a href="/tournaments/{{_id}}" class="btn btn-outline-secondary">Back</a>
     {{/tournament}}
   </div>
 </body>
+{{> partials/footer}}
