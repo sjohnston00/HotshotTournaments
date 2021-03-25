@@ -11,6 +11,13 @@ router.post(
   controller.post_message_to_tournament
 )
 
+//Post a new message to a team
+router.post(
+  '/team/:teamID/tournament/:tournamentID',
+  ensureAuthenticated,
+  controller.post_message_to_team
+)
+
 //A users messages
 router.get(
   '/myMessages',
@@ -19,28 +26,28 @@ router.get(
 )
 
 //update message
-router.put('/:messageId', ensureAuthenticated, async (req, res) => {
-  const { messageId } = req.params
-  const { body } = req.body
-  if (!body) {
-    res.status(401).send('Message body and Announcement are required')
-  }
-  try {
-    const updatedMessage = await Message.updateOne(
-      { _id: messageId },
-      {
-        $set: {
-          body: body,
-          isAnnouncement: isAnnouncement
-        }
-      }
-    )
+// router.put('/:messageId', ensureAuthenticated, async (req, res) => {
+//   const { messageId } = req.params
+//   const { body } = req.body
+//   if (!body) {
+//     res.status(401).send('Message body and Announcement are required')
+//   }
+//   try {
+//     const updatedMessage = await Message.updateOne(
+//       { _id: messageId },
+//       {
+//         $set: {
+//           body: body,
+//           isAnnouncement: isAnnouncement
+//         }
+//       }
+//     )
 
-    res.status(200).send(updatedMessage)
-  } catch (error) {
-    res.status(500).send(error)
-  }
-})
+//     res.status(200).send(updatedMessage)
+//   } catch (error) {
+//     res.status(500).send(error)
+//   }
+// })
 
 router.delete('/:messagedId', ensureAuthenticated, async (req, res) => {
   const { messageId } = req.params

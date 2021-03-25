@@ -2,6 +2,7 @@
 {{> partials/navbar}}
 <body>
   <div class="container my-4 min-vh-100">
+    {{> partials/messages}}
     {{#tournament}}
       <h1>
         {{name}} <span class="badge-primary badge-pill small">{{game}}</span>
@@ -14,19 +15,41 @@
     {{/tournament}}
     {{#team}}
       <h2>{{name}}</h2>
+      <h4>Messages Board</h4>
+      <div id="messages-container" class="mb-3">
+        {{#messages}} 
+          {{#user}} 
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">{{name}}</h5>
+                <p class="card-title">{{body}}</p>
+              </div>
+            </div>
+          {{/user}}
+        {{/messages}} 
+        {{^messages}}
+          <p class="text-danger">
+            Currently there are no messages in this tournament
+          </p>
+        {{/messages}} 
+      </div>
+      <form id="send-message-form" action="/tournaments/{{_id}}/addMessage" method="POST">
+        <div class="input-group mb-3">
+          <input id="input-message" type="text" name="message" class="form-control" placeholder="Message..." aria-label="Message..." aria-describedby="the message to be sent" required>
+          <div class="input-group-append">
+            <button id="btn-send-message" type="submit" class="btn btn-outline-primary" type="button">Send</button>
+          </div>
+        </div>
+      </form>
     {{/team}}
 
-    <h4>Messages Board</h4>
-    <div class="container">
-      {{#team}}
-        {{#messages}}
-          
-        {{/messages}}
-      {{/team}}
-    </div>
     {{#tournament}}
-      <a href="/tournaments/{{_id}}" class="btn btn-outline-secondary">Back</a>
+      <a href="/tournaments/{{_id}}" class="btn btn-secondary">Back</a>
     {{/tournament}}
   </div>
+
+  {{#tournament}}<p id="tournamentID" class="d-none">{{_id}}</p>{{/tournament}}
+  {{#team}}<p id="teamID" class="d-none">{{_id}}</p>{{/team}}
+  <script src="/scripts/teamMessaging.js" defer></script>
 </body>
 {{> partials/footer}}
