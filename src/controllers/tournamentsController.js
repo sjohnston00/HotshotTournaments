@@ -6,7 +6,7 @@ const Message = require('../models/Message')
 
 exports.get_all_users_tournaments = async (req, res) => {
   try {
-    const tournaments = await Tournament.find({ users: req.user._id })
+    const memberTournaments = await Tournament.find({ users: req.user._id })
       .populate('users', '-_id -__v -password')
       .populate({
         path: 'messages',
@@ -17,7 +17,8 @@ exports.get_all_users_tournaments = async (req, res) => {
           select: '-_id -__v -password'
         }
       })
-    tournaments.forEach(tournament => {
+    memberTournaments.forEach(tournament => {
+      console.log(tournament.creator[0] + '  ' + req.user._id)
       const parsedStartDate = moment(tournament.startDate)
       .utc()
       .local()
@@ -37,7 +38,12 @@ exports.get_all_users_tournaments = async (req, res) => {
       tournament.parsedEndDate = parsedEndDate
       tournament.parsedDateCreated = parsedDateCreated
     })
-    res.render('tournaments/myTournaments', { tournaments: tournaments })
+    const userCreatedTournaments = memberTournaments.filter(tournament => String(tournament.creator) === String(req.user._id))
+    console.log(userCreatedTournaments)
+    res.render('tournaments/myTournaments', {
+      memberTournaments: memberTournaments,
+      userCreatedTournaments: userCreatedTournaments
+     })
   } catch (error) {
     return handlers.response_handler(
       '/',
