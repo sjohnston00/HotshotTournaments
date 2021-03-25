@@ -52,7 +52,15 @@ exports.view_team_from_tournament = async (req, res) => {
   const { tournamentID, teamID } = req.params
 
   try {
-    const team = await Team.findById(teamID).populate('users');
+    const team = await Team.findById(teamID).populate('users').populate({
+      path: 'messages',
+      select: '-_id -__v -tournament',
+      populate: {
+        path: 'user',
+        model: 'users',
+        select: '-_id -__v -password'
+      }
+    })
     const tournament = await Tournament.findById(tournamentID);
     res.render('teams/view',{
       isLoggedIn: true,

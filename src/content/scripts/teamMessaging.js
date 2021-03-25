@@ -28,7 +28,7 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const messageValue = message.value;
-  fetch(`/messages/tournament/${tournamentID}`, {
+  fetch(`/messages/team/${teamID}/tournament/${tournamentID}`, {
     method: "POST",
     headers: {
       // "Content-Type": "application/json" //for when the application only accepts JSON input
@@ -43,11 +43,3 @@ form.addEventListener("submit", async (event) => {
   //set the value of the message box back to empty
   document.querySelector("#input-message").value = "";
 });
-
-function copyText() {
-  const tournamentLink = document.getElementById("tournamentInviteLink");
-  tournamentLink.select();
-  tournamentLink.setSelectionRange(0, 99999);
-  document.execCommand("copy");
-  alert(`Copied to your clipboard`);
-}
