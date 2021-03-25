@@ -1,8 +1,8 @@
 {{> partials/head}}
 {{> partials/navbar}}
-<body class="container">
-  <div>
-    <form action="/auth/login" method="POST">
+<body>
+  <div class="container min-vh-100 d-flex justify-content-center align-items-center">
+    <form action="/auth/login" class="w-100" method="POST">
       <h2 class="text-center">Log in</h2>
       {{> partials/messages}}
       <div class="form-group">

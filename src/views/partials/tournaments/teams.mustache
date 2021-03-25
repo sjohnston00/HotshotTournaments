@@ -1,7 +1,7 @@
+<div class="my-4">
 <h4>Teams</h4>
 {{#tournament}}
   {{#teams}}
-    {{! Don't know how I'm going to be able to put the TournamentID and the TeamID in there }}
     <a class="btn btn-outline-primary mr-4 my-4" href="/teams/view/{{tournamentID}}/team/{{_id}}">{{name}}</a>
   {{/teams}}
   {{^teams}}
@@ -72,7 +72,7 @@
       </div>
     </div>
   </div>
-</div>
 {{/teamsNotEqualsTournamentSize}}
 
 {{/tournament}}
+</div>

@@ -17,12 +17,11 @@
       <div
         id="tournament-bracket"
         class="w-100 d-flex justify-content-center align-items-center my-4"
-      >
-      </div>
-        <textarea id='tournament-bracket-textarea' class='d-none'>
-          {{bracketString}}
-        </textarea>
-        <p id="tournamentID" class="d-none">{{_id}}</p>
+      ></div>
+      <textarea id='tournament-bracket-textarea' class='d-none'>
+        {{bracketString}}
+      </textarea>
+      <p id="tournamentID" class="d-none">{{_id}}</p>
       {{#isTournamentCreator}}
         {{> partials/tournaments/tournamentCreator}}
       {{/isTournamentCreator}}
@@ -75,9 +74,7 @@
         </div>
       </form>
       {{/tournament}}
-      <a href="/tournaments/myTournaments" class="btn btn-secondary mx-4"
-        >Back</a
-      >
+      <a href="/tournaments/myTournaments" class="btn btn-secondary mr-4">Back</a>
     {{#isTournamentCreator}}
       {{> partials/tournaments/tournamentActions}}  
     {{/isTournamentCreator}} 
