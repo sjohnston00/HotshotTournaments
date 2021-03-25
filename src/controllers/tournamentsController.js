@@ -17,33 +17,31 @@ exports.get_all_users_tournaments = async (req, res) => {
           select: '-_id -__v -password'
         }
       })
-    memberTournaments.forEach(tournament => {
+    memberTournaments.forEach((tournament) => {
       console.log(tournament.creator[0] + '  ' + req.user._id)
-      const parsedStartDate = moment(tournament.startDate)
-      .utc()
-      .local()
-      .format('DD/MM/YY, HH:mm')
+      tournament.parsedStartDate = moment(tournament.startDate)
+        .utc()
+        .local()
+        .format('DD/MM/YY, HH:mm')
 
-      const parsedEndDate = moment(tournament.endDate)
-      .utc()
-      .local()
-      .format('DD/MM/YY, HH:mm')
+      tournament.parsedEndDate = moment(tournament.endDate)
+        .utc()
+        .local()
+        .format('DD/MM/YY, HH:mm')
 
-      const parsedDateCreated = moment(tournament.dateCreated)
-      .utc()
-      .local()
-      .format('DD/MM/YY')
-
-      tournament.parsedStartDate = parsedStartDate
-      tournament.parsedEndDate = parsedEndDate
-      tournament.parsedDateCreated = parsedDateCreated
+      tournament.parsedDateCreated = moment(tournament.dateCreated)
+        .utc()
+        .local()
+        .format('DD/MM/YY')
     })
-    const userCreatedTournaments = memberTournaments.filter(tournament => String(tournament.creator) === String(req.user._id))
+    const userCreatedTournaments = memberTournaments.filter(
+      (tournament) => String(tournament.creator) === String(req.user._id)
+    )
     console.log(userCreatedTournaments)
     res.render('tournaments/myTournaments', {
       memberTournaments: memberTournaments,
       userCreatedTournaments: userCreatedTournaments
-     })
+    })
   } catch (error) {
     return handlers.response_handler(
       '/',
@@ -64,21 +62,23 @@ exports.add_user_to_tournament = async (req, res) => {
       inviteCode: token
     })
 
-    if (!tournament) return handlers.response_handler(
-      '/tournaments/myTournaments',
-      'error_msg',
-      'Tournament not found',
-      req,
-      res
-    )
-    if (tournament.users.includes(req.user._id)) return handlers.response_handler(
-      `/tournaments/${tournamentID}`,
-      'error_msg',
-      'You are already involved with this tournament',
-      req,
-      res
-    )
-  
+    if (!tournament)
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'Tournament not found',
+        req,
+        res
+      )
+    if (tournament.users.includes(req.user._id))
+      return handlers.response_handler(
+        `/tournaments/${tournamentID}`,
+        'error_msg',
+        'You are already involved with this tournament',
+        req,
+        res
+      )
+
     if (tournament.users.length >= tournament.limit) {
       return handlers.response_handler(
         '/tournaments/myTournaments',
@@ -90,13 +90,14 @@ exports.add_user_to_tournament = async (req, res) => {
     }
     const today = new Date()
 
-    if (tournament.endDate < today) return handlers.response_handler(
-      '/tournaments/myTournaments',
-      'error_msg',
-      'Tournament has already ended',
-      req,
-      res
-    )
+    if (tournament.endDate < today)
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'Tournament has already ended',
+        req,
+        res
+      )
     // Add user to the tournament via ID
     tournament.users.push(req.user._id)
     await tournament.save()
@@ -199,23 +200,23 @@ exports.post_create_tournament = async (req, res) => {
       })
       break
 
-      case 'team':
-        newTournament = new Tournament({
-          name: name,
-          description: description,
-          game: game,
-          type: type,
-          bracket: bracket,
-          startDate: new Date(startDate),
-          endDate: new Date(endDate),
-          messages: [],
-          creator: req.user._id,
-          teams: [],
-          users: [req.user._id],
-          inviteCode: token,
-          inviteCodeExpiryDate: new Date(endDate),
-          limit: Number(size)
-        })
+    case 'team':
+      newTournament = new Tournament({
+        name: name,
+        description: description,
+        game: game,
+        type: type,
+        bracket: bracket,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        messages: [],
+        creator: req.user._id,
+        teams: [],
+        users: [req.user._id],
+        inviteCode: token,
+        inviteCodeExpiryDate: new Date(endDate),
+        limit: Number(size)
+      })
       break
     default:
       req.flash('error_msg', 'Invalid Tournament Type')
@@ -333,7 +334,7 @@ exports.get_one_tournament = async (req, res) => {
     //https://stackoverflow.com/questions/11637353/comparing-mongoose-id-and-strings
     const isTournamentCreator = tournament.creator.equals(req.user._id)
       ? true
-      : false;
+      : false
     //GET THE FULL URL SO IT CAN BE USED IN THE TEXTBOX
     //TODO: FIGURE OUT WHY THIS RENDERS THE URL WITH HTTP NOT HTTPS
     const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl
@@ -343,7 +344,8 @@ exports.get_one_tournament = async (req, res) => {
       tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
       isTournamentCreator: isTournamentCreator,
       isTeamTournament: tournament.type === 'team' ? true : false,
-      teamsNotEqualsTournamentSize: tournament.teams.length !== tournament.limit ? true : false,
+      teamsNotEqualsTournamentSize:
+        tournament.teams.length !== tournament.limit ? true : false,
       bracketString: JSON.stringify(tournament.bracket)
       /*REASON: Mustache will not allow front-end script to access the properties that are passed from the server
           therefore I'm having to turn the JSON object to a string, then put the string in a <textarea/> element and hide import PropTypes from 'prop-types'
@@ -448,7 +450,7 @@ exports.delete_tournament = async (req, res) => {
 
   //TODO: VALIDATE THAT THIS USER IS THE TOURNAMENT CREATOR
   try {
-    const tournament = await Tournament.findById(tournamentID);
+    const tournament = await Tournament.findById(tournamentID)
     if (!tournament) {
       req.flash('error_msg', 'Could not find tournament')
       return res.redirect('/tournaments/myTournaments')
@@ -458,14 +460,14 @@ exports.delete_tournament = async (req, res) => {
       return res.redirect('/tournaments/myTournaments')
     }
   } catch (error) {
-    console.error(error.message);
+    console.error(error.message)
     req.flash('error_msg', 'Something went wrong please try again later')
     return res.redirect('/tournaments/myTournaments')
   }
-  
+
   try {
     const deletedTournament = await Tournament.deleteOne({
-      _id: tournamentID,
+      _id: tournamentID
     })
     try {
       // Delete all the messages associated with that tournament
@@ -473,7 +475,10 @@ exports.delete_tournament = async (req, res) => {
         tournament: tournamentID
       })
     } catch (error) {
-      console.error('Could not find any messages associated with this tournament',error.message)
+      console.error(
+        'Could not find any messages associated with this tournament',
+        error.message
+      )
       req.flash('error_msg', 'Something went wrong, please try again later')
       return res.redirect('/tournaments/myTournaments')
     }
