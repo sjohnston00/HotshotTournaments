@@ -17,7 +17,8 @@ exports.create_new_team_post = async (req,res) => {
         name: newTeam,
         tournament: tournamentID,
         users: [],
-        limit: tournament.teamsSize || 5
+        messages: [],
+        limit: tournament.teamsSize || 5 //Get the team size from the tournament, specify the tournament team size when creating a team tournament, else it 5
       })
       const createdTeam = await team.save()
       tournament.teams.push(createdTeam._id)
@@ -54,6 +55,7 @@ exports.view_team_from_tournament = async (req, res) => {
     const team = await Team.findById(teamID).populate('users');
     const tournament = await Tournament.findById(tournamentID);
     res.render('teams/view',{
+      isLoggedIn: true,
       tournament: tournament,
       team: team
     })
