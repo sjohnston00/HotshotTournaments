@@ -7,7 +7,8 @@
     </header>
     {{> partials/messages}}
     <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
-    {{#tournaments}}
+      <h2>Creator</h2>
+    {{#userCreatedTournaments}}
       <a class="card bg-light mr-2 text-decoration-none text-muted my-3" style="width: 20rem" href="/tournaments/{{_id}}">
         <div class="card-header">
           <div class="d-flex align-items-center justify-content-between card-title">
@@ -33,15 +34,16 @@
           </div>
         </div>
       </a>
-    {{/tournaments}}
-    {{^tournaments}}
-      <p class="text-primary">You currently do not have any tournaments, why not created one!</p>
-    {{/tournaments}}
+    {{/userCreatedTournaments}}
+    {{^userCreatedTournaments}}
+      <p class="text-primary">You currently do not have any tournaments. Why not create one?</p>
+    {{/userCreatedTournaments}}
     </div>
 
 
     <!-- This will be a separate view for the tournaments which the user did NOT create -->
     <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
+      <h2>Participant</h2>
       {{#memberTournaments}}
         <a class="card bg-light mr-2 text-decoration-none text-muted my-3" style="width: 20rem" href="/tournaments/{{_id}}">
           <div class="card-header">
