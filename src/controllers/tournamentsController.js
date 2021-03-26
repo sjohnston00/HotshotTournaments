@@ -141,6 +141,16 @@ exports.add_user_to_team_in_tournament = async (req, res) => {
         req,
         res
       )
+    if (tournament.type !== 'team') {
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'This is not a team tournament',
+        req,
+        res
+      )
+    }
+
     if (tournament.users.includes(req.user._id))
       return handlers.response_handler(
         `/tournaments/${tournamentID}`,
@@ -169,16 +179,6 @@ exports.add_user_to_team_in_tournament = async (req, res) => {
         req,
         res
       )
-
-    if (tournament.type !== 'team') {
-      return handlers.response_handler(
-        '/tournaments/myTournaments',
-        'error_msg',
-        'This is not a team tournament',
-        req,
-        res
-      )
-    }
 
     //check wether the user is already part of a team
     //THIS WILL NEVER GET HIT BECAUSE IF THE USER IS ALREADY PART OF THE TOURNAMENT THEN IT WILL REDIRECT ANYWAY
