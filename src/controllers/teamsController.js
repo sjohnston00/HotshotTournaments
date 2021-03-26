@@ -24,8 +24,13 @@ exports.create_new_team_post = async (req, res) => {
       const createdTeam = await team.save()
       tournament.teams.push(createdTeam._id)
       await tournament.save()
-      req.flash('success_msg', `${createdTeam.name} has been created`)
-      return res.redirect(`/tournaments/${tournamentID}`)
+      return handlers.response_handler(
+        `/teams/view/${tournamentID}/team/${createdTeam._id}`,
+        'success_msg',
+        `${createdTeam.name} has been created`,
+        req,
+        res
+      )
     } catch (error) {
       return handlers.response_handler(
         `/tournaments/${tournamentID}`,
