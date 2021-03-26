@@ -24,8 +24,13 @@ exports.create_new_team_post = async (req, res) => {
       const createdTeam = await team.save()
       tournament.teams.push(createdTeam._id)
       await tournament.save()
-      req.flash('success_msg', `${createdTeam.name} has been created`)
-      return res.redirect(`/tournaments/${tournamentID}`)
+      return handlers.response_handler(
+        `/teams/view/${tournamentID}/team/${createdTeam._id}`,
+        'success_msg',
+        `${createdTeam.name} has been created`,
+        req,
+        res
+      )
     } catch (error) {
       return handlers.response_handler(
         `/tournaments/${tournamentID}`,
@@ -63,6 +68,23 @@ exports.view_team_from_tournament = async (req, res) => {
           select: '-_id -__v -password'
         }
       })
+    let found = false
+    for (let index = 0; index < team.users.length; index++) {
+      const user = team.users[index]
+      if (user._id.equals(req.user._id)) {
+        found = true
+        break
+      }
+    }
+    if (!found) {
+      return handlers.response_handler(
+        `/tournaments/${tournamentID}`,
+        'error_msg',
+        `You are not a member of ${team.name}`,
+        req,
+        res
+      )
+    }
     const tournament = await Tournament.findById(tournamentID)
     const inviteLink = req.protocol + '://' + req.get('host')
     res.render('teams/view', {
