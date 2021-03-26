@@ -26,9 +26,14 @@ const TeamSchema = mongoose.Schema({
       ref: 'users'
     }
   ],
+  teamLeader: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'teamLeader'
+  },
   limit: {
     type: Number,
-    required: true,
+    required: true
   }
 })
 

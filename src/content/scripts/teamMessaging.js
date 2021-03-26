@@ -1,4 +1,4 @@
-const deployed = false
+const deployed = true
 const connectionString = deployed
   ? 'https://hotshot-tournaments.herokuapp.com/'
   : 'http://localhost:8000'
