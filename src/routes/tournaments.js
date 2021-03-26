@@ -16,6 +16,12 @@ router.get(
 )
 
 router.get(
+  '/:tournamentID/invite/:token/team/:teamID',
+  ensureAuthenticated,
+  controller.add_user_to_team_in_tournament
+)
+
+router.get(
   '/createTournament',
   ensureAuthenticated,
   controller.get_create_tournament

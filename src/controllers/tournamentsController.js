@@ -3,6 +3,7 @@ const moment = require('moment')
 const crypto = require('crypto')
 const Tournament = require('../models/Tournament')
 const Message = require('../models/Message')
+const Team = require('../models/Team')
 
 exports.get_all_users_tournaments = async (req, res) => {
   try {
@@ -109,6 +110,102 @@ exports.add_user_to_tournament = async (req, res) => {
       `/tournaments/${tournamentID}`,
       'success_msg',
       'You are now part of this tournament',
+      req,
+      res
+    )
+  } catch (error) {
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Something went wrong, Please try again later',
+      req,
+      res,
+      error.message
+    )
+  }
+}
+
+exports.add_user_to_team_in_tournament = async (req, res) => {
+  try {
+    const { tournamentID, token, teamID } = req.params
+    const tournament = await Tournament.findOne({
+      _id: tournamentID,
+      inviteCode: token
+    }).populate('teams')
+
+    if (!tournament)
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'Tournament not found',
+        req,
+        res
+      )
+    if (tournament.users.includes(req.user._id))
+      return handlers.response_handler(
+        `/tournaments/${tournamentID}`,
+        'error_msg',
+        'You are already involved with this tournament',
+        req,
+        res
+      )
+
+    if (tournament.users.length >= tournament.limit) {
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'Tournament has reached maximum capacity',
+        req,
+        res
+      )
+    }
+    const today = new Date()
+
+    if (tournament.endDate < today)
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'Tournament has already ended',
+        req,
+        res
+      )
+
+    if (tournament.type !== 'team') {
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'This is not a team tournament',
+        req,
+        res
+      )
+    }
+
+    //check wether the user is already part of a team
+    //THIS WILL NEVER GET HIT BECAUSE IF THE USER IS ALREADY PART OF THE TOURNAMENT THEN IT WILL REDIRECT ANYWAY
+    for (let index = 0; index < tournament.teams.length; index++) {
+      const team = tournament.teams[index]
+      if (team.users.includes(req.user._id)) {
+        return handlers.response_handler(
+          `/tournaments/${tournamentID}`,
+          'error_msg',
+          `You are already part of ${team.name}`,
+          req,
+          res
+        )
+      }
+    }
+
+    //Add user to the team
+    const team = await Team.findById(teamID)
+    team.users.push(req.user._id)
+    await team.save()
+    // Add user to the tournament via ID
+    tournament.users.push(req.user._id)
+    await tournament.save()
+    return handlers.response_handler(
+      `/teams/view/${tournamentID}/team/${teamID}`,
+      'success_msg',
+      `You are now part of this tournaments and a member of ${team.name}`,
       req,
       res
     )
