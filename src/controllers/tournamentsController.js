@@ -103,6 +103,8 @@ exports.add_user_to_tournament = async (req, res) => {
         req,
         res
       )
+
+    //TODO: Check if its a team tournament then render all the teams of the tournament on a dialog box that
     // Add user to the tournament via ID
     tournament.users.push(req.user._id)
     await tournament.save()
