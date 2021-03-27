@@ -19,6 +19,7 @@ app.engine('mustache', mustache())
 app.set('view engine', 'mustache')
 app.use(express.static('./src/content'))
 app.set('views', __dirname + '/views')
+app.enable('trust proxy')
 // Passport Config
 require('./config/passport')(passport)
 
