@@ -2,6 +2,10 @@
     color: white;
 }
 
+h1{
+    color: white;
+}
+
 .modal-header{
     background: #4d4d4c;
 }
@@ -22,3 +26,4 @@
     background: #4d4d4c;
     color: white;
 }
+
