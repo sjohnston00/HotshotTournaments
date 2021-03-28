@@ -47,32 +47,8 @@
         {{/users}}
       </div>
 
-      <h4>Messages</h4>
-      <div id="messages-container" class="mb-3">
-        {{#messages}} 
-          {{#user}} 
-        <div class="card mb-3">
-          <div class="card-body">
-            <h5 class="card-title">{{name}}</h5>
-            <p class="card-title">{{body}}</p>
-          </div>
-        </div>
-          {{/user}}
-        {{/messages}} 
-          {{^messages}}
-            <p class="text-danger">
-              Currently there are no messages in this tournament
-            </p>
-          {{/messages}} 
-      </div>
-      <form id="send-message-form">
-        <div class="input-group mb-3">
-          <input id="input-message" type="text" name="message" class="form-control" placeholder="Message..." aria-label="Message..." aria-describedby="the message to be sent" required>
-          <div class="input-group-append">
-            <button id="btn-send-message" type="submit" class="btn btn-outline-primary" type="button">Send</button>
-          </div>
-        </div>
-      </form>
+          {{> partials/tournaments/tournamentMessages}}
+
       {{/tournament}}
       <a href="/tournaments/myTournaments" class="btn btn-secondary mr-4">Back</a>
     {{#isTournamentCreator}}
