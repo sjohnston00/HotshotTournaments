@@ -2,3 +2,8 @@
 #tournament-bracket * {
   cursor: pointer;
 }
+
+#messages-container{
+  max-height: 680px;
+  overflow-y: scroll;
+}
