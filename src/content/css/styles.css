@@ -1,9 +1,4 @@
-#tournament-bracket,
-#tournament-bracket * {
-  cursor: pointer;
-}
+@import 'shared/messagePanel.css';
+@import 'shared/tournamentBracket.css';
 
-#messages-container{
-  max-height: 680px;
-  overflow-y: scroll;
-}
+
