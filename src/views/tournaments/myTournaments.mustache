@@ -1,12 +1,12 @@
 {{> partials/head}}
 {{> partials/navbar}}
 <body>
+  {{> partials/messages}}
   <div class="d-flex flex-column min-vh-100">
     <header class="d-flex align-items-center justify-content-center py-5 border-bottom">
       <h1 class="text-center">My Tournaments</h1>
     </header>
     <div class="container">
-      {{> partials/messages}}
       <div class="d-flex justify-content-between border-bottom mt-5">
         <h2>Creator</h2>
         <h2>{{userCreatedTournamentCount}}</h2>
