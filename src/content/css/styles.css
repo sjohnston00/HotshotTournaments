@@ -1,5 +1,6 @@
 @import 'shared/messagePanel.css';
 @import 'shared/tournamentBracket.css';
+@import 'shared/bootstrapOverrides.css';
 
 body {
     background: linear-gradient(-45deg, #0574e2, #222a68, #654597, #ab81cd);
