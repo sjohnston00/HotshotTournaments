@@ -2,7 +2,7 @@
 {{> partials/navbar}}
 
 <body>
-  <div class="modal model-open show" id="myModal">
+  <div class="modal show" id="myModal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -29,6 +29,11 @@
     <p>Accepting team tournament invite</p>
     {{/tournament}}
   </div>
+  <script>
+    $(document).ready(function () {
+      $('#myModal').modal({ backdrop: 'static', keyboard: false })
+    })
+  </script>
 </body>
 
 {{> partials/footer}}
