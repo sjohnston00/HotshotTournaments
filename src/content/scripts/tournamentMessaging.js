@@ -42,3 +42,11 @@ form.addEventListener('submit', async (event) => {
   //set the value of the message box back to empty
   document.querySelector('#input-message').value = ''
 })
+
+socket.on('deletedMessage', (messagedId) => {
+  /**
+   * the message has been deleted in the database so now find the message card by the
+   * ID the remove it from the DOM, beware that this event will fire even when someone deletes a message in another tournament
+   * so find the DOM element by its ID first, if its there remove it, else return out of this function
+   */
+})
