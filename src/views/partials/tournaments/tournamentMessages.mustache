@@ -8,8 +8,7 @@
         <h5 class="card-title mr-auto">{{ name }}</h5>
         {{/user}}
         {{# isLoggedInUsers }}
-        <button type="button" class="btn text-white">
-          {{ id }}
+        <button type="button" class="btn text-white delete-btn" id="{{ _id }}">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="28"
