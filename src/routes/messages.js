@@ -49,17 +49,19 @@ router.get(
 //   }
 // })
 
-router.delete('/:messagedId', ensureAuthenticated, async (req, res) => {
+
+// TODO: move delete message logic to controller
+router.delete('/deleteMessage/:messageId', ensureAuthenticated, async (req, res) => {
   const { messageId } = req.params
 
   try {
-    const checkUserId = await Message.findOne({
-      _id: messageId,
-      user: req.user._id
-    })
-    if (!checkUserId) {
-      return res.status(401).send('Not your message to delete')
-    }
+    // const checkUserId = await Message.findOne({
+    //   _id: messageId,
+    //   user: req.user._id
+    // })
+    // if (!checkUserId) {
+    //   return res.status(401).send('Not your message to delete')
+    // }
 
     const deletedMessage = await Message.deleteOne({ _id: messageId })
     res.status(200).send({
