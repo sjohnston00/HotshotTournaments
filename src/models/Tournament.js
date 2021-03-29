@@ -69,8 +69,8 @@ const TournamentSchema = mongoose.Schema({
   ],
   limit: {
     type: Number,
-    max: 16,
-    min: 4,
+    max: 256, //maximum is a team tournament of 16 teams with 16 players
+    min: 4, //minimun is a 4 user tournament
     required: true
   },
   teams: [
@@ -82,7 +82,7 @@ const TournamentSchema = mongoose.Schema({
   ],
   teamsSize: {
     type: Number,
-    required: false,
+    required: false
   },
   inviteCode: {
     type: String,
