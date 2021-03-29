@@ -22,8 +22,8 @@
             <h5 class="modal-title">Joining {{ name }}</h5>
           </div>
           <div class="modal-body">
-            <p>Please choose a team to join:</p>
             {{# teams }}
+            <p>Please choose a team to join:</p>
             <a
               href="/tournaments/{{ tournamentID }}/invite/{{
                 inviteToken
@@ -31,6 +31,9 @@
               class="btn btn-outline-primary mr-2"
               >{{ name }}</a
             >
+            {{/ teams }}
+            {{^ teams }}
+            <p class="text-danger">There are no teams yet, please create one</p>
             {{/ teams }}
             {{! If tournament has reached full capacity then do not show this}}
             {{# TournamentNotFull }}
