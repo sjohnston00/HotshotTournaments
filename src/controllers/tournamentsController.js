@@ -425,13 +425,14 @@ exports.get_one_tournament = async (req, res) => {
       .populate('teams')
       .populate({
         path: 'messages',
-        select: '-_id -__v -tournament',
+        select: '-__v -tournament',
         populate: {
           path: 'user',
           model: 'users',
           select: '-_id -__v -password'
         }
       })
+      tournament.messages.forEach(msg => console.log(msg._id))  // Debugging
     //TODO: VALIDATION SHOULD BE IN ANOTHER FILE
     if (!tournament) {
       req.flash('error_msg', 'Tournament Not Found')
