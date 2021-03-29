@@ -429,10 +429,18 @@ exports.get_one_tournament = async (req, res) => {
         populate: {
           path: 'user',
           model: 'users',
-          select: '-_id -__v -password'
+          select: '-__v -password'
         }
       })
-      tournament.messages.forEach(msg => console.log(msg._id))  // Debugging
+
+    const parsedTournament = tournament.toObject()
+
+    parsedTournament.messages.forEach((message) => {
+      if (String(message.user._id) === String(req.user._id)) {
+        message.isLoggedInUsers = true
+      }
+    })
+
     //TODO: VALIDATION SHOULD BE IN ANOTHER FILE
     if (!tournament) {
       req.flash('error_msg', 'Tournament Not Found')
@@ -464,7 +472,7 @@ exports.get_one_tournament = async (req, res) => {
     //TODO: FIGURE OUT WHY THIS RENDERS THE URL WITH HTTP NOT HTTPS
     const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl
     res.render('tournaments/viewTournament', {
-      tournament: tournament,
+      tournament: parsedTournament,
       isLoggedIn: true,
       tournamentID: tournament._id,
       tournamentInviteLink: `${fullUrl}/invite/${tournament.inviteCode}`,
