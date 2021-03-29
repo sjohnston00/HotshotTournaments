@@ -65,7 +65,7 @@ exports.add_user_to_tournament = async (req, res) => {
     const tournament = await Tournament.findOne({
       _id: tournamentID,
       inviteCode: token
-    })
+    }).populate('teams')
 
     if (!tournament)
       return handlers.response_handler(
@@ -103,6 +103,20 @@ exports.add_user_to_tournament = async (req, res) => {
         req,
         res
       )
+
+    if (tournament.type === 'team') {
+      //TODO: Check if its a team tournament then render all the teams of the tournament on a dialog box that allows the user to choose or create a team
+
+      return res.render('tournaments/acceptTournamentInvite', {
+        isLoggedIn: true,
+        tournamentID: tournament._id,
+        inviteToken: tournament.inviteCode,
+        TournamentNotFull:
+          tournament.teams.length < tournament.limit ? true : false,
+        tournament: tournament
+      })
+    }
+
     // Add user to the tournament via ID
     tournament.users.push(req.user._id)
     await tournament.save()

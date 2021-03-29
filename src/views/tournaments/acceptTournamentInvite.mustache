@@ -1,0 +1,122 @@
+{{> partials/head}}
+{{> partials/navbar}}
+
+<body>
+  <div class="container min-vh-100 my-4">
+    {{#tournament}}
+    {{> partials/messages}}
+    <h1>
+      {{ name }} <span class="badge-primary badge-pill small">{{ game }}</span>
+    </h1>
+    <p class="small">Type: {{ type }}</p>
+    <p class="small">Description: {{ description }}</p>
+    <p class="small">Start Date: {{ startDate }}</p>
+    <p class="small">End Date: {{ endDate }}</p>
+    <p class="small">Tournament Size: {{ limit }} teams</p>
+    <p class="small">Team Size: {{ teamsSize }} members</p>
+    <p>Accepting team tournament invite</p>
+    <div class="modal show" id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Joining {{ name }}</h5>
+          </div>
+          <div class="modal-body">
+            {{# teams }}
+            <p>Please choose a team to join:</p>
+            <a
+              href="/tournaments/{{ tournamentID }}/invite/{{
+                inviteToken
+              }}/team/{{ _id }}"
+              class="btn btn-outline-primary mr-2"
+              >{{ name }}</a
+            >
+            {{/ teams }}
+            {{^ teams }}
+            <p class="text-danger">There are no teams yet, please create one</p>
+            {{/ teams }}
+            {{! If tournament has reached full capacity then do not show this}}
+            {{# TournamentNotFull }}
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-toggle="modal"
+              data-target="#teamsModal"
+            >
+              Add Team
+            </button>
+
+            <!-- Modal -->
+            <div
+              class="modal fade"
+              id="teamsModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="teamsModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="teamsModalLabel">Add team</h5>
+                    <button
+                      type="button"
+                      class="close"
+                      data-target="#teamsModal"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="/teams/{{ tournamentID }}/" method="POST">
+                      <div class="form-group mb-3">
+                        <label for="newTeam" class="col-form-label"
+                          >Team Name <span class="text-danger">*</span></label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="newTeam"
+                          id="newTeam"
+                          placeholder="Name of new Team..."
+                          aria-label="New Team Name"
+                          aria-describedby="textbox, enter new team name"
+                          required
+                        />
+                      </div>
+                      <div class="form-group mb-3">
+                        <button type="submit" class="btn btn-primary">
+                          Create
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{/ TournamentNotFull }}
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/tournament}}
+  </div>
+  <script>
+    $(document).ready(function () {
+      $('#myModal').modal({ backdrop: 'static', keyboard: false })
+    })
+  </script>
+</body>
+
+{{> partials/footer}}

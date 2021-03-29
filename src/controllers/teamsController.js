@@ -23,6 +23,9 @@ exports.create_new_team_post = async (req, res) => {
       })
       const createdTeam = await team.save()
       tournament.teams.push(createdTeam._id)
+      if (!tournament.users.includes(req.user._id)) {
+        tournament.users.push(req.user._id)
+      }
       await tournament.save()
       return handlers.response_handler(
         `/teams/view/${tournamentID}/team/${createdTeam._id}`,
