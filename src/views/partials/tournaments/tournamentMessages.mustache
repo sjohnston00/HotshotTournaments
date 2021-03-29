@@ -7,6 +7,7 @@
         {{#user}}
         <h5 class="card-title mr-auto">{{ name }}</h5>
         {{/user}}
+        {{# isLoggedInUsers }}
         <button type="button" class="btn text-white">
           {{ id }}
           <svg
@@ -22,6 +23,7 @@
             />
           </svg>
         </button>
+        {{/ isLoggedInUsers }}
       </div>
       <p class="card-title">{{ body }}</p>
     </div>
