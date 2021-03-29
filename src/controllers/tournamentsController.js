@@ -253,8 +253,16 @@ exports.get_create_tournament = (req, res) => {
 }
 // TODO: Review this function to see if it can be slimmed down
 exports.post_create_tournament = async (req, res) => {
-  const { name, description, game, type, startDate, endDate, size } = req.body
-  //TODO: VALIDATE BODY PARAMS IN SEPERATE FILE
+  const {
+    name,
+    description,
+    game,
+    type,
+    startDate,
+    endDate,
+    size,
+    teamSize
+  } = req.body
   if (
     !name ||
     !description ||
@@ -331,7 +339,7 @@ exports.post_create_tournament = async (req, res) => {
         users: [req.user._id],
         inviteCode: token,
         inviteCodeExpiryDate: new Date(endDate),
-        limit: Number(size)
+        limit: Number(size * teamSize)
       })
       break
     default:
