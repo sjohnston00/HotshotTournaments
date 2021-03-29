@@ -478,7 +478,8 @@ exports.get_one_tournament = async (req, res) => {
           : false,
       bracketString: JSON.stringify(tournament.bracket)
       /*REASON: Mustache will not allow front-end script to access the properties that are passed from the server
-          therefore I'm having to turn the JSON object to a string, then put the string in a <textarea/> element and hide import PropTypes from 'prop-types'
+          therefore I'm having to turn the JSON object to a string, then put the string in a <textarea/> element and hide the element
+          then use front-end js to get the string and turn back into a JSON object
           THIS IS WHY I HATE MUSTACHE
         */
     })
