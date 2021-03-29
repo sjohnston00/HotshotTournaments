@@ -1,4 +1,29 @@
-#tournament-bracket,
-#tournament-bracket * {
-  cursor: pointer;
+@import 'shared/messagePanel.css';
+@import 'shared/tournamentBracket.css';
+@import 'shared/bootstrapOverrides.css';
+
+body {
+    background: linear-gradient(
+        -45deg,
+        #0574e2,
+        #222a68,
+        #654597,
+        #ab81cd
+    );
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
 }
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+

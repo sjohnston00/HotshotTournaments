@@ -1,0 +1,29 @@
+.container{
+    color: white;
+}
+
+h1{
+    color: white;
+}
+
+.modal-header{
+    background: #4d4d4c;
+}
+
+.modal-body{
+    background: #4d4d4c;
+}
+
+.modal-footer{
+    background: #4d4d4c;
+}
+
+.toast-header{
+    background: #4d4d4c;
+}
+
+.toast-body{
+    background: #4d4d4c;
+    color: white;
+}
+
