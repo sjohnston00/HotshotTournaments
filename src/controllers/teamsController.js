@@ -1,6 +1,7 @@
 const handlers = require('../middlewares/handlers')
 const Team = require('../models/Team')
 const Tournament = require('../models/Tournament')
+const Message = require('../models/Message')
 const teamValidation = require('../validation/teamsValidation')
 
 exports.root_get_response = async (req, res) => {
@@ -114,6 +115,45 @@ exports.view_team_from_tournament = async (req, res) => {
       `/tournaments/${tournamentID}`,
       'error_msg',
       'Something went wrong, please try again later',
+      req,
+      res,
+      error.message
+    )
+  }
+}
+exports.delete_team_from_tournament = async (req, res) => {
+  const { teamID, tournamentID } = req.params
+  try {
+    const tournament = await Tournament.findById(tournamentID)
+    const team = await Team.findById(teamID)
+    const isTeamLeader = teamValidation.is_team_leader(team, req.user._id)
+    if (!isTeamLeader) {
+      return handlers.response_handler(
+        `/teams/view/${tournamentID}/team/${teamID}`,
+        'error_msg',
+        'You are not the leader of this team',
+        req,
+        res
+      )
+    }
+    await Team.deleteOne({ _id: teamID })
+    await Message.deleteMany({ team: teamID })
+    tournament.teams = tournament.teams.filter(
+      (tournamentTeam) => !tournamentTeam.equals(teamID)
+    )
+    await tournament.save()
+    return handlers.response_handler(
+      `/tournaments/${tournamentID}`,
+      'success_msg',
+      `${team.name} has been deleted`,
+      req,
+      res
+    )
+  } catch (error) {
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Something went wrong, please try again',
       req,
       res,
       error.message
