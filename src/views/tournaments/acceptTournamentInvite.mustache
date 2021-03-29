@@ -2,18 +2,6 @@
 {{> partials/navbar}}
 
 <body>
-  <div class="modal show" id="myModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Modal title</h5>
-        </div>
-        <div class="modal-body">
-          <p>Modal body text goes here.</p>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="container min-vh-100 my-4">
     {{#tournament}}
     {{> partials/messages}}
@@ -27,6 +15,23 @@
     <p class="small">Tournament Size: {{ limit }} teams</p>
     <p class="small">Team Size: {{ teamsSize }} members</p>
     <p>Accepting team tournament invite</p>
+    <div class="modal show" id="myModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Joining {{ name }}</h5>
+          </div>
+          <div class="modal-body">
+            <p>Please choose a team to join:</p>
+            {{# teams }}
+            <a href="/" class="btn btn-outline-primary mr-2">{{ name }}</a>
+            {{/ teams }}
+            {{! If tournament has reached full capacity then do not show this}}
+            <a href="/" class="btn btn-primary mr-2">Add a team</a>
+          </div>
+        </div>
+      </div>
+    </div>
     {{/tournament}}
   </div>
   <script>
