@@ -88,14 +88,7 @@ exports.view_team_from_tournament = async (req, res) => {
           select: '-_id -__v -password'
         }
       })
-    let found = false
-    for (let index = 0; index < team.users.length; index++) {
-      const user = team.users[index]
-      if (user._id.equals(req.user._id)) {
-        found = true
-        break
-      }
-    }
+    let found = teamValidation.user_Is_In_Team(team, req.user._id)
     if (!found) {
       return handlers.response_handler(
         `/tournaments/${tournamentID}`,
@@ -113,7 +106,8 @@ exports.view_team_from_tournament = async (req, res) => {
       tournamentID: tournament._id,
       token: tournament.token,
       tournamentTeamInviteLink: `${inviteLink}/tournaments/${tournament._id}/invite/${tournament.inviteCode}/team/${team._id}`,
-      team: team
+      team: team,
+      isTeamLeader: teamValidation.is_team_leader(team, req.user._id)
     })
   } catch (error) {
     return handlers.response_handler(
