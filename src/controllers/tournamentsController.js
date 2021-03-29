@@ -112,7 +112,9 @@ exports.add_user_to_tournament = async (req, res) => {
         tournamentID: tournament._id,
         inviteToken: tournament.inviteCode,
         TournamentNotFull:
-          tournament.teams.length < tournament.limit ? true : false,
+          tournament.teams.length < tournament.limit / tournament.teamSize
+            ? true
+            : false,
         tournament: tournament
       })
     }
@@ -339,7 +341,8 @@ exports.post_create_tournament = async (req, res) => {
         users: [req.user._id],
         inviteCode: token,
         inviteCodeExpiryDate: new Date(endDate),
-        limit: Number(size * teamSize)
+        limit: Number(size * teamSize),
+        teamSize: Number(teamSize)
       })
       break
     default:
@@ -470,7 +473,9 @@ exports.get_one_tournament = async (req, res) => {
       isTournamentCreator: isTournamentCreator,
       isTeamTournament: tournament.type === 'team' ? true : false,
       teamsNotEqualsTournamentSize:
-        tournament.teams.length !== tournament.limit ? true : false,
+        tournament.teams.length < tournament.limit / tournament.teamSize
+          ? true
+          : false,
       bracketString: JSON.stringify(tournament.bracket)
       /*REASON: Mustache will not allow front-end script to access the properties that are passed from the server
           therefore I'm having to turn the JSON object to a string, then put the string in a <textarea/> element and hide import PropTypes from 'prop-types'
