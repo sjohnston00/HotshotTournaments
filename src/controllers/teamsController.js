@@ -1,6 +1,7 @@
 const handlers = require('../middlewares/handlers')
 const Team = require('../models/Team')
 const Tournament = require('../models/Tournament')
+const teamValidation = require('../validation/teamsValidation')
 
 exports.root_get_response = async (req, res) => {
   res.send('teams router')
@@ -11,6 +12,22 @@ exports.create_new_team_post = async (req, res) => {
 
   try {
     const tournament = await Tournament.findById(tournamentID)
+    const teamsInTournament = await Team.find({ tournament: tournamentID })
+
+    const found = teamValidation.user_Is_In_Any_Team(
+      teamsInTournament,
+      req.user._id
+    )
+
+    if (found) {
+      return handlers.response_handler(
+        `/tournaments/${tournament._id}`,
+        'error_msg',
+        'You are already part of a team in this tournament',
+        req,
+        res
+      )
+    }
 
     try {
       const team = new Team({
@@ -64,7 +81,7 @@ exports.view_team_from_tournament = async (req, res) => {
       .populate('users')
       .populate({
         path: 'messages',
-        select: '-_id -__v -tournament',
+        select: ' -__v -tournament',
         populate: {
           path: 'user',
           model: 'users',
