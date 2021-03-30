@@ -389,8 +389,25 @@ exports.generate_tournament_bracket = async (req, res) => {
       res
     )
   }
+  switch (tournament.type) {
+    case 'single':
+      brackets.generate_user_bracket(tournament)
+      break
 
-  brackets.generate_user_bracket(tournament)
+    case 'team':
+      brackets.generate_team_bracket(tournament)
+      break
+
+    default:
+      return handlers.response_handler(
+        `/tournaments/myTournaments`,
+        'error_msg',
+        'Invalid tournament type',
+        req,
+        res,
+        `Please check ${tournament._id} in the database, the tournament type is invalid`
+      )
+  }
 
   try {
     tournament.markModified('bracket') //this tells mongoose thats the bracket has been modified so make sure to save it this way

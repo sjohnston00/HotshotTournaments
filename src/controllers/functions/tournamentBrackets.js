@@ -30,4 +30,33 @@ exports.generate_user_bracket = (tournament) => {
   return tournament
 }
 
-exports.generate_team_bracket = () => {}
+/**
+ * @description Generate a tournament bracket for a teams users tournament, using the teams array in the tournament
+ * @param {Object} tournament The tournament from the database, make sure the teams array has been populated
+ */
+exports.generate_team_bracket = (tournament) => {
+  let tournamentTeams = tournament.teams
+
+  for (let index = 0; index < tournament.bracket.teams.length; index++) {
+    const currentArray = tournament.bracket.teams[index]
+    const faceOff = addRandomUsers(currentArray)
+
+    tournament.bracket.teams[index] = faceOff
+  }
+  function addRandomUsers(array) {
+    for (let index = 0; index < array.length; index++) {
+      const randomTeam =
+        tournamentTeams[Math.floor(Math.random() * tournamentTeams.length)]
+      if (randomTeam == undefined) {
+        return array
+      } else {
+        array[index] = randomTeam.name
+        tournamentTeams = tournamentTeams.filter(
+          (item) => !item._id.equals(randomTeam._id)
+        )
+      }
+    }
+    return array
+  }
+  return tournament
+}
