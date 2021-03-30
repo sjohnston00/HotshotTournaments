@@ -1,8 +1,5 @@
-const deployed = true
-const connectionString = deployed
-  ? 'https://hotshot-tournaments.herokuapp.com/'
-  : 'http://localhost:8000'
-const socket = io.connect(connectionString)
+const CONNECTION_STRING = 'https://hotshot-tournaments.herokuapp.com/'
+const socket = io.connect(CONNECTION_STRING)
 
 const form = document.querySelector('#send-message-form')
 const message = document.querySelector('#input-message')

@@ -1,65 +1,66 @@
 {{> partials/head}}
 {{> partials/navbar}}
 <body>
-    <div class="container">
-      {{#tournament}}
-      <h1>
-        {{name}} <span class="badge-primary badge-pill small">{{game}}</span>
-      </h1>
-      <p class="small">Type: {{type}}</p>
-      <p class="small">Description: {{description}}</p>
-      <p class="small">Start Date: {{startDate}}</p>
-      <p class="small">End Date: {{endDate}}</p>
-      <p class="small">Tournament Size: {{limit}}</p>
-      
-      <h2>Bracket</h2>
-      {{> partials/messages}}
-      <div
-        id="tournament-bracket"
-        class="w-100 d-flex justify-content-center align-items-center my-4"
-      ></div>
-      <textarea id='tournament-bracket-textarea' class='d-none'>
-        {{bracketString}}
-      </textarea>
-      <p id="tournamentID" class="d-none">{{_id}}</p>
-      {{#isTournamentCreator}}
-        {{> partials/tournaments/tournamentCreator}}
-      {{/isTournamentCreator}}
+  <div class="container">
+    {{#tournament}}
+    <h1>
+      {{ name }} <span class="badge-primary badge-pill small">{{ game }}</span>
+    </h1>
+    <p class="small">Type: {{ type }}</p>
+    <p class="small">Description: {{ description }}</p>
+    <p class="small">Start Date: {{ startDate }}</p>
+    <p class="small">End Date: {{ endDate }}</p>
+    <p class="small">Tournament Size: {{ limit }}</p>
 
-      {{#isTeamTournament}}
-        {{> partials/tournaments/teams}}
-      {{/isTeamTournament}}
-      <h4>Users</h4>
-      <div
-        class="d-flex flex-wrap justify-content-space-around align-items-center my-4"
-      >
-        {{#users}}
-        <div class="card mr-4 mb-4">
-          <div class="card-body">
-            <h5 class="card-title">{{name}}</h5>
-            <p class="card-text"><b>Email: </b> {{email}}</p>
-          </div>
-        </div>
-        {{/users}} {{^users}}
-        <p class="text-danger">
-          Something must have gone wrong, no one is part of this tournament
-        </p>
-        {{/users}}
-      </div>
-
-          {{> partials/tournaments/tournamentMessages}}
-
-      {{/tournament}}
-      <a href="/tournaments/myTournaments" class="btn btn-secondary mr-4">Back</a>
+    <h2>Bracket</h2>
+    {{> partials/messages}}
+    <div
+      id="tournament-bracket"
+      class="w-100 d-flex justify-content-center align-items-center my-4"
+    ></div>
+    <textarea id="tournament-bracket-textarea" class="d-none">
+        {{ bracketString }}
+      </textarea
+    >
+    <p id="tournamentID" class="d-none">{{ _id }}</p>
     {{#isTournamentCreator}}
-      {{> partials/tournaments/tournamentActions}}  
-    {{/isTournamentCreator}} 
+    {{> partials/tournaments/tournamentCreator}}
+    {{/isTournamentCreator}}
+
+    {{#isTeamTournament}}
+    {{> partials/tournaments/teams}}
+    {{/isTeamTournament}}
+    <h4>Users</h4>
+    <div
+      class="d-flex flex-wrap justify-content-space-around align-items-center my-4"
+    >
+      {{#users}}
+      <div class="card mr-4 mb-4">
+        <div class="card-body">
+          <h5 class="card-title">{{ name }}</h5>
+          <p class="card-text"><b>Email: </b> {{ email }}</p>
+        </div>
+      </div>
+      {{/users}} {{^users}}
+      <p class="text-danger">
+        Something must have gone wrong, no one is part of this tournament
+      </p>
+      {{/users}}
+    </div>
+
+    {{> partials/tournaments/tournamentMessages}}
+
+    {{/tournament}}
+    <a href="/tournaments/myTournaments" class="btn btn-secondary mr-4">Back</a>
+    {{#isTournamentCreator}}
+    {{> partials/tournaments/tournamentActions}}
+    {{/isTournamentCreator}}
   </div>
 
-    <script src="/scripts/tournamentMessaging.js" defer></script>
-    <script src="/scripts/copyText.js" defer></script>
-    <link rel="stylesheet" href="/css/jquery.bracket.min.css" />
-    <script src="/scripts/tournament-bracket.js" defer></script>
-    <script src="/scripts/jquery.bracket.min.js" defer></script>
-  </body>
+  <script src="/scripts/tournamentMessaging.js" defer></script>
+  <script src="/scripts/copyText.js" defer></script>
+  <link rel="stylesheet" href="/css/jquery.bracket.min.css" />
+  <script src="/scripts/tournament-bracket.js" defer></script>
+  <script src="/scripts/jquery.bracket.min.js" defer></script>
+</body>
 {{> partials/footer}}
