@@ -6,35 +6,39 @@ const message = document.querySelector('#input-message')
 const tournamentID = document.querySelector('#tournamentID').textContent
 const messagesContainer = document.querySelector('#messages-container')
 
-const addDeleteEventListeners = (buttons) => {
-  // Button's ID is the same as the associated message's ID
-  for (let button of buttons) {
-    button.addEventListener('click', () => {
-      console.log(button.id)
-      fetch(`/messages/deleteMessage/${button.id}`, {
-        method: 'DELETE',
-        body: {
-          messageId: button.id
-        }
-      })
+let buttons
+
+const deleteEventFunction = (element) =>
+  element.addEventListener('click', () => {
+    fetch(`/messages/deleteMessage/${element.id}`, {
+      method: 'DELETE',
+      body: {
+        messageId: element.id
+      }
     })
+  })
+
+const addDeleteEventListeners = (elements) => {
+  // Button's ID is the same as the associated message's ID
+  for (let element of elements) {
+    deleteEventFunction(element)
   }
 }
 
-const removeAddEventListeners = (buttons) => {
+const removeEventListeners = (buttons) => {
   for (let button of buttons) {
-    button.removeEventListener('click')
+    button.removeEventListener('click', deleteEventFunction(button))
   }
 }
 
-const buttons = document.getElementsByClassName('delete-btn')
+buttons = document.getElementsByClassName('delete-btn')
 addDeleteEventListeners(buttons)
 
 socket.on('newMessage', (message) => {
   messagesContainer.innerHTML =
     messagesContainer.innerHTML +
     /*html*/ `
-  <div class="card mb-3">
+  <div class="card mb-3 tournament-message" id="message-${message._id}">
     <div class="card-body">
     <div class="d-flex">
     <h5 class="card-title mr-auto">${message.user.name}</h5>
@@ -57,6 +61,10 @@ socket.on('newMessage', (message) => {
     </div>
   </div>
   `
+
+  buttons = document.getElementsByClassName('delete-btn')
+  removeEventListeners(buttons)
+  addDeleteEventListeners(buttons)
 })
 
 form.addEventListener('submit', async (event) => {
@@ -79,6 +87,6 @@ form.addEventListener('submit', async (event) => {
   document.querySelector('#input-message').value = ''
 })
 
-socket.on('deletedMessage', (messagedId) => {
-  document.getElementById(`message-${messagedId}`).remove()
+socket.on('deletedMessage', (messageId) => {
+  document.getElementById(`message-${messageId}`).remove()
 })
