@@ -38,15 +38,14 @@ socket.on('newMessage', (message) => {
   messagesContainer.innerHTML =
     messagesContainer.innerHTML +
     /*html*/ `
-  <div class="card mb-3 tournament-message" id="message-${message._id}">
-    <div class="card-body">
-    <div class="d-flex">
-    <h5 class="card-title mr-auto">${message.user.name}</h5>
-    <button type="button" class="btn text-white delete-btn" id="${message._id}"> 
+  <div class="card mb-3 tournament-message border-0" id="message-${message._id}">
+    <div class="d-flex card-header align-items-center">
+    <h5>${message.user.name}</h5>
+    <button type="button" class="btn ml-auto text-white delete-btn" id="${message._id}"> 
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="28"
-        height="28"
+        width="16"
+        height="16"
         fill="currentColor"
         class="bi bi-x"
         viewBox="0 0 16 16"
@@ -57,7 +56,11 @@ socket.on('newMessage', (message) => {
       </svg>
     </button>
   </div>
-  <p class="card-title">${message.body}</p>
+    <div class="card-body">
+      <p class="card-text px-3">${message.body}</p>
+    </div>
+    <div class="card-footer font-italic">
+      ${message.createdAt}
     </div>
   </div>
   `
@@ -65,6 +68,7 @@ socket.on('newMessage', (message) => {
   buttons = document.getElementsByClassName('delete-btn')
   removeEventListeners(buttons)
   addDeleteEventListeners(buttons)
+  console.log(buttons)
 })
 
 form.addEventListener('submit', async (event) => {

@@ -4,11 +4,12 @@ const Tournament = require('../models/Tournament')
 const Team = require('../models/Team')
 
 exports.post_message_to_tournament = async (req, res) => {
+  const today = new Date()
   const { tournamentID } = req.params
   const message = new Message({
     user: req.user._id,
     isAnnouncement: req.body.isAnnouncement,
-    createdAt: new Date(),
+    createdAt: today,
     tournament: tournamentID,
     name: req.user.name,
     body: req.body.message
@@ -20,7 +21,10 @@ exports.post_message_to_tournament = async (req, res) => {
       { _id: tournamentID },
       { $push: { messages: savedMessage._id } }
     )
-    return res.json({ success: true, message: 'message successfully added' })
+    return res.json({
+      success: true,
+      message: 'message successfully added',
+    })
   } catch (error) {
     return handlers.response_handler(
       `/tournaments/${tournamentID}`,
