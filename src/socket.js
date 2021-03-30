@@ -29,9 +29,6 @@ exports.createConnection = (server) => {
           break
 
         case 'delete':
-          console.log(
-            `Deleted message: ${change.documentKey._id} from ${change.ns.db} collection ${change.ns.coll}`
-          )
           io.emit('deletedMessage', change.documentKey._id)
           break
       }
