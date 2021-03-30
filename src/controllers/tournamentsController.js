@@ -1,4 +1,6 @@
 const handlers = require('../middlewares/handlers')
+const tournamentValidation = require('../validation/tournamentValidation')
+const brackets = require('./functions/tournamentBrackets')
 const moment = require('moment')
 const crypto = require('crypto')
 const Tournament = require('../models/Tournament')
@@ -112,7 +114,9 @@ exports.add_user_to_tournament = async (req, res) => {
         tournamentID: tournament._id,
         inviteToken: tournament.inviteCode,
         TournamentNotFull:
-          tournament.teams.length < tournament.limit ? true : false,
+          tournament.teams.length < tournament.limit / tournament.teamSize
+            ? true
+            : false,
         tournament: tournament
       })
     }
@@ -339,7 +343,8 @@ exports.post_create_tournament = async (req, res) => {
         users: [req.user._id],
         inviteCode: token,
         inviteCodeExpiryDate: new Date(endDate),
-        limit: Number(size * teamSize)
+        limit: Number(size * teamSize),
+        teamSize: Number(teamSize)
       })
       break
     default:
@@ -360,58 +365,69 @@ exports.post_create_tournament = async (req, res) => {
 
 exports.generate_tournament_bracket = async (req, res) => {
   const { tournamentID } = req.params
-  const tournament = await Tournament.findOne({
-    _id: tournamentID
-  }).populate('users')
-
+  const tournament = await tournamentValidation.tournament_exists(tournamentID)
   if (!tournament) {
-    req.flash('error_msg', 'Tournament Not Found')
-    return res.status(404).redirect('/tournaments/myTournaments')
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Tournament Not Found',
+      req,
+      res
+    )
   }
 
-  const isTournamentCreator = tournament.creator.equals(req.user._id)
-    ? true
-    : false
-
+  const isTournamentCreator = tournamentValidation.is_tournament_creator(
+    tournament,
+    req.user._id
+  )
   if (!isTournamentCreator) {
-    req.flash('error_msg', 'You are not part of this tournament')
-    return res.status(401).redirect('/tournaments/myTournaments')
+    return handlers.response_handler(
+      `/tournaments/${tournament._id}`,
+      'error_msg',
+      'You are not the creator of this tournament',
+      req,
+      res
+    )
   }
+  switch (tournament.type) {
+    case 'single':
+      brackets.generate_user_bracket(tournament)
+      break
 
-  //MAKE A COPY OF THE TOURNAMENT USERS ARRAY
-  let tournamentUsers = tournament.users
+    case 'team':
+      brackets.generate_team_bracket(tournament)
+      break
 
-  for (let index = 0; index < tournament.bracket.teams.length; index++) {
-    const currentArray = tournament.bracket.teams[index]
-    const faceOff = addRandomUsers(currentArray)
-
-    tournament.bracket.teams[index] = faceOff
-  }
-  function addRandomUsers(array) {
-    for (let index = 0; index < array.length; index++) {
-      const randomUser =
-        tournamentUsers[Math.floor(Math.random() * tournamentUsers.length)]
-      if (randomUser == undefined) {
-        return array
-      } else {
-        array[index] = randomUser.name
-        tournamentUsers = tournamentUsers.filter(
-          (item) => item.name !== randomUser.name
-        )
-      }
-    }
-    return array
+    default:
+      return handlers.response_handler(
+        `/tournaments/myTournaments`,
+        'error_msg',
+        'Invalid tournament type',
+        req,
+        res,
+        `Please check ${tournament._id} in the database, the tournament type is invalid`
+      )
   }
 
   try {
     tournament.markModified('bracket') //this tells mongoose thats the bracket has been modified so make sure to save it this way
     const savedTournament = await tournament.save()
-    req.flash('success_msg', 'Tournament bracket has been generated')
-    return res.redirect(`/tournaments/${savedTournament._id}`)
+    return handlers.response_handler(
+      `/tournaments/${savedTournament._id}`,
+      'success_msg',
+      `${savedTournament.name} bracket has been generated`,
+      req,
+      res
+    )
   } catch (error) {
-    console.error('\x1b[31m', `Error: ${error.message}`)
-    req.flash('error_msg', 'Something went wrong, Please try again later')
-    res.redirect('/tournaments/myTournaments')
+    return handlers.response_handler(
+      `/tournaments/myTournaments`,
+      'error_msg',
+      'Something went wrong, Please try again later',
+      req,
+      res,
+      error.message
+    )
   }
 }
 
@@ -470,10 +486,13 @@ exports.get_one_tournament = async (req, res) => {
       isTournamentCreator: isTournamentCreator,
       isTeamTournament: tournament.type === 'team' ? true : false,
       teamsNotEqualsTournamentSize:
-        tournament.teams.length !== tournament.limit ? true : false,
+        tournament.teams.length < tournament.limit / tournament.teamSize
+          ? true
+          : false,
       bracketString: JSON.stringify(tournament.bracket)
       /*REASON: Mustache will not allow front-end script to access the properties that are passed from the server
-          therefore I'm having to turn the JSON object to a string, then put the string in a <textarea/> element and hide import PropTypes from 'prop-types'
+          therefore I'm having to turn the JSON object to a string, then put the string in a <textarea/> element and hide the element
+          then use front-end js to get the string and turn back into a JSON object
           THIS IS WHY I HATE MUSTACHE
         */
     })

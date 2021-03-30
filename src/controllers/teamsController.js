@@ -1,6 +1,8 @@
 const handlers = require('../middlewares/handlers')
 const Team = require('../models/Team')
 const Tournament = require('../models/Tournament')
+const Message = require('../models/Message')
+const teamValidation = require('../validation/teamsValidation')
 
 exports.root_get_response = async (req, res) => {
   res.send('teams router')
@@ -11,6 +13,22 @@ exports.create_new_team_post = async (req, res) => {
 
   try {
     const tournament = await Tournament.findById(tournamentID)
+    const teamsInTournament = await Team.find({ tournament: tournamentID })
+
+    const found = teamValidation.user_Is_In_Any_Team(
+      teamsInTournament,
+      req.user._id
+    )
+
+    if (found) {
+      return handlers.response_handler(
+        `/tournaments/${tournament._id}`,
+        'error_msg',
+        'You are already part of a team in this tournament',
+        req,
+        res
+      )
+    }
 
     try {
       const team = new Team({
@@ -64,21 +82,14 @@ exports.view_team_from_tournament = async (req, res) => {
       .populate('users')
       .populate({
         path: 'messages',
-        select: '-_id -__v -tournament',
+        select: ' -__v -tournament',
         populate: {
           path: 'user',
           model: 'users',
           select: '-_id -__v -password'
         }
       })
-    let found = false
-    for (let index = 0; index < team.users.length; index++) {
-      const user = team.users[index]
-      if (user._id.equals(req.user._id)) {
-        found = true
-        break
-      }
-    }
+    let found = teamValidation.user_Is_In_Team(team, req.user._id)
     if (!found) {
       return handlers.response_handler(
         `/tournaments/${tournamentID}`,
@@ -96,13 +107,53 @@ exports.view_team_from_tournament = async (req, res) => {
       tournamentID: tournament._id,
       token: tournament.token,
       tournamentTeamInviteLink: `${inviteLink}/tournaments/${tournament._id}/invite/${tournament.inviteCode}/team/${team._id}`,
-      team: team
+      team: team,
+      isTeamLeader: teamValidation.is_team_leader(team, req.user._id)
     })
   } catch (error) {
     return handlers.response_handler(
       `/tournaments/${tournamentID}`,
       'error_msg',
       'Something went wrong, please try again later',
+      req,
+      res,
+      error.message
+    )
+  }
+}
+exports.delete_team_from_tournament = async (req, res) => {
+  const { teamID, tournamentID } = req.params
+  try {
+    const tournament = await Tournament.findById(tournamentID)
+    const team = await Team.findById(teamID)
+    const isTeamLeader = teamValidation.is_team_leader(team, req.user._id)
+    if (!isTeamLeader) {
+      return handlers.response_handler(
+        `/teams/view/${tournamentID}/team/${teamID}`,
+        'error_msg',
+        'You are not the leader of this team',
+        req,
+        res
+      )
+    }
+    await Team.deleteOne({ _id: teamID })
+    await Message.deleteMany({ team: teamID })
+    tournament.teams = tournament.teams.filter(
+      (tournamentTeam) => !tournamentTeam.equals(teamID)
+    )
+    await tournament.save()
+    return handlers.response_handler(
+      `/tournaments/${tournamentID}`,
+      'success_msg',
+      `${team.name} has been deleted`,
+      req,
+      res
+    )
+  } catch (error) {
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Something went wrong, please try again',
       req,
       res,
       error.message

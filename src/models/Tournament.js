@@ -80,7 +80,7 @@ const TournamentSchema = mongoose.Schema({
       ref: 'teams'
     }
   ],
-  teamsSize: {
+  teamSize: {
     type: Number,
     required: false
   },

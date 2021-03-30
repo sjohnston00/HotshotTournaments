@@ -4,147 +4,93 @@
   <div class="container my-4 min-vh-100">
     {{> partials/messages}}
     {{#tournament}}
-      <h1>
-        {{name}} <span class="badge-primary badge-pill small">{{game}}</span>
-      </h1>
-      <p class="small">Type: {{type}}</p>
-      <p class="small">Description: {{description}}</p>
-      <p class="small">Start Date: {{startDate}}</p>
-      <p class="small">End Date: {{endDate}}</p>
-      <p class="small">Tournament Size: {{limit}}</p>
+    <h1>
+      {{ name }} <span class="badge-primary badge-pill small">{{ game }}</span>
+    </h1>
+    <p class="small">Type: {{ type }}</p>
+    <p class="small">Description: {{ description }}</p>
+    <p class="small">Start Date: {{ startDate }}</p>
+    <p class="small">End Date: {{ endDate }}</p>
+    <p class="small">Tournament Size: {{ limit }}</p>
     {{/tournament}}
 
-
     {{#team}}
-      <h2>{{name}}</h2>
-      <h4>Members</h4>
-      {{#users}}
-        <div class="card mr-4 mb-4">
-          <div class="card-body">
-            <h5 class="card-title">{{name}}</h5>
-            <p class="card-text"><b>Email: </b> {{email}}</p>
-          </div>
-        </div>
-      {{/users}}
-      {{^users}}
-        <p class="text-danger">There are no members in this team</p>
-      {{/users}}
-      <h4>Messages Board</h4>
-      <div id="messages-container" class="mb-3">
-        {{#messages}} 
-          {{#user}} 
-            <div class="card mb-3">
-              <div class="card-body">
-                <h5 class="card-title">{{name}}</h5>
-                <p class="card-title">{{body}}</p>
-              </div>
-            </div>
-          {{/user}}
-        {{/messages}} 
-        {{^messages}}
-          <p class="text-danger">
-            Currently there are no messages in this tournament
-          </p>
-        {{/messages}} 
+    <h2>{{ name }}</h2>
+    <h4>Members</h4>
+    {{#users}}
+    <div class="card mr-4 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">{{ name }}</h5>
+        <p class="card-text"><b>Email: </b> {{ email }}</p>
       </div>
-      <form id="send-message-form" action="/tournaments/{{_id}}/addMessage" method="POST">
-        <div class="input-group mb-3">
-          <input id="input-message" type="text" name="message" class="form-control" placeholder="Message..." aria-label="Message..." aria-describedby="the message to be sent" required>
-          <div class="input-group-append">
-            <button id="btn-send-message" type="submit" class="btn btn-outline-primary" type="button">Send</button>
-          </div>
+    </div>
+    {{/users}}
+    {{^users}}
+    <p class="text-danger">There are no members in this team</p>
+    {{/users}}
+    <h4>Messages Board</h4>
+    <div id="messages-container" class="mb-3">
+      {{#messages}}
+      {{#user}}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ name }}</h5>
+          <p class="card-title">{{ body }}</p>
         </div>
-      </form>
+      </div>
+      {{/user}}
+      {{/messages}}
+      {{^messages}}
+      <p class="text-danger">
+        Currently there are no messages in this tournament
+      </p>
+      {{/messages}}
+    </div>
+    <form
+      id="send-message-form"
+      action="/tournaments/{{ _id }}/addMessage"
+      method="POST"
+    >
+      <div class="input-group mb-3">
+        <input
+          id="input-message"
+          type="text"
+          name="message"
+          class="form-control"
+          placeholder="Message..."
+          aria-label="Message..."
+          aria-describedby="the message to be sent"
+          required
+        />
+        <div class="input-group-append">
+          <button
+            id="btn-send-message"
+            type="submit"
+            class="btn btn-outline-primary"
+            type="button"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </form>
     {{/team}}
 
     {{#tournament}}
-      <a href="/tournaments/{{_id}}" class="btn btn-secondary">Back</a>
-  <button
-    type="button"
-    class="btn btn-primary"
-    data-toggle="modal"
-    data-target="#inviteModal"
-  >
-    Add Members
-  </button>
+    <a href="/tournaments/{{ _id }}" class="btn btn-secondary">Back</a>
 
-  <!-- Modal -->
-  <div
-    class="modal fade"
-    id="inviteModal"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="inviteModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="inviteModalLabel">Add members</h5>
-          <button
-            type="button"
-            class="close"
-            data-dismiss="modal"
-            aria-label="Close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>
-            Copy this link and send it to the people you would like to invite
-            to your team
-          </p>
-          <div class="input-group mb-3">
-            <input
-              type="text"
-              class="form-control"
-              id="tournamentInviteLink"
-              value="{{tournamentTeamInviteLink}}"
-              aria-label="Tournament Invite Link to this Team"
-              aria-describedby="A textbox so users can copy the tournament link for this team"
-              readonly
-            />
-            <div class="input-group-append">
-              <button
-                class="btn btn-outline-primary"
-                onclick="copyText()"
-                id="copy-link-btn"
-              >
-                <svg
-                  height="1em"
-                  width="1em "
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 448 512"
-                >
-                  <path
-                    d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-dismiss="modal"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-{{/tournament}}
+    {{#isTeamLeader}}
+    {{> partials/teams/teamLeaderActions}}
+    {{/isTeamLeader}}
+    {{/tournament}}
   </div>
 
-  {{#tournament}}<p id="tournamentID" class="d-none">{{_id}}</p>{{/tournament}}
-  {{#team}}<p id="teamID" class="d-none">{{_id}}</p>{{/team}}
+  {{#tournament}}
+  <p id="tournamentID" class="d-none">{{ _id }}</p>
+  {{/tournament}} {{#team}}
+  <p id="teamID" class="d-none">{{ _id }}</p>
+  {{/team}}
   <script src="/scripts/teamMessaging.js" defer></script>
   <script src="/scripts/copyText.js" defer></script>
-
 </body>
 {{> partials/footer}}
