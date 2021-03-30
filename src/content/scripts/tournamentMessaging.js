@@ -6,24 +6,29 @@ const message = document.querySelector('#input-message')
 const tournamentID = document.querySelector('#tournamentID').textContent
 const messagesContainer = document.querySelector('#messages-container')
 
-const addDeleteEvent = (buttons) => {
-  let selectedButtonId // This is the same as the message ID
+const addDeleteEventListeners = (buttons) => {
+  // Button's ID is the same as the associated message's ID
   for (let button of buttons) {
     button.addEventListener('click', () => {
       console.log(button.id)
-      selectedButtonId = button.id
-      fetch(`/messages/deleteMessage/${selectedButtonId}`, {
+      fetch(`/messages/deleteMessage/${button.id}`, {
         method: 'DELETE',
         body: {
-          messageId: selectedButtonId
+          messageId: button.id
         }
       })
     })
   }
 }
 
+const removeAddEventListeners = (buttons) => {
+  for (let button of buttons) {
+    button.removeEventListener('click')
+  }
+}
+
 const buttons = document.getElementsByClassName('delete-btn')
-addDeleteEvent(buttons)
+addDeleteEventListeners(buttons)
 
 socket.on('newMessage', (message) => {
   messagesContainer.innerHTML =
