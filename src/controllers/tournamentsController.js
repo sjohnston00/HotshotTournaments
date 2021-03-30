@@ -1,4 +1,6 @@
 const handlers = require('../middlewares/handlers')
+const tournamentValidation = require('../validation/tournamentValidation')
+const brackets = require('./functions/tournamentBrackets')
 const moment = require('moment')
 const crypto = require('crypto')
 const Tournament = require('../models/Tournament')
@@ -363,22 +365,29 @@ exports.post_create_tournament = async (req, res) => {
 
 exports.generate_tournament_bracket = async (req, res) => {
   const { tournamentID } = req.params
-  const tournament = await Tournament.findOne({
-    _id: tournamentID
-  }).populate('users')
-
+  const tournament = await tournamentValidation.tournament_exists(tournamentID)
   if (!tournament) {
-    req.flash('error_msg', 'Tournament Not Found')
-    return res.status(404).redirect('/tournaments/myTournaments')
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Tournament Not Found',
+      req,
+      res
+    )
   }
 
-  const isTournamentCreator = tournament.creator.equals(req.user._id)
-    ? true
-    : false
-
+  const isTournamentCreator = tournamentValidation.is_tournament_creator(
+    tournament,
+    req.user._id
+  )
   if (!isTournamentCreator) {
-    req.flash('error_msg', 'You are not part of this tournament')
-    return res.status(401).redirect('/tournaments/myTournaments')
+    return handlers.response_handler(
+      `/tournaments/${tournament._id}`,
+      'error_msg',
+      'You are not the creator of this tournament',
+      req,
+      res
+    )
   }
 
   //MAKE A COPY OF THE TOURNAMENT USERS ARRAY
@@ -409,12 +418,22 @@ exports.generate_tournament_bracket = async (req, res) => {
   try {
     tournament.markModified('bracket') //this tells mongoose thats the bracket has been modified so make sure to save it this way
     const savedTournament = await tournament.save()
-    req.flash('success_msg', 'Tournament bracket has been generated')
-    return res.redirect(`/tournaments/${savedTournament._id}`)
+    return handlers.response_handler(
+      `/tournaments/${savedTournament._id}`,
+      'success_msg',
+      `${savedTournament.name} bracket has been generated`,
+      req,
+      res
+    )
   } catch (error) {
-    console.error('\x1b[31m', `Error: ${error.message}`)
-    req.flash('error_msg', 'Something went wrong, Please try again later')
-    res.redirect('/tournaments/myTournaments')
+    return handlers.response_handler(
+      `/tournaments/myTournaments`,
+      'error_msg',
+      'Something went wrong, Please try again later',
+      req,
+      res,
+      error.message
+    )
   }
 }
 
