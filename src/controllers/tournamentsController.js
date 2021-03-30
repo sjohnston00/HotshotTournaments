@@ -390,30 +390,7 @@ exports.generate_tournament_bracket = async (req, res) => {
     )
   }
 
-  //MAKE A COPY OF THE TOURNAMENT USERS ARRAY
-  let tournamentUsers = tournament.users
-
-  for (let index = 0; index < tournament.bracket.teams.length; index++) {
-    const currentArray = tournament.bracket.teams[index]
-    const faceOff = addRandomUsers(currentArray)
-
-    tournament.bracket.teams[index] = faceOff
-  }
-  function addRandomUsers(array) {
-    for (let index = 0; index < array.length; index++) {
-      const randomUser =
-        tournamentUsers[Math.floor(Math.random() * tournamentUsers.length)]
-      if (randomUser == undefined) {
-        return array
-      } else {
-        array[index] = randomUser.name
-        tournamentUsers = tournamentUsers.filter(
-          (item) => item.name !== randomUser.name
-        )
-      }
-    }
-    return array
-  }
+  brackets.generate_user_bracket(tournament)
 
   try {
     tournament.markModified('bracket') //this tells mongoose thats the bracket has been modified so make sure to save it this way

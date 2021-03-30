@@ -7,7 +7,7 @@ const Tournament = require('../models/Tournament')
  */
 exports.tournament_exists = async (tournamentID) => {
   try {
-    const tournament = await Tournament.findById(tournamentID)
+    const tournament = await Tournament.findById(tournamentID).populate('users')
     return tournament
   } catch (error) {
     console.error(error.message)
