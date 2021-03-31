@@ -11,7 +11,7 @@ const User = require('../models/User')
 exports.get_all_users_tournaments = async (req, res) => {
   try {
     const allTournaments = await Tournament.find({ users: req.user._id })
-      .populate('users', '-_id -__v -password')
+      .populate('users', '-id -__v -password')
       .populate({
         path: 'messages',
         select: '-_id -__v -tournament',

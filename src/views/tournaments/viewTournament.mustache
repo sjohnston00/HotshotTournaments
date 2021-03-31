@@ -39,6 +39,11 @@
         <div class="card-body">
           <h5 class="card-title">{{ name }}</h5>
           <p class="card-text"><b>Email: </b> {{ email }}</p>
+          {{#isTournamentCreator}}
+          <a href="/tournaments/{{ tournamentID }}/kickUser/{{ _id }}"
+            >Kick User</a
+          >
+          {{/isTournamentCreator}}
         </div>
       </div>
       {{/users}} {{^users}}

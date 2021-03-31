@@ -7,7 +7,7 @@ exports.generate_user_bracket = (tournament) => {
   let tournamentUsers = tournament.users
 
   for (let index = 0; index < tournament.bracket.teams.length; index++) {
-    const currentArray = tournament.bracket.teams[index]
+    const currentArray = new Array(2).fill(null)
     const faceOff = addRandomUsers(currentArray)
 
     tournament.bracket.teams[index] = faceOff
