@@ -658,6 +658,19 @@ exports.kick_user = async (req, res) => {
       res
     )
   }
+  const isTournamentCreator = tournamentValidation.is_tournament_creator(
+    tournament,
+    req.user.id
+  )
+  if (!isTournamentCreator) {
+    return handlers.response_handler(
+      `/tournaments/${tournament._id}`,
+      'error_msg',
+      `You are not authorized to kick users from this tournament`,
+      req,
+      res
+    )
+  }
 
   const user = await User.findById(userID)
   if (!user) {
@@ -665,6 +678,21 @@ exports.kick_user = async (req, res) => {
       `/tournaments/myTournaments`,
       'error_msg',
       `User Not Found`,
+      req,
+      res
+    )
+  }
+
+  const userID_is_tournament_creator = tournamentValidation.is_tournament_creator(
+    tournament,
+    user._id
+  )
+
+  if (userID_is_tournament_creator) {
+    return handlers.response_handler(
+      `/tournaments/${tournament._id}`,
+      'error_msg',
+      `You cannot delete yourself`,
       req,
       res
     )
