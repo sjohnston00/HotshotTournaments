@@ -32,6 +32,13 @@ const UserSchema = mongoose.Schema({
     required: false,
     default: false
   },
+  blockedTournaments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+      ref: 'tournaments'
+    }
+  ],
   emailConfirmationToken: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date

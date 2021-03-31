@@ -6,11 +6,12 @@ const crypto = require('crypto')
 const Tournament = require('../models/Tournament')
 const Message = require('../models/Message')
 const Team = require('../models/Team')
+const User = require('../models/User')
 
 exports.get_all_users_tournaments = async (req, res) => {
   try {
     const allTournaments = await Tournament.find({ users: req.user._id })
-      .populate('users', '-_id -__v -password')
+      .populate('users', '-id -__v -password')
       .populate({
         path: 'messages',
         select: '-_id -__v -tournament',
@@ -77,6 +78,16 @@ exports.add_user_to_tournament = async (req, res) => {
         req,
         res
       )
+    const user = await User.findById(req.user._id)
+    if (user.blockedTournaments.includes(tournament._id)) {
+      return handlers.response_handler(
+        `/tournaments/myTournaments`,
+        'error_msg',
+        'You have been kicked from this tournament, therefore you are not allowed to join again',
+        req,
+        res
+      )
+    }
     if (tournament.users.includes(req.user._id))
       return handlers.response_handler(
         `/tournaments/${tournamentID}`,
@@ -643,4 +654,82 @@ exports.delete_tournament = async (req, res) => {
     req.flash('error_msg', 'Something went wrong please try again later')
     return res.redirect(`/tournaments/myTournaments`)
   }
+}
+exports.kick_user = async (req, res) => {
+  const { tournamentID, userID } = req.params
+
+  const tournament = await tournamentValidation.tournament_exists(tournamentID)
+  if (!tournament) {
+    return handlers.response_handler(
+      `/tournaments/myTournaments`,
+      'error_msg',
+      `Tournament Not Found`,
+      req,
+      res
+    )
+  }
+  const isTournamentCreator = tournamentValidation.is_tournament_creator(
+    tournament,
+    req.user.id
+  )
+  if (!isTournamentCreator) {
+    return handlers.response_handler(
+      `/tournaments/${tournament._id}`,
+      'error_msg',
+      `You are not authorized to kick users from this tournament`,
+      req,
+      res
+    )
+  }
+
+  const user = await User.findById(userID)
+  if (!user) {
+    return handlers.response_handler(
+      `/tournaments/myTournaments`,
+      'error_msg',
+      `User Not Found`,
+      req,
+      res
+    )
+  }
+  const userID_is_tournament_creator = tournamentValidation.is_tournament_creator(
+    tournament,
+    user._id
+  )
+
+  if (userID_is_tournament_creator) {
+    return handlers.response_handler(
+      `/tournaments/${tournament._id}`,
+      'error_msg',
+      `You cannot delete yourself`,
+      req,
+      res
+    )
+  }
+  user.blockedTournaments.push(tournament._id)
+  tournament.users = tournament.users.filter((user) => user.id !== userID)
+
+  if (tournament.type === 'team') {
+    //remove the user from the
+    await Team.findOneAndUpdate(
+      {
+        tournament: tournamentID
+      },
+      {
+        $pull: {
+          users: user._id
+        }
+      }
+    )
+  }
+  await user.save()
+  await tournament.save()
+
+  return handlers.response_handler(
+    `/tournaments/${tournament._id}`,
+    'success_msg',
+    `Successfully removed ${user.name} from tournament`,
+    req,
+    res
+  )
 }

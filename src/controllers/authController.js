@@ -9,31 +9,34 @@ exports.post_register = async (req, res) => {
   //VALIDATE BODY
   const { name, email, password } = req.body
 
-  if (!name || !email || !password) return handlers.response_handler(
-    '/auth/register',
-    'error_msg',
-    'Please fill in all the fields',
-    req,
-    res
-  )
+  if (!name || !email || !password)
+    return handlers.response_handler(
+      '/auth/register',
+      'error_msg',
+      'Please fill in all the fields',
+      req,
+      res
+    )
 
-  if (password.length < 6) return handlers.response_handler(
-    '/auth/register',
-    'error_msg',
-    'Password must be at least 6 characters',
-    req,
-    res
-  )
+  if (password.length < 6)
+    return handlers.response_handler(
+      '/auth/register',
+      'error_msg',
+      'Password must be at least 6 characters',
+      req,
+      res
+    )
 
   //VALIDATE THAT THE EMAIL DOESN'T ALREADY EXIST
   const userWithEmail = await User.findOne({ email: email })
-  if (userWithEmail) return handlers.response_handler(
-    '/auth/register',
-    'error_msg',
-    `A user with ${email} already exists`,
-    req,
-    res
-  )
+  if (userWithEmail)
+    return handlers.response_handler(
+      '/auth/register',
+      'error_msg',
+      `A user with ${email} already exists`,
+      req,
+      res
+    )
 
   const salt = await bcrypt.genSalt(10)
   const hashedPassword = await bcrypt.hash(password, salt)
@@ -42,7 +45,8 @@ exports.post_register = async (req, res) => {
     const user = new User({
       name: name,
       email: email,
-      password: hashedPassword
+      password: hashedPassword,
+      blockedTournaments: []
     })
 
     const savedUser = await user.save()
