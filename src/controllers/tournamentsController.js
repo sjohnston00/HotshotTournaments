@@ -78,6 +78,16 @@ exports.add_user_to_tournament = async (req, res) => {
         req,
         res
       )
+    const user = await User.findById(req.user._id)
+    if (user.blockedTournaments.includes(tournament._id)) {
+      return handlers.response_handler(
+        `/tournaments/myTournaments`,
+        'error_msg',
+        'You have been kicked from this tournament, therefore you are not allowed to join again',
+        req,
+        res
+      )
+    }
     if (tournament.users.includes(req.user._id))
       return handlers.response_handler(
         `/tournaments/${tournamentID}`,
@@ -682,7 +692,6 @@ exports.kick_user = async (req, res) => {
       res
     )
   }
-
   const userID_is_tournament_creator = tournamentValidation.is_tournament_creator(
     tournament,
     user._id
@@ -697,15 +706,16 @@ exports.kick_user = async (req, res) => {
       res
     )
   }
-
+  user.blockedTournaments.push(tournament._id)
   tournament.users = tournament.users.filter((user) => user.id !== userID)
 
+  await user.save()
   await tournament.save()
 
   return handlers.response_handler(
     `/tournaments/${tournament._id}`,
     'success_msg',
-    `Successfully removed ${user._id} from tournament`,
+    `Successfully removed ${user.name} from tournament`,
     req,
     res
   )
