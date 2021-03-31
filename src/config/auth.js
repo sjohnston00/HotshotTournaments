@@ -2,33 +2,43 @@
 function ensureAuthenticated(req, res, next) {
   //isAutheticated is a passport function
   if (req.isAuthenticated()) {
-    return next();
+    return next()
   }
-  req.flash("error_msg", "Please log in to access that page");
+  req.flash('error_msg', 'Please log in to access that page')
   //credit https://github.com/jaredhanson/connect-ensure-login/blob/master/lib/ensureLoggedIn.js
   if (req.session) {
-    req.session.returnTo = req.originalUrl || req.url;
+    req.session.returnTo = req.originalUrl || req.url
   }
-  return res.status(403).redirect("/auth/login");
+  return res.status(403).redirect('/auth/login')
 
-  next();
+  next()
+}
+
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    req.isLoggedIn = true
+    return next()
+  }
+  req.isLoggedIn = false
+  return next()
 }
 
 //users will be taken fordward to tournaments/myTournaments and skip login if they are already logged in
 function forwardAuthenticated(req, res, next) {
   if (!req.isAuthenticated()) {
-    return next();
+    return next()
   }
-  res.redirect("/tournaments/myTournaments");
+  res.redirect('/tournaments/myTournaments')
 }
 
 //Authenticate that this user is part of the tournament
 function authUserTournament(user, tournament) {
-  return tournament.userId === user._id;
+  return tournament.userId === user._id
 }
 
 module.exports = {
   ensureAuthenticated,
   forwardAuthenticated,
-  authUserTournament
-};
+  authUserTournament,
+  isLoggedIn
+}
