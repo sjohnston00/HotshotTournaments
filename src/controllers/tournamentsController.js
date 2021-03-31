@@ -709,6 +709,20 @@ exports.kick_user = async (req, res) => {
   user.blockedTournaments.push(tournament._id)
   tournament.users = tournament.users.filter((user) => user.id !== userID)
 
+  const tournamentTeams = await Team.find({ tournament: tournamentID })
+
+  if (tournament.type === 'team') {
+    for (let index = 0; index < tournamentTeams.length; index++) {
+      const team = tournamentTeams[index]
+      for (let index = 0; index < team.users.length; index++) {
+        const teamUser = team.users[index]
+        if (teamUser.equals(user._id)) {
+          team.users = team.users.filter((user) => !user.equals(user._id))
+        }
+      }
+    }
+  }
+  await tournamentTeams.save()
   await user.save()
   await tournament.save()
 
