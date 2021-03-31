@@ -1,29 +1,45 @@
-.container{
+.container {
     color: white;
 }
 
-h1{
+h1 {
     color: white;
 }
 
-.modal-header{
+.modal-header {
     background: #4d4d4c;
 }
 
-.modal-body{
+.modal-body {
+    background-color: rgba(77, 77, 76, 0.5);
+}
+
+.modal-footer {
     background: #4d4d4c;
 }
 
-.modal-footer{
+.toast-header {
     background: #4d4d4c;
 }
 
-.toast-header{
-    background: #4d4d4c;
-}
-
-.toast-body{
+.toast-body {
     background: #4d4d4c;
     color: white;
 }
 
+.container .card-header {
+    background-color: rgba(77, 77, 76, 1.0);
+}
+
+.container .card-footer {
+    background-color: rgba(77, 77, 76, 1.0);
+}
+
+.card-header h5 {
+    margin-bottom: 0;
+}
+
+.card {
+    border: 2px solid purple;
+    font-size: 0.8em;
+}
