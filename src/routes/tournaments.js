@@ -57,5 +57,10 @@ router.get(
   ensureAuthenticated,
   controller.delete_tournament
 )
+router.get(
+  '/:tournamentID/kickUser/:userID',
+  ensureAuthenticated,
+  controller.kick_user
+)
 
 module.exports = router

@@ -6,6 +6,7 @@ const crypto = require('crypto')
 const Tournament = require('../models/Tournament')
 const Message = require('../models/Message')
 const Team = require('../models/Team')
+const User = require('../models/User')
 
 exports.get_all_users_tournaments = async (req, res) => {
   try {
@@ -643,4 +644,41 @@ exports.delete_tournament = async (req, res) => {
     req.flash('error_msg', 'Something went wrong please try again later')
     return res.redirect(`/tournaments/myTournaments`)
   }
+}
+exports.kick_user = async (req, res) => {
+  const { tournamentID, userID } = req.params
+
+  const tournament = await tournamentValidation.tournament_exists(tournamentID)
+  if (!tournament) {
+    return handlers.response_handler(
+      `/tournaments/myTournaments`,
+      'error_msg',
+      `Tournament Not Found`,
+      req,
+      res
+    )
+  }
+
+  const user = await User.findById(userID)
+  if (!user) {
+    return handlers.response_handler(
+      `/tournaments/myTournaments`,
+      'error_msg',
+      `User Not Found`,
+      req,
+      res
+    )
+  }
+
+  tournament.users = tournament.users.filter((user) => user.id !== userID)
+
+  await tournament.save()
+
+  return handlers.response_handler(
+    `/tournaments/${tournament._id}`,
+    'success_msg',
+    `Successfully removed ${user._id} from tournament`,
+    req,
+    res
+  )
 }
