@@ -62,8 +62,11 @@ app.use('/messages', messagesRouter)
 app.use('/teams', teamsRouter)
 
 //BASIC ROUTE
-app.get('/', (req, res) => {
-  res.render('index')
+const { isLoggedIn } = require('./config/auth')
+app.get('/', isLoggedIn, (req, res) => {
+  res.render('index', {
+    isLoggedIn: req.isLoggedIn
+  })
 })
 
 //CONNECT TO DATABASE
