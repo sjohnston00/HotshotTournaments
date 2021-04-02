@@ -556,6 +556,19 @@ exports.get_update_tournament = async (req, res) => {
         res
       )
     }
+    const isCreator = tournamentValidation.is_tournament_creator(
+      tournament,
+      req.user._id
+    )
+    if (!isCreator) {
+      return handlers.response_handler(
+        `/tournaments/${tournamentID}`,
+        'error_msg',
+        'You are not the creator of this tournament',
+        req,
+        res
+      )
+    }
     const tournamentStartDate = moment(tournament.startDate)
       .utc()
       .local()
@@ -586,13 +599,18 @@ exports.get_update_tournament = async (req, res) => {
 exports.post_update_tournament = async (req, res) => {
   const { tournamentID } = req.params
   const { name, description, game, startDate, endDate } = req.body
-  const nowDate = new Date()
   if (new Date(endDate) < new Date(startDate)) {
-    return res.status(401).send('Ending Date cannot be before Start date')
+    return handlers.response_handler(
+      `/tournaments/updateTournament/${tournamentID}`,
+      'error_msg',
+      'End date cannot be before start date',
+      req,
+      res
+    )
   }
 
   try {
-    const updatedTournament = await Tournament.updateOne(
+    await Tournament.updateOne(
       { _id: tournamentID },
       {
         $set: {
