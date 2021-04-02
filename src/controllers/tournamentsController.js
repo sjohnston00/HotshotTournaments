@@ -543,8 +543,8 @@ exports.save_tournament_bracket = async (req, res) => {
     return res.redirect('/tournaments/myTournaments')
   }
 }
-
-exports.update_tournament = async (req, res) => {
+exports.get_update_tournament = async (req, res) => {}
+exports.post_update_tournament = async (req, res) => {
   //TODO: VALIDATION SHOULD BE IN SEPERATE FILE
   const { tournamentID } = req.params
   const {

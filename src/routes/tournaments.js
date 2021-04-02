@@ -47,7 +47,16 @@ router.post(
   controller.save_tournament_bracket
 )
 
-router.put('/:tournamentID', ensureAuthenticated, controller.update_tournament)
+router.get(
+  '/updateTournament/:tournamentID',
+  ensureAuthenticated,
+  controller.get_update_tournament
+)
+router.post(
+  '/updateTournament/:tournamentID',
+  ensureAuthenticated,
+  controller.post_update_tournament
+)
 
 //DELETE A TOURNAMENT
 //THIS SHOULDN'T BE DONE AS WE STILL WANT USERS TO BE ABLE TO SEE PAST TOURNAMENTS
