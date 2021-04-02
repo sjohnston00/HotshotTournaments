@@ -543,7 +543,33 @@ exports.save_tournament_bracket = async (req, res) => {
     return res.redirect('/tournaments/myTournaments')
   }
 }
-exports.get_update_tournament = async (req, res) => {}
+exports.get_update_tournament = async (req, res) => {
+  const { tournamentID } = req.params
+  try {
+    const tournament = await Tournament.findById(tournamentID)
+    if (!tournament) {
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'Tournament Not Found',
+        req,
+        res
+      )
+    }
+    return res.render('tournaments/editTournament', {
+      isLoggedIn: true
+    })
+  } catch (error) {
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Something went wrong, please try again later',
+      req,
+      res,
+      error.message
+    )
+  }
+}
 exports.post_update_tournament = async (req, res) => {
   //TODO: VALIDATION SHOULD BE IN SEPERATE FILE
   const { tournamentID } = req.params
