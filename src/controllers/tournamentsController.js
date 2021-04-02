@@ -543,76 +543,107 @@ exports.save_tournament_bracket = async (req, res) => {
     return res.redirect('/tournaments/myTournaments')
   }
 }
-
-exports.update_tournament = async (req, res) => {
-  //TODO: VALIDATION SHOULD BE IN SEPERATE FILE
+exports.get_update_tournament = async (req, res) => {
   const { tournamentID } = req.params
-  const {
-    name,
-    description,
-    game,
-    type,
-    startDate,
-    endDate,
-    messages,
-    users
-  } = req.body
-
-  if (
-    !name ||
-    !description ||
-    !game ||
-    !type ||
-    !startDate ||
-    !endDate ||
-    !messages ||
-    !users
-  ) {
-    req.flash(
-      'error_msg',
-      'Name, Description, Game, Tournament Type, Start Date, End Date, Messages and Users are required fields'
+  try {
+    const tournament = await Tournament.findById(tournamentID)
+    if (!tournament) {
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'Tournament Not Found',
+        req,
+        res
+      )
+    }
+    const isCreator = tournamentValidation.is_tournament_creator(
+      tournament,
+      req.user._id
     )
-    return res.redirect(`/tournaments/${tournamentID}`)
-  }
+    if (!isCreator) {
+      return handlers.response_handler(
+        `/tournaments/${tournamentID}`,
+        'error_msg',
+        'You are not the creator of this tournament',
+        req,
+        res
+      )
+    }
+    const tournamentStartDate = moment(tournament.startDate)
+      .utc()
+      .local()
+      .format(moment.HTML5_FMT.DATETIME_LOCAL)
 
-  const nowDate = new Date()
-  if (new Date(startDate) < nowDate) {
-    return res.status(401).send('Starting Date cannot be before today')
-  } else if (new Date(endDate) < nowDate) {
-    return res.status(401).send('Ending Date cannot be before today')
-  } else if (new Date(endDate) < new Date(startDate)) {
-    return res.status(401).send('Ending Date cannot be before Start date')
+    const tournamentEndDate = moment(tournament.endDate)
+      .utc()
+      .local()
+      .format(moment.HTML5_FMT.DATETIME_LOCAL)
+    return res.render('tournaments/editTournament', {
+      isLoggedIn: true,
+      tournament,
+      isTeamTournament: tournament.type === 'team' ? true : false,
+      tournamentStartDate,
+      tournamentEndDate
+    })
+  } catch (error) {
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Something went wrong, please try again later',
+      req,
+      res,
+      error.message
+    )
+  }
+}
+exports.post_update_tournament = async (req, res) => {
+  const { tournamentID } = req.params
+  const { name, description, game, startDate, endDate } = req.body
+  if (new Date(endDate) < new Date(startDate)) {
+    return handlers.response_handler(
+      `/tournaments/updateTournament/${tournamentID}`,
+      'error_msg',
+      'End date cannot be before start date',
+      req,
+      res
+    )
   }
 
   try {
-    const updatedTournament = await Tournament.updateOne(
+    await Tournament.updateOne(
       { _id: tournamentID },
       {
         $set: {
           name: name,
           description: description,
           game: game,
-          type: type,
           startDate: new Date(startDate),
-          endDate: new Date(endDate),
-          messages: messages,
-          users: users
+          endDate: new Date(endDate)
         }
       }
     )
-    req.flash('success_msg', 'Tournament has been updated')
-    return res.redirect(`/tournaments/${updatedTournament._id}`)
+    return handlers.response_handler(
+      `/tournaments/${tournamentID}`,
+      'success_msg',
+      `${name} has been updated`,
+      req,
+      res
+    )
   } catch (error) {
-    console.error(error.message)
-    req.flash('error_msg', 'Something went wrong please try again later')
-    return res.redirect(`/tournaments/${updatedTournament._id}`)
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Something went wrong, please try again later',
+      req,
+      res,
+      error.message
+    )
   }
 }
 
 exports.delete_tournament = async (req, res) => {
   const { tournamentID } = req.params
 
-  //TODO: VALIDATE THAT THIS USER IS THE TOURNAMENT CREATOR
   try {
     const tournament = await Tournament.findById(tournamentID)
     if (!tournament) {

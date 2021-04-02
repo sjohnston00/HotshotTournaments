@@ -1,0 +1,100 @@
+{{> partials/head}}
+{{> partials/navbar}}
+<body>
+  {{#tournament}}
+  <div class="container">
+    <h1 class="text-center">Edit {{ name }}</h1>
+    <hr />
+  </div>
+
+  <div class="container my-4">
+    <form action="/tournaments/updateTournament/{{ _id }}" method="POST">
+      {{> partials/messages}}
+      <div class="form-group">
+        <label for="name" class="col-form-label"
+          >Tournament Name <span class="text-danger">*</span></label
+        >
+        <input
+          type="text"
+          name="name"
+          id="name"
+          value="{{ name }}"
+          class="form-control"
+          required="required"
+        />
+      </div>
+      <div class="form-group">
+        <label for="description" class="col-form-label">Description</label>
+        <input
+          type="text"
+          name="description"
+          id="description"
+          value="{{ description }}"
+          class="form-control"
+          required="required"
+        />
+      </div>
+      <div class="form-group">
+        <label for="game" class="col-form-label"
+          >Game / Sport <span class="text-danger">*</span></label
+        >
+        <input
+          type="text"
+          name="game"
+          id="game"
+          value="{{ game }}"
+          class="form-control"
+          required="required"
+        />
+      </div>
+      <div class="form-group">
+        <label for="startDate" class="col-form-label"
+          >Start Date <span class="text-danger">*</span></label
+        >
+        <input
+          class="form-control"
+          type="datetime-local"
+          min="{{ tournamentStartDate }}"
+          value="{{ tournamentStartDate }}"
+          id="startDate"
+          name="startDate"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="endDate" class="col-form-label"
+          >End Date <span class="text-danger">*</span></label
+        >
+        <input
+          class="form-control"
+          type="datetime-local"
+          min="{{ tournamentStartDate }}"
+          value="{{ tournamentEndDate }}"
+          id="endDate"
+          name="endDate"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <button
+          id="login-button"
+          type="submit"
+          class="btn btn-primary btn-block"
+        >
+          Confirm
+        </button>
+      </div>
+      <a href="/tournaments/{{ _id }}" class="btn btn-secondary float-left"
+        >Back</a
+      >
+    </form>
+  </div>
+  {{/tournament}}
+  <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+  </script>
+  <script src="/scripts/showHideTeamsView.js"></script>
+</body>
+{{> partials/footer}}
