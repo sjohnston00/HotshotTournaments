@@ -587,9 +587,7 @@ exports.post_update_tournament = async (req, res) => {
   const { tournamentID } = req.params
   const { name, description, game, startDate, endDate } = req.body
   const nowDate = new Date()
-  if (new Date(endDate) < nowDate) {
-    return res.status(401).send('Ending Date cannot be before today')
-  } else if (new Date(endDate) < new Date(startDate)) {
+  if (new Date(endDate) < new Date(startDate)) {
     return res.status(401).send('Ending Date cannot be before Start date')
   }
 
@@ -609,7 +607,7 @@ exports.post_update_tournament = async (req, res) => {
     return handlers.response_handler(
       `/tournaments/${tournamentID}`,
       'success_msg',
-      `${updatedTournament.name} has been updated`,
+      `${name} has been updated`,
       req,
       res
     )
