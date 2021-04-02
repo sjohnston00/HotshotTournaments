@@ -557,7 +557,9 @@ exports.get_update_tournament = async (req, res) => {
       )
     }
     return res.render('tournaments/editTournament', {
-      isLoggedIn: true
+      isLoggedIn: true,
+      tournament,
+      isTeamTournament: tournament.type === 'team' ? true : false
     })
   } catch (error) {
     return handlers.response_handler(
