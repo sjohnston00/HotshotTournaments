@@ -165,7 +165,17 @@ exports.delete_team_from_tournament = async (req, res) => {
 
 exports.kick_member = async (req, res) => {
   const { tournamentID, teamID, userID } = req.params
-  //TODO: Validate that the userID is part of the team / tournament
+  //Check the user is not trying to remove themselves
+  if (userID === req.user.id) {
+    return handlers.response_handler(
+      `/teams/view/${tournamentID}/team/${teamID}`,
+      'error_msg',
+      'You cannot kick yourself from the team',
+      req,
+      res
+    )
+  }
+  //Validate that the userID is part of the team / tournament
   try {
     const user = await User.findById(userID)
     if (!user) {
@@ -177,7 +187,7 @@ exports.kick_member = async (req, res) => {
         res
       )
     }
-    //TODO: Validate that the req.user is the teamLeader
+    //Validate that the team exists
     const team = await Team.findById(teamID)
     if (!team) {
       return handlers.response_handler(
@@ -188,7 +198,7 @@ exports.kick_member = async (req, res) => {
         res
       )
     }
-
+    //Validate that the req.user is the teamLeader
     if (!team.teamLeader.equals(req.user._id)) {
       return handlers.response_handler(
         `/teams/view/${tournamentID}/team/${teamID}`,
@@ -198,6 +208,17 @@ exports.kick_member = async (req, res) => {
         res
       )
     }
+    //TODO: Remove user from the team
+    //TODO: Redirect to teams page
+    team.users = team.users.filter((user) => !user.equals(user._id))
+    await team.save()
+    return handlers.response_handler(
+      `/teams/view/${tournamentID}/team/${teamID}`,
+      'success_msg',
+      `${user.name} has been kicked from the team`,
+      req,
+      res
+    )
   } catch (error) {
     return handlers.response_handler(
       `/tournaments/myTournaments`,
@@ -208,9 +229,4 @@ exports.kick_member = async (req, res) => {
       error.message
     )
   }
-
-  return res.send('Team member can be deleted')
-  //TODO: Check the user is not trying to remove themselves
-  //TODO: Remove user from the team
-  //TODO: Redirect to teams page
 }
