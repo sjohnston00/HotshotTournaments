@@ -59,3 +59,13 @@ a:hover {
 .card-header h5 {
   margin-bottom: 0;
 }
+.form-control {
+  background-color: #3f3f3f;
+  color: #fdfdfd;
+  border: none;
+}
+
+.form-control:focus {
+  color: #fdfdfd;
+  background-color: #3f3f3f;
+}
