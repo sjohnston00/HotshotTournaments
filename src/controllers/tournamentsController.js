@@ -764,10 +764,11 @@ exports.kick_user = async (req, res) => {
   tournament.users = tournament.users.filter((user) => user.id !== userID)
 
   if (tournament.type === 'team') {
-    //remove the user from the
+    //remove the user from the team of that tournament
     await Team.findOneAndUpdate(
       {
-        tournament: tournamentID
+        tournament: tournamentID,
+        users: user._id
       },
       {
         $pull: {

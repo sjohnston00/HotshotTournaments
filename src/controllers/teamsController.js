@@ -218,7 +218,7 @@ exports.kick_member = async (req, res) => {
         res
       )
     }
-    //TODO: Remove user from the team
+    //Remove user from the team
     await Team.findOneAndUpdate(
       {
         tournament: tournamentID,
