@@ -177,6 +177,16 @@ exports.kick_member = async (req, res) => {
   }
   //Validate that the userID is part of the team / tournament
   try {
+    const tournament = await Tournament.findById(tournamentID)
+    if (!tournament) {
+      return handlers.response_handler(
+        `/tournaments/myTournaments`,
+        'error_msg',
+        'Tournament Not Found',
+        req,
+        res
+      )
+    }
     const user = await User.findById(userID)
     if (!user) {
       return handlers.response_handler(
@@ -209,9 +219,18 @@ exports.kick_member = async (req, res) => {
       )
     }
     //TODO: Remove user from the team
-    //TODO: Redirect to teams page
-    team.users = team.users.filter((user) => !user.equals(user._id))
-    await team.save()
+    await Team.findOneAndUpdate(
+      {
+        tournament: tournamentID,
+        _id: teamID
+      },
+      {
+        $pull: {
+          users: user._id
+        }
+      }
+    )
+    //Redirect to teams page
     return handlers.response_handler(
       `/teams/view/${tournamentID}/team/${teamID}`,
       'success_msg',
