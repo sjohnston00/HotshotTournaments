@@ -106,6 +106,7 @@ exports.view_team_from_tournament = async (req, res) => {
       isLoggedIn: true,
       tournament: tournament,
       tournamentID: tournament._id,
+      teamID: team._id,
       token: tournament.token,
       tournamentTeamInviteLink: `${inviteLink}/tournaments/${tournament._id}/invite/${tournament.inviteCode}/team/${team._id}`,
       team: team,
@@ -165,39 +166,51 @@ exports.delete_team_from_tournament = async (req, res) => {
 exports.kick_member = async (req, res) => {
   const { tournamentID, teamID, userID } = req.params
   //TODO: Validate that the userID is part of the team / tournament
-  const user = await User.findById(userID)
-  if (!user) {
-    return handlers.response_handler(
-      `/teams/view/${tournamentID}/team/${teamID}`,
-      'error_msg',
-      "User doesn't exist",
-      req,
-      res
-    )
-  }
-  //TODO: Validate that the req.user is the teamLeader
-  const team = await Team.findById(teamID)
-  if (!team) {
-    return handlers.response_handler(
-      `/tournaments/${tournamentID}`,
-      'error_msg',
-      "Team doesn't exist",
-      req,
-      res
-    )
-  }
+  try {
+    const user = await User.findById(userID)
+    if (!user) {
+      return handlers.response_handler(
+        `/teams/view/${tournamentID}/team/${teamID}`,
+        'error_msg',
+        "User doesn't exist",
+        req,
+        res
+      )
+    }
+    //TODO: Validate that the req.user is the teamLeader
+    const team = await Team.findById(teamID)
+    if (!team) {
+      return handlers.response_handler(
+        `/tournaments/${tournamentID}`,
+        'error_msg',
+        "Team doesn't exist",
+        req,
+        res
+      )
+    }
 
-  if (!team.teamLeader.equals(req.user._id)) {
+    if (!team.teamLeader.equals(req.user._id)) {
+      return handlers.response_handler(
+        `/teams/view/${tournamentID}/team/${teamID}`,
+        'error_msg',
+        `You are not the ${team.name}'s team leader`,
+        req,
+        res
+      )
+    }
+  } catch (error) {
     return handlers.response_handler(
-      `/teams/view/${tournamentID}/team/${teamID}`,
+      `/tournaments/myTournaments`,
       'error_msg',
-      `You are not the ${team.name}'s team leader`,
+      'Something went wrong, please try again later',
       req,
-      res
+      res,
+      error.message
     )
   }
 
   return res.send('Team member can be deleted')
+  //TODO: Check the user is not trying to remove themselves
   //TODO: Remove user from the team
   //TODO: Redirect to teams page
 }
