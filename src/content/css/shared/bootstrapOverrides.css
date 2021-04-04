@@ -1,45 +1,71 @@
-.container {
-    color: white;
+.bg-dark {
+  background-color: #313131 !important;
+}
+.bg-dark-2 {
+  background-color: #292929 !important;
+}
+hr {
+  background-color: #fdfdfd;
+}
+.text-light,
+a,
+.container,
+h1 {
+  color: #fdfdfd;
+}
+a:hover {
+  color: #fdfdfd;
+  text-decoration-color: var(--primary);
+  text-decoration-thickness: 3px;
 }
 
-h1 {
-    color: white;
+.faded {
+  opacity: 0.5;
+}
+
+.faded:hover {
+  opacity: 1;
 }
 
 .modal-header {
-    background: #4d4d4c;
+  background: #4d4d4c;
 }
 
 .modal-body {
-    background-color: rgba(77, 77, 76, 0.5);
+  background-color: rgba(77, 77, 76, 0.5);
 }
 
 .modal-footer {
-    background: #4d4d4c;
+  background: #4d4d4c;
 }
 
 .toast-header {
-    background: #4d4d4c;
+  background: #4d4d4c;
 }
 
 .toast-body {
-    background: #4d4d4c;
-    color: white;
+  background: #4d4d4c;
+  color: white;
 }
 
 .container .card-header {
-    background-color: rgba(77, 77, 76, 1.0);
+  background-color: rgba(77, 77, 76, 1);
 }
 
 .container .card-footer {
-    background-color: rgba(77, 77, 76, 1.0);
+  background-color: rgba(77, 77, 76, 1);
 }
 
 .card-header h5 {
-    margin-bottom: 0;
+  margin-bottom: 0;
+}
+.form-control {
+  background-color: #3f3f3f;
+  color: #fdfdfd;
+  border: none;
 }
 
-.card {
-    border: 2px solid purple;
-    font-size: 0.8em;
+.form-control:focus {
+  color: #fdfdfd;
+  background-color: #3f3f3f;
 }

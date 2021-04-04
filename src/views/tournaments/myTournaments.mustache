@@ -3,35 +3,46 @@
 <body>
   {{> partials/messages}}
   <div class="d-flex flex-column min-vh-100">
-    <header class="d-flex align-items-center justify-content-center py-5 border-bottom">
+    <header
+      class="d-flex align-items-center justify-content-center py-5 border-bottom"
+    >
       <h1 class="text-center">My Tournaments</h1>
     </header>
     <div class="container">
       <div class="d-flex justify-content-between border-bottom mt-5">
         <h2>Creator</h2>
-        <h2>{{userCreatedTournamentCount}}</h2>
+        <h2>{{ userCreatedTournamentCount }}</h2>
       </div>
-      <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
-      {{#userCreatedTournaments}}
+      <div
+        class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap"
+      >
+        {{#userCreatedTournaments}}
         {{> tournaments/tournamentCard}}
-      {{/userCreatedTournaments}}
-      {{^userCreatedTournaments}}
-        <p class="text-primary">You currently do not have any tournaments. Why not create one?</p>
-      {{/userCreatedTournaments}}
+        {{/userCreatedTournaments}}
+        {{^userCreatedTournaments}}
+        <p class="text-light faded">
+          You currently do not have any tournaments. Why not
+          <a href="/tournaments/createTournament">create one?</a>
+        </p>
+        {{/userCreatedTournaments}}
       </div>
 
       <div class="d-flex justify-content-between border-bottom mt-5">
         <h2>Participant</h2>
-        <h2>{{memberTournamentCount}}</h2>
+        <h2>{{ memberTournamentCount }}</h2>
       </div>
-      <div class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap">
+      <div
+        class="d-flex flex-row justify-content-around align-items-center my-4 flex-wrap"
+      >
         {{#memberTournaments}}
-          {{> tournaments/tournamentCard}}
+        {{> tournaments/tournamentCard}}
         {{/memberTournaments}}
         {{^memberTournaments}}
-          <p class="text-primary">You aren't a part of any other tournaments :(</p>
+        <p class="text-light faded">
+          You aren't a part of any other tournaments :(
+        </p>
         {{/memberTournaments}}
-        </div>
+      </div>
     </div>
   </div>
 </body>

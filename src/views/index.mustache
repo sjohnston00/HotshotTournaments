@@ -3,11 +3,14 @@
 <body>
   <div class="container mt-4 min-vh-100">
     <h1 class="text-center">Welcome to Hotshot Tournaments</h1>
-    <hr/>
+    <hr />
     {{> partials/messages}}
-    <a href="/auth/login" class="btn btn-secondary">Login</a>
-    <a href="/auth/register" class="btn btn-primary">Register</a>
+    <form action="" method="post">
+      <div class="form-group">
+        <label class="col-form-label" for="">Label</label>
+        <input class="form-control" type="text" />
+      </div>
+    </form>
   </div>
-  
 </body>
 {{> partials/footer}}
