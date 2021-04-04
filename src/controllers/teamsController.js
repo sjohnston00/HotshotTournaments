@@ -2,6 +2,7 @@ const handlers = require('../middlewares/handlers')
 const Team = require('../models/Team')
 const Tournament = require('../models/Tournament')
 const Message = require('../models/Message')
+const User = require('../models/User')
 const teamValidation = require('../validation/teamsValidation')
 
 exports.root_get_response = async (req, res) => {
@@ -105,6 +106,7 @@ exports.view_team_from_tournament = async (req, res) => {
       isLoggedIn: true,
       tournament: tournament,
       tournamentID: tournament._id,
+      teamID: team._id,
       token: tournament.token,
       tournamentTeamInviteLink: `${inviteLink}/tournaments/${tournament._id}/invite/${tournament.inviteCode}/team/${team._id}`,
       team: team,
@@ -154,6 +156,93 @@ exports.delete_team_from_tournament = async (req, res) => {
       '/tournaments/myTournaments',
       'error_msg',
       'Something went wrong, please try again',
+      req,
+      res,
+      error.message
+    )
+  }
+}
+
+exports.kick_member = async (req, res) => {
+  const { tournamentID, teamID, userID } = req.params
+  //Check the user is not trying to remove themselves
+  if (userID === req.user.id) {
+    return handlers.response_handler(
+      `/teams/view/${tournamentID}/team/${teamID}`,
+      'error_msg',
+      'You cannot kick yourself from the team',
+      req,
+      res
+    )
+  }
+  //Validate that the userID is part of the team / tournament
+  try {
+    const tournament = await Tournament.findById(tournamentID)
+    if (!tournament) {
+      return handlers.response_handler(
+        `/tournaments/myTournaments`,
+        'error_msg',
+        'Tournament Not Found',
+        req,
+        res
+      )
+    }
+    const user = await User.findById(userID)
+    if (!user) {
+      return handlers.response_handler(
+        `/teams/view/${tournamentID}/team/${teamID}`,
+        'error_msg',
+        "User doesn't exist",
+        req,
+        res
+      )
+    }
+    //Validate that the team exists
+    const team = await Team.findById(teamID)
+    if (!team) {
+      return handlers.response_handler(
+        `/tournaments/${tournamentID}`,
+        'error_msg',
+        "Team doesn't exist",
+        req,
+        res
+      )
+    }
+    //Validate that the req.user is the teamLeader
+    if (!team.teamLeader.equals(req.user._id)) {
+      return handlers.response_handler(
+        `/teams/view/${tournamentID}/team/${teamID}`,
+        'error_msg',
+        `You are not the ${team.name}'s team leader`,
+        req,
+        res
+      )
+    }
+    //Remove user from the team
+    await Team.findOneAndUpdate(
+      {
+        tournament: tournamentID,
+        _id: teamID
+      },
+      {
+        $pull: {
+          users: user._id
+        }
+      }
+    )
+    //Redirect to teams page
+    return handlers.response_handler(
+      `/teams/view/${tournamentID}/team/${teamID}`,
+      'success_msg',
+      `${user.name} has been kicked from the team`,
+      req,
+      res
+    )
+  } catch (error) {
+    return handlers.response_handler(
+      `/tournaments/myTournaments`,
+      'error_msg',
+      'Something went wrong, please try again later',
       req,
       res,
       error.message
