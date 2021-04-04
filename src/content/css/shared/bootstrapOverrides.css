@@ -2,6 +2,20 @@
   background-color: #313131 !important;
 }
 
+.bg-dark-2 {
+  background-color: #292929 !important;
+}
+hr {
+  background-color: #fdfdfd;
+}
+
+a {
+  color: #fdfdfd;
+}
+.text-light {
+  color: #fdfdfd;
+}
+
 .container {
   color: white;
 }
