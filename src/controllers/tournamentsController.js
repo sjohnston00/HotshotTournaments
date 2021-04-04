@@ -7,6 +7,7 @@ const Tournament = require('../models/Tournament')
 const Message = require('../models/Message')
 const Team = require('../models/Team')
 const User = require('../models/User')
+const { is_user_in_team } = require('./functions/isUserInTeam')
 
 exports.get_all_users_tournaments = async (req, res) => {
   try {
@@ -180,7 +181,10 @@ exports.add_user_to_team_in_tournament = async (req, res) => {
       )
     }
 
-    if (tournament.users.includes(req.user._id))
+    const isInTeam = await is_user_in_team(tournament, req.user)
+    const userInTournament = tournament.users.includes(req.user._id)
+
+    if (userInTournament && isInTeam)
       return handlers.response_handler(
         `/tournaments/${tournamentID}`,
         'error_msg',
@@ -229,8 +233,10 @@ exports.add_user_to_team_in_tournament = async (req, res) => {
     team.users.push(req.user._id)
     await team.save()
     // Add user to the tournament via ID
-    tournament.users.push(req.user._id)
-    await tournament.save()
+    if (!userInTournament) {
+      tournament.users.push(req.user._id)
+      await tournament.save()
+    }
     return handlers.response_handler(
       `/teams/view/${tournamentID}/team/${teamID}`,
       'success_msg',
@@ -459,21 +465,15 @@ exports.get_one_tournament = async (req, res) => {
           select: '-__v -password'
         }
       })
-
-    const parsedTournament = tournament.toObject()
-
-    parsedTournament.messages.forEach((message) => {
-      if (String(message.user._id) === String(req.user._id)) {
-        message.isLoggedInUsers = true
-      }
-    })
-
-    //TODO: VALIDATION SHOULD BE IN ANOTHER FILE
     if (!tournament) {
-      req.flash('error_msg', 'Tournament Not Found')
-      return res.status(404).redirect('/tournaments/myTournaments')
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'Tournament Not Found',
+        req,
+        res
+      )
     }
-
     //FIND THE USERS ID IN THE TOURNAMENT
     let found = false
     for (let i = 0; i < tournament.users.length; i++) {
@@ -488,6 +488,29 @@ exports.get_one_tournament = async (req, res) => {
       req.flash('error_msg', 'You are not part of this tournament')
       return res.status(401).redirect('/tournaments/myTournaments')
     }
+    if (tournament.type === 'team') {
+      const isInTeam = await is_user_in_team(tournament, req.user)
+      if (!isInTeam) {
+        return res.render('tournaments/acceptTournamentInvite', {
+          isLoggedIn: true,
+          tournamentID: tournament._id,
+          inviteToken: tournament.inviteCode,
+          TournamentNotFull:
+            tournament.teams.length < tournament.limit / tournament.teamSize
+              ? true
+              : false,
+          tournament: tournament
+        })
+      }
+    }
+
+    const parsedTournament = tournament.toObject()
+
+    parsedTournament.messages.forEach((message) => {
+      if (String(message.user._id) === String(req.user._id)) {
+        message.isLoggedInUsers = true
+      }
+    })
 
     //Reason why its .id and not _id is because .id is the getter method for the _id as its still treated as a mongo ObjectId
     //https://stackoverflow.com/questions/15724272/what-is-the-difference-between-id-and-id-in-mongoose
