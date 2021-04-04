@@ -2,6 +2,7 @@ const handlers = require('../middlewares/handlers')
 const Team = require('../models/Team')
 const Tournament = require('../models/Tournament')
 const Message = require('../models/Message')
+const User = require('../models/User')
 const teamValidation = require('../validation/teamsValidation')
 
 exports.root_get_response = async (req, res) => {
@@ -159,4 +160,44 @@ exports.delete_team_from_tournament = async (req, res) => {
       error.message
     )
   }
+}
+
+exports.kick_member = async (req, res) => {
+  const { tournamentID, teamID, userID } = req.params
+  //TODO: Validate that the userID is part of the team / tournament
+  const user = await User.findById(userID)
+  if (!user) {
+    return handlers.response_handler(
+      `/teams/view/${tournamentID}/team/${teamID}`,
+      'error_msg',
+      "User doesn't exist",
+      req,
+      res
+    )
+  }
+  //TODO: Validate that the req.user is the teamLeader
+  const team = await Team.findById(teamID)
+  if (!team) {
+    return handlers.response_handler(
+      `/tournaments/${tournamentID}`,
+      'error_msg',
+      "Team doesn't exist",
+      req,
+      res
+    )
+  }
+
+  if (!team.teamLeader.equals(req.user._id)) {
+    return handlers.response_handler(
+      `/teams/view/${tournamentID}/team/${teamID}`,
+      'error_msg',
+      `You are not the ${team.name}'s team leader`,
+      req,
+      res
+    )
+  }
+
+  return res.send('Team member can be deleted')
+  //TODO: Remove user from the team
+  //TODO: Redirect to teams page
 }
