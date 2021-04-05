@@ -69,3 +69,14 @@ a:hover {
   color: #fdfdfd;
   background-color: var(--tertiary-colour);
 }
+
+.dropdown-menu.show {
+  background-color: var(--secondary-colour);
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#dropdownMenuButton svg {
+  fill: var(--text-colour);
+}

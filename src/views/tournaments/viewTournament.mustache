@@ -12,15 +12,16 @@
     <p class="small">Tournament Size: {{ limit }} users</p>
 
     {{> partials/messages}}
-    <h2>Bracket</h2>
+    <div class="d-flex align-items-center justify-content-between">
+      <h2>Bracket</h2>
+      {{#isTournamentCreator}}
+      {{> partials/tournaments/tournamentCreator}}
+      {{/isTournamentCreator}}
+    </div>
     <div
       id="tournament-bracket"
       class="w-100 d-flex justify-content-center align-items-center my-4"
     ></div>
-
-    {{#isTournamentCreator}}
-    {{> partials/tournaments/tournamentCreator}}
-    {{/isTournamentCreator}}
 
     {{#isTeamTournament}}
     {{> partials/tournaments/teams}}
@@ -49,10 +50,14 @@
 
     {{> partials/tournaments/tournamentMessages}}
 
-    <a href="/tournaments/myTournaments" class="btn btn-secondary mr-4">Back</a>
-    {{#isTournamentCreator}}
-    {{> partials/tournaments/tournamentActions}}
-    {{/isTournamentCreator}}
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/tournaments/myTournaments" class="btn btn-secondary mr-4"
+        >Back</a
+      >
+      {{#isTournamentCreator}}
+      {{> partials/tournaments/tournamentActions}}
+      {{/isTournamentCreator}}
+    </div>
   </div>
 
   {{! Hidden area }}
