@@ -1,12 +1,16 @@
 {{> partials/head}}
 {{> partials/navbar}}
-<body >
-  <div class="container min-vh-100 d-flex justify-content-center align-items-center">
+<body>
+  <div
+    class="container min-vh-100 d-flex justify-content-center align-items-center"
+  >
     <form action="/auth/register" class="w-100" method="POST">
       <h2 class="text-center">Register</h2>
       {{> partials/messages}}
       <div class="form-group">
-        <label for="name" class="col-form-label">Full Name</label>
+        <label for="name" class="col-form-label"
+          >Full Name <span class="text-danger">*</span></label
+        >
         <input
           type="text"
           name="name"
@@ -17,7 +21,9 @@
       </div>
 
       <div class="form-group">
-        <label for="email" class="col-form-label">Email</label>
+        <label for="email" class="col-form-label"
+          >Email <span class="text-danger">*</span></label
+        >
         <input
           type="email"
           name="email"
@@ -28,7 +34,9 @@
       </div>
 
       <div class="form-group">
-        <label for="password" class="col-form-label">Password</label>
+        <label for="password" class="col-form-label"
+          >Password <span class="text-danger">*</span></label
+        >
         <input
           type="password"
           name="password"

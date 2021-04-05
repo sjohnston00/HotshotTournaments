@@ -1,5 +1,5 @@
-<nav class="navbar navbar-dark navbar-expand-lg navbar-light bg-dark-2">
-  <a class="navbar-brand text-light" href="/">Hotshot Tournaments</a>
+<nav class="navbar navbar-expand-lg bg-dark-2">
+  <a class="navbar-brand" href="/">Hotshot Tournaments</a>
   <button
     class="navbar-toggler"
     type="button"
@@ -9,7 +9,15 @@
     aria-expanded="false"
     aria-label="Toggle navigation"
   >
-    <span class="navbar-toggler-icon text-light"></span>
+    <span class="navbar-icon"
+      ><svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="36"
+        height="36"
+        viewBox="0 0 24 24"
+      >
+        <path d="M4 6H20V8H4zM4 11H20V13H4zM4 16H20V18H4z" /></svg
+    ></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav ml-auto">
@@ -23,7 +31,7 @@
       {{#isLoggedIn}}
       <li class="nav-item">
         <a
-          class="btn btn-outline-light my-2 mx-1"
+          class="btn btn-outline-secondary my-2 mx-1"
           href="/tournaments/myTournaments"
           >My Tournaments</a
         >
@@ -36,7 +44,9 @@
       {{/isLoggedIn}}
       {{^isLoggedIn}}
       <li class="nav-item">
-        <a href="/auth/login" class="btn btn-outline-light my-2 mx-1">Login</a>
+        <a href="/auth/login" class="btn btn-outline-secondary my-2 mx-1"
+          >Login</a
+        >
       </li>
       <li class="nav-item">
         <a href="/auth/register" class="btn btn-primary my-2 mx-1">Register</a>

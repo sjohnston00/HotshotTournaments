@@ -1,7 +1,9 @@
 {{> partials/head}}
 {{> partials/navbar}}
 <body>
-  <div class="container min-vh-100 d-flex justify-content-center align-items-center">
+  <div
+    class="container min-vh-100 d-flex justify-content-center align-items-center"
+  >
     <form action="/auth/login" class="w-100" method="POST">
       <h2 class="text-center">Log in</h2>
       {{> partials/messages}}
@@ -39,7 +41,9 @@
         </button>
       </div>
       <a href="/" class="float-left">Home</a>
-      <a href="/auth/register" class="float-right">Create an Account</a>
+      <a href="/auth/register" class="float-right"
+        >Don't have an account? Create one</a
+      >
     </form>
   </div>
 </body>

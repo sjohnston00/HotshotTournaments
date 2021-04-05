@@ -1,4 +1,5 @@
 #messages-container {
+  min-height: 200px;
   max-height: 680px;
   overflow-y: auto;
 }

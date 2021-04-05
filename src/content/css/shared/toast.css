@@ -1,0 +1,25 @@
+.toast {
+  box-shadow: var(--shadow);
+}
+
+.toast-header.danger {
+  background: var(--danger);
+  color: #fdfdfd;
+}
+
+.toast-header .close {
+  color: #fdfdfd;
+}
+
+.toast-header .close:hover {
+  color: #fdfdfd;
+}
+
+.toast-header.success {
+  background: var(--success);
+}
+
+.toast-body {
+  background: var(--tertiary-colour);
+  color: var(--text-colour);
+}
