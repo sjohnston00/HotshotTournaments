@@ -67,20 +67,18 @@ a:hover {
   border-bottom: 1px solid var(--faded-text-colour);
 }
 
-.form-control {
+.form-control,
+.form-select {
   background-color: var(--tertiary-colour);
-  color: #fdfdfd;
+  color: var(--text-colour);
   border: none;
   box-shadow: var(--shadow);
 }
 
-.form-control:focus {
-  color: #fdfdfd;
-  background-color: var(--tertiary-colour);
-}
-
-.form-control:read-only {
-  color: #fdfdfd;
+.form-control:focus,
+.form-control:read-only,
+.form-select:focus {
+  color: var(--text-colour);
   background-color: var(--tertiary-colour);
 }
 
