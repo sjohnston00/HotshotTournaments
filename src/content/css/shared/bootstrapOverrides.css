@@ -1,20 +1,20 @@
 .bg-dark {
-  background-color: #313131 !important;
+  background-color: var(--primary-colour) !important;
 }
 .bg-dark-2 {
-  background-color: #292929 !important;
+  background-color: var(--secondary-colour) !important;
 }
 hr {
-  background-color: #fdfdfd;
+  background-color: var(--text-colour);
 }
 .text-light,
 a,
 .container,
 h1 {
-  color: #fdfdfd;
+  color: var(--text-colour);
 }
 a:hover {
-  color: #fdfdfd;
+  color: var(--text-colour);
   text-decoration-color: var(--primary);
   text-decoration-thickness: 3px;
 }
@@ -48,24 +48,24 @@ a:hover {
   color: white;
 }
 
-.container .card-header {
-  background-color: rgba(77, 77, 76, 1);
+.card {
+  background-color: var(--tertiary-colour);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--faded-text-colour);
 }
 
-.container .card-footer {
-  background-color: rgba(77, 77, 76, 1);
+.card-header {
+  border-bottom: 1px solid var(--faded-text-colour);
 }
 
-.card-header h5 {
-  margin-bottom: 0;
-}
 .form-control {
-  background-color: #3f3f3f;
+  background-color: var(--tertiary-colour);
   color: #fdfdfd;
   border: none;
+  box-shadow: var(--shadow);
 }
 
 .form-control:focus {
   color: #fdfdfd;
-  background-color: #3f3f3f;
+  background-color: var(--tertiary-colour);
 }
