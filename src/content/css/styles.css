@@ -1,7 +1,8 @@
+@import 'shared/variables.css';
 @import 'shared/messagePanel.css';
 @import 'shared/tournamentBracket.css';
 @import 'shared/bootstrapOverrides.css';
 body {
-  background-color: #313131 !important;
-  color: #fdfdfd;
+  background-color: var(--primary-colour);
+  color: var(--text-colour);
 }
