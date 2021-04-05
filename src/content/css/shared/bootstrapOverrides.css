@@ -34,6 +34,10 @@ a:hover {
   transition: opacity 0.3s ease-in-out;
 }
 
+.navbar-toggler-icon {
+  border-color: rgb(255, 102, 203);
+}
+
 .close:hover {
   color: var(--text-colour);
 }

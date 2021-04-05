@@ -2,6 +2,9 @@
 @import 'shared/messagePanel.css';
 @import 'shared/tournamentBracket.css';
 @import 'shared/bootstrapOverrides.css';
+.navbar-icon {
+  fill: var(--text-colour);
+}
 body {
   background-color: var(--primary-colour);
   color: var(--text-colour);
