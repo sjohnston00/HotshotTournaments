@@ -52,15 +52,6 @@ a:hover {
   background: var(--secondary-colour);
 }
 
-.toast-header {
-  background: #4d4d4c;
-}
-
-.toast-body {
-  background: #4d4d4c;
-  color: white;
-}
-
 .card {
   background-color: var(--tertiary-colour);
   box-shadow: var(--shadow);

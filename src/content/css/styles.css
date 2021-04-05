@@ -1,5 +1,6 @@
 @import 'shared/variables.css';
 @import 'shared/messagePanel.css';
+@import 'shared/toast.css';
 @import 'shared/tournamentBracket.css';
 @import 'shared/bootstrapOverrides.css';
 .navbar-icon {
