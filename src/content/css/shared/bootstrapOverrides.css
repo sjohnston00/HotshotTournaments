@@ -28,16 +28,24 @@ a:hover {
   opacity: 1;
 }
 
-.modal-header {
-  background: #4d4d4c;
+.close {
+  color: var(--text-colour);
+  font-weight: 500;
+  transition: opacity 0.3s ease-in-out;
 }
 
-.modal-body {
-  background-color: rgba(77, 77, 76, 0.5);
+.close:hover {
+  color: var(--text-colour);
+}
+.modal {
+  color: var(--text-colour);
+  box-shadow: var(--shadow);
 }
 
+.modal-header,
+.modal-body,
 .modal-footer {
-  background: #4d4d4c;
+  background: var(--secondary-colour);
 }
 
 .toast-header {
@@ -67,6 +75,11 @@ a:hover {
 }
 
 .form-control:focus {
+  color: #fdfdfd;
+  background-color: var(--tertiary-colour);
+}
+
+.form-control:read-only {
   color: #fdfdfd;
   background-color: var(--tertiary-colour);
 }
