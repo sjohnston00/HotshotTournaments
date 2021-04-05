@@ -48,9 +48,7 @@
       {{/user}}
       {{/messages}}
       {{^messages}}
-      <p class="text-danger">
-        Currently there are no messages in this tournament
-      </p>
+      <p class="faded">Currently there are no messages in this tournament</p>
       {{/messages}}
     </div>
     <form
@@ -73,7 +71,7 @@
           <button
             id="btn-send-message"
             type="submit"
-            class="btn btn-outline-primary"
+            class="btn btn-primary"
             type="button"
           >
             Send
@@ -84,11 +82,12 @@
     {{/team}}
 
     {{#tournament}}
-    <a href="/tournaments/{{ _id }}" class="btn btn-secondary">Back</a>
-
-    {{#isTeamLeader}}
-    {{> partials/teams/teamLeaderActions}}
-    {{/isTeamLeader}}
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/tournaments/{{ _id }}" class="btn btn-secondary">Back</a>
+      {{#isTeamLeader}}
+      {{> partials/teams/teamLeaderActions}}
+      {{/isTeamLeader}}
+    </div>
     {{/tournament}}
   </div>
 
