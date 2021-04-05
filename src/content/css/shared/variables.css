@@ -7,3 +7,13 @@
   --shadow: 2px 2px 2px rgba(0, 0, 0, 0.05), 4px 4px 4px rgba(0, 0, 0, 0.05),
     8px 8px 8px rgba(0, 0, 0, 0.05);
 }
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --primary-colour: #fdfdfd;
+    --secondary-colour: #e9e9e9;
+    --tertiary-colour: #d9d9d9;
+    --text-colour: #161616;
+    --faded-text-colour: #7b7b7b;
+  }
+}
