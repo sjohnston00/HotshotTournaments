@@ -12,8 +12,5 @@ body {
 }
 
 .gradient {
-  background: linear-gradient(
-    var(--purple-primary-colour),
-    var(--secondary-colour)
-  );
+  background: linear-gradient(transparent, var(--secondary-colour));
 }
