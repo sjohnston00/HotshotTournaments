@@ -2,12 +2,16 @@
   --primary-colour: #313131;
   --secondary-colour: #292929;
   --tertiary-colour: #3f3f3f;
+  --purple-primary-colour: #1f175b;
   --text-colour: #fdfdfd;
   --faded-text-colour: #fdfdfd5b;
   --shadow: 2px 2px 2px rgba(0, 0, 0, 0.05), 4px 4px 4px rgba(0, 0, 0, 0.05),
     8px 8px 8px rgba(0, 0, 0, 0.05);
 }
 
+/* 
+--light move support----
+--removed so assesors can only have dark mode theme
 @media (prefers-color-scheme: light) {
   :root {
     --primary-colour: #fdfdfd;
@@ -16,4 +20,4 @@
     --text-colour: #161616;
     --faded-text-colour: #7b7b7b;
   }
-}
+} */

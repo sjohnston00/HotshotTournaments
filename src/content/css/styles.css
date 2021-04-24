@@ -10,3 +10,10 @@ body {
   background-color: var(--primary-colour);
   color: var(--text-colour);
 }
+
+.gradient {
+  background: linear-gradient(
+    var(--purple-primary-colour),
+    var(--secondary-colour)
+  );
+}
