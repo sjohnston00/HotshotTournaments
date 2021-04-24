@@ -87,3 +87,7 @@ a:hover {
 #dropdownMenuButton svg {
   fill: var(--text-colour);
 }
+#card {
+  border: 0;
+  box-shadow: var(--shadow);
+}
