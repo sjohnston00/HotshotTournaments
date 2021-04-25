@@ -374,9 +374,14 @@ exports.post_create_tournament = async (req, res) => {
     req.flash('success_msg', 'New Tournament Created')
     return res.redirect(`/tournaments/${savedTournament._id}`)
   } catch (error) {
-    console.error('\x1b[31m', `Error: ${error.message}`)
-    req.flash('error_msg', 'Something went wrong, Please try again later')
-    return res.redirect('/tournaments/createTournament')
+    return handlers.response_handler(
+      '/tournaments/createTournament',
+      'error_msg',
+      'Tournament Not Found',
+      req,
+      res,
+      error.message
+    )
   }
 }
 
@@ -540,8 +545,14 @@ exports.get_one_tournament = async (req, res) => {
         */
     })
   } catch (error) {
-    req.flash('error_msg', error.message)
-    return res.status(500).redirect('/tournaments/myTournaments')
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Tournament Not Found',
+      req,
+      res,
+      error.message
+    )
   }
 }
 
@@ -561,9 +572,14 @@ exports.save_tournament_bracket = async (req, res) => {
     req.flash('success_msg', 'Tournament bracket saved')
     return res.redirect(`/tournaments/${updatedTournament._id}`)
   } catch (error) {
-    console.error('\x1b[31m', `Error: ${error.message}`)
-    req.flash('error_msg', 'Something went wrong, Please try again later')
-    return res.redirect('/tournaments/myTournaments')
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Tournament Not Found',
+      req,
+      res,
+      error.message
+    )
   }
 }
 exports.get_update_tournament = async (req, res) => {
@@ -678,9 +694,14 @@ exports.delete_tournament = async (req, res) => {
       return res.redirect('/tournaments/myTournaments')
     }
   } catch (error) {
-    console.error(error.message)
-    req.flash('error_msg', 'Something went wrong please try again later')
-    return res.redirect('/tournaments/myTournaments')
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Tournament Not Found',
+      req,
+      res,
+      error.message
+    )
   }
 
   try {
@@ -693,20 +714,27 @@ exports.delete_tournament = async (req, res) => {
         tournament: tournamentID
       })
     } catch (error) {
-      console.error(
-        'Could not find any messages associated with this tournament',
-        error.message
+      return handlers.response_handler(
+        '/tournaments/myTournaments',
+        'error_msg',
+        'Tournament Not Found',
+        req,
+        res,
+        `Could not find any messages associated with this tournament: ${error.message}`
       )
-      req.flash('error_msg', 'Something went wrong, please try again later')
-      return res.redirect('/tournaments/myTournaments')
     }
 
     req.flash('success_msg', 'Your tournament has been deleted')
     return res.redirect('/tournaments/myTournaments')
   } catch (error) {
-    console.error(error.message)
-    req.flash('error_msg', 'Something went wrong please try again later')
-    return res.redirect(`/tournaments/myTournaments`)
+    return handlers.response_handler(
+      '/tournaments/myTournaments',
+      'error_msg',
+      'Tournament Not Found',
+      req,
+      res,
+      error.message
+    )
   }
 }
 exports.kick_user = async (req, res) => {
